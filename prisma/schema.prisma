@@ -1,0 +1,364 @@
+// Fix My Bike - Prisma Schema
+// This defines all data models for the platform.
+// Datasource: PostgreSQL (via DATABASE_URL env variable)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// USERS & AUTHENTICATION
+// ============================================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // NextAuth relations
+  accounts Account[]
+  sessions Session[]
+
+  // Platform relations
+  mechanicProfile   MechanicProfile?
+  serviceRequests   ServiceRequest[]
+  partsListings     PartListing[]
+  bikeListings      BikeListing[]
+  wantedPosts       WantedPost[]
+  reviewsGiven      Review[]         @relation("ReviewAuthor")
+  reviewsReceived   Review[]         @relation("ReviewTarget")
+  contactMessagesSent     ContactMessage[] @relation("ContactFromUser")
+  contactMessagesReceived ContactMessage[] @relation("ContactToUser")
+
+  @@map("users")
+}
+
+// NextAuth required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================================
+// SERVICE MARKETPLACE
+// ============================================================
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  EXPERT
+  PROFESSIONAL
+}
+
+model MechanicProfile {
+  id          String     @id @default(cuid())
+  userId      String     @unique
+  bio         String?    @db.Text
+  location    String
+  phoneNumber String?
+  skillLevel  SkillLevel @default(INTERMEDIATE)
+  hourlyRate  Float?
+  // Comma-separated list of skills e.g. "Brakes, Gears, Wheels, Suspension"
+  skills      String?
+  isAvailable Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photos       MechanicPhoto[]
+  requests     ServiceRequest[]
+  reviews      Review[]         @relation("MechanicReviews")
+  contactMessages ContactMessage[]
+
+  @@map("mechanic_profiles")
+}
+
+model MechanicPhoto {
+  id         String          @id @default(cuid())
+  profileId  String
+  url        String
+  caption    String?
+  createdAt  DateTime        @default(now())
+
+  profile MechanicProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("mechanic_photos")
+}
+
+enum RequestStatus {
+  OPEN
+  QUOTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model ServiceRequest {
+  id          String        @id @default(cuid())
+  userId      String
+  mechanicId  String?
+  title       String
+  description String        @db.Text
+  location    String
+  budget      Float?
+  status      RequestStatus @default(OPEN)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user     User             @relation(fields: [userId], references: [id])
+  mechanic MechanicProfile? @relation(fields: [mechanicId], references: [id])
+  photos   ServiceRequestPhoto[]
+
+  @@map("service_requests")
+}
+
+model ServiceRequestPhoto {
+  id        String         @id @default(cuid())
+  requestId String
+  url       String
+  createdAt DateTime       @default(now())
+
+  request ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@map("service_request_photos")
+}
+
+// ============================================================
+// PARTS & ACCESSORIES MARKETPLACE
+// ============================================================
+
+enum Condition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+  POOR
+}
+
+enum PartCategory {
+  BRAKES
+  DRIVETRAIN
+  WHEELS
+  HANDLEBARS
+  SADDLE
+  FRAME
+  FORKS
+  PEDALS
+  LIGHTS
+  ACCESSORIES
+  OTHER
+}
+
+model PartListing {
+  id          String       @id @default(cuid())
+  userId      String
+  title       String
+  description String       @db.Text
+  price       Float
+  condition   Condition
+  category    PartCategory
+  brand       String?
+  location    String
+  isSold      Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id])
+  photos          PartListingPhoto[]
+  contactMessages ContactMessage[]
+
+  @@map("part_listings")
+}
+
+model PartListingPhoto {
+  id        String      @id @default(cuid())
+  listingId String
+  url       String
+  isPrimary Boolean     @default(false)
+  createdAt DateTime    @default(now())
+
+  listing PartListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@map("part_listing_photos")
+}
+
+// ============================================================
+// BIKE SALES MARKETPLACE
+// ============================================================
+
+enum BikeType {
+  ROAD
+  MOUNTAIN
+  GRAVEL
+  HYBRID
+  CITY
+  BMX
+  ELECTRIC
+  FOLDING
+  KIDS
+  OTHER
+}
+
+enum FrameSize {
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+  ONE_SIZE
+}
+
+model BikeListing {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  description String    @db.Text
+  price       Float
+  condition   Condition
+  brand       String
+  model       String?
+  year        Int?
+  bikeType    BikeType
+  frameSize   FrameSize
+  wheelSize   String?   // e.g. "26\"", "27.5\"", "29\"", "700c"
+  color       String?
+  location    String
+  isSold      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user            User               @relation(fields: [userId], references: [id])
+  photos          BikeListingPhoto[]
+  contactMessages ContactMessage[]
+
+  @@map("bike_listings")
+}
+
+model BikeListingPhoto {
+  id        String      @id @default(cuid())
+  listingId String
+  url       String
+  isPrimary Boolean     @default(false)
+  createdAt DateTime    @default(now())
+
+  listing BikeListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@map("bike_listing_photos")
+}
+
+// ============================================================
+// WANTED POSTS (Buy Bikes)
+// ============================================================
+
+model WantedPost {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  description String    @db.Text
+  maxBudget   Float?
+  bikeType    BikeType?
+  frameSize   FrameSize?
+  location    String
+  isFulfilled Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user            User             @relation(fields: [userId], references: [id])
+  contactMessages ContactMessage[]
+
+  @@map("wanted_posts")
+}
+
+// ============================================================
+// REVIEWS
+// ============================================================
+
+model Review {
+  id          String   @id @default(cuid())
+  authorId    String
+  targetId    String   // The user being reviewed
+  mechanicId  String?  // If it's for a mechanic specifically
+  rating      Int      // 1-5
+  comment     String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  author  User             @relation("ReviewAuthor", fields: [authorId], references: [id])
+  target  User             @relation("ReviewTarget", fields: [targetId], references: [id])
+  mechanic MechanicProfile? @relation("MechanicReviews", fields: [mechanicId], references: [id])
+
+  @@map("reviews")
+}
+
+// ============================================================
+// CONTACT MESSAGES (Buyer ↔ Seller / Mechanic)
+// ============================================================
+
+model ContactMessage {
+  id               String   @id @default(cuid())
+  fromUserId       String?
+  toUserId         String
+  email            String?        // For non-authenticated senders
+  name             String?
+  subject          String?
+  message          String   @db.Text
+  partListingId    String?
+  bikeListingId    String?
+  mechanicProfileId String?
+  wantedPostId     String?
+  createdAt        DateTime @default(now())
+
+  fromUser        User?            @relation("ContactFromUser", fields: [fromUserId], references: [id])
+  toUser          User             @relation("ContactToUser", fields: [toUserId], references: [id])
+  partListing     PartListing?     @relation(fields: [partListingId], references: [id])
+  bikeListing     BikeListing?     @relation(fields: [bikeListingId], references: [id])
+  mechanicProfile MechanicProfile? @relation(fields: [mechanicProfileId], references: [id])
+  wantedPost      WantedPost?      @relation(fields: [wantedPostId], references: [id])
+
+  @@map("contact_messages")
+}
