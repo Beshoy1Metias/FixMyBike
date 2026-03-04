@@ -1,0 +1,119 @@
+.footer {
+    margin-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.inner {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: var(--space-12);
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-12);
+}
+
+/* --- Brand column --- */
+.brand {}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+}
+
+.logo strong {
+    color: var(--color-primary);
+}
+
+.tagline {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 280px;
+    margin-bottom: var(--space-6);
+}
+
+.socials {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.social {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: var(--transition-fast);
+    text-decoration: none;
+}
+
+.social:hover {
+    border-color: var(--color-primary);
+    background: rgba(255, 92, 40, 0.1);
+}
+
+/* --- Link groups --- */
+.groupTitle {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-4);
+}
+
+.linkList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footerLink {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+    text-decoration: none;
+}
+
+.footerLink:hover {
+    color: var(--text-primary);
+}
+
+/* --- Bottom bar --- */
+.bottom {
+    border-top: 1px solid var(--border);
+    padding: var(--space-5) 0;
+}
+
+.copyright {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    text-align: center;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+    .inner {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-8);
+    }
+}
+
+@media (max-width: 640px) {
+    .inner {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+    }
+}

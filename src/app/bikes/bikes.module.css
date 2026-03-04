@@ -1,0 +1,51 @@
+.typePills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.pill:hover {
+    background: var(--surface-2);
+    color: var(--text-primary);
+}
+
+.pillActive {
+    background: rgba(255, 92, 40, 0.15);
+    border-color: rgba(255, 92, 40, 0.4);
+    color: var(--color-primary-light);
+}
+
+.filterBar {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-4);
+    margin-bottom: var(--space-10);
+    flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+    .filterBar {
+        flex-direction: column;
+    }
+
+    .filterBar>* {
+        width: 100% !important;
+    }
+}

@@ -1,65 +1,136 @@
-import Image from "next/image";
+import Link from "next/link";
+import styles from "./page.module.css";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      {/* ---- HERO ---- */}
+      <section className={styles.hero}>
+        <div className={`container ${styles.heroInner}`}>
+          <div className={styles.heroContent}>
+            <span className="page-header__eyebrow">🚲 The Bike Community Marketplace</span>
+            <h1 className={`text-display ${styles.heroTitle}`}>
+              Fix, Buy & Sell<br />
+              <span className="gradient-text">Your Bike.</span>
+            </h1>
+            <p className="text-body-lg">
+              Connect with skilled local mechanics, buy and sell parts, or find the bike you&apos;ve always wanted. Everything bikes, all in one place.
+            </p>
+            <div className={styles.heroCta}>
+              <Link href="/mechanics" className="btn btn-primary btn-lg">
+                🔧 Find a Mechanic
+              </Link>
+              <Link href="/auth/register" className="btn btn-secondary btn-lg">
+                Post a Listing
+              </Link>
+            </div>
+          </div>
+          <div className={styles.heroImage}>
+            <div className={styles.heroImageBlob} />
+            <div className={styles.heroStats}>
+              <div className={styles.stat}>
+                <span className={styles.statNum}>2,400+</span>
+                <span className={styles.statLabel}>Mechanics</span>
+              </div>
+              <div className={styles.stat}>
+                <span className={styles.statNum}>12k+</span>
+                <span className={styles.statLabel}>Parts Listed</span>
+              </div>
+              <div className={styles.stat}>
+                <span className={styles.statNum}>3,800+</span>
+                <span className={styles.statLabel}>Bikes Sold</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* ---- CATEGORIES ---- */}
+      <section className={`section ${styles.categories}`}>
+        <div className="container">
+          <div className={styles.sectionHead}>
+            <h2 className="text-heading-1">What are you looking for?</h2>
+            <p className="text-body-lg">Everything bikes, in one marketplace.</p>
+          </div>
+          <div className={styles.categoryGrid}>
+            <Link href="/mechanics" className={styles.categoryCard}>
+              <div className={styles.categoryIcon}>🔧</div>
+              <h3 className="text-heading-3">Find a Mechanic</h3>
+              <p className="text-sm text-secondary-color">
+                Browse skilled local mechanics and DIY fixers. Get quotes and book repairs.
+              </p>
+              <span className={styles.categoryArrow}>→</span>
+            </Link>
+            <Link href="/parts" className={styles.categoryCard}>
+              <div className={styles.categoryIcon}>⚙️</div>
+              <h3 className="text-heading-3">Parts & Accessories</h3>
+              <p className="text-sm text-secondary-color">
+                Buy and sell bike parts, gear, and accessories. New and used.
+              </p>
+              <span className={styles.categoryArrow}>→</span>
+            </Link>
+            <Link href="/bikes" className={styles.categoryCard}>
+              <div className={styles.categoryIcon}>🚲</div>
+              <h3 className="text-heading-3">Bikes for Sale</h3>
+              <p className="text-sm text-secondary-color">
+                Browse full bikes for sale from private sellers. Road, MTB, gravel, and more.
+              </p>
+              <span className={styles.categoryArrow}>→</span>
+            </Link>
+            <Link href="/wanted" className={styles.categoryCard}>
+              <div className={styles.categoryIcon}>🔍</div>
+              <h3 className="text-heading-3">Looking to Buy</h3>
+              <p className="text-sm text-secondary-color">
+                Post your wishlist with specs and budget. Let sellers come to you.
+              </p>
+              <span className={styles.categoryArrow}>→</span>
+            </Link>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* ---- HOW IT WORKS ---- */}
+      <section className={`section ${styles.howItWorks}`}>
+        <div className="container">
+          <div className={styles.sectionHead}>
+            <h2 className="text-heading-1">How it works</h2>
+            <p className="text-body-lg">Get started in minutes.</p>
+          </div>
+          <div className="grid-3">
+            {[
+              { step: "01", title: "Create an account", desc: "Sign up for free in under a minute. No credit card required." },
+              { step: "02", title: "Post or browse", desc: "List your skills, parts, or bike — or search thousands of listings." },
+              { step: "03", title: "Connect & transact", desc: "Message directly, agree on terms, and close the deal safely." },
+            ].map((item) => (
+              <div key={item.step} className={styles.step}>
+                <span className={styles.stepNum}>{item.step}</span>
+                <h3 className="text-heading-3">{item.title}</h3>
+                <p className="text-sm text-secondary-color">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---- CTA BANNER ---- */}
+      <section className={`section ${styles.ctaBanner}`}>
+        <div className="container">
+          <div className={styles.ctaCard}>
+            <div className={styles.ctaGlow} />
+            <h2 className="text-heading-1">
+              Ready to get your bike fixed?
+            </h2>
+            <p className="text-body-lg">
+              Join thousands of cyclists who trust FixMyBike.
+            </p>
+            <div className={styles.ctaActions}>
+              <Link href="/auth/register" className="btn btn-primary btn-lg">
+                Get Started — It&apos;s Free
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

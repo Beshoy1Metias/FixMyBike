@@ -1,0 +1,160 @@
+.filterBar {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-4);
+    margin-bottom: var(--space-10);
+    flex-wrap: wrap;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--space-5);
+}
+
+/* Mechanic Card */
+.mechCard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    display: flex;
+    gap: var(--space-5);
+    align-items: flex-start;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+}
+
+.mechCard:hover {
+    border-color: rgba(255, 92, 40, 0.3);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-glow);
+}
+
+/* Avatar */
+.mechAvatar {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.availDot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--color-success);
+    border: 2px solid var(--surface);
+}
+
+/* Info */
+.mechInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+}
+
+.mechTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-2);
+}
+
+.mechName {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.mechLocation {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+}
+
+.mechBadges {
+    display: flex;
+    gap: var(--space-1);
+    flex-shrink: 0;
+}
+
+.mechBio {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.mechSkills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+}
+
+.mechFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-1);
+}
+
+.mechRating {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.stars {
+    color: var(--color-accent);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+    .filterBar {
+        flex-direction: column;
+    }
+
+    .filterBar>* {
+        width: 100% !important;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mechCard {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .mechTop {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .mechFooter {
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+}

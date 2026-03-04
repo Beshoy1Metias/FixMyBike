@@ -1,0 +1,247 @@
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--navbar-height);
+    z-index: 1000;
+    background: rgba(13, 13, 15, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+}
+
+.inner {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    gap: var(--space-8);
+}
+
+/* --- Logo --- */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.logoIcon {
+    font-size: 1.4rem;
+}
+
+.logoText {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.logoBold {
+    color: var(--color-primary);
+}
+
+/* --- Desktop Nav Links --- */
+.links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex: 1;
+}
+
+.link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.link:hover {
+    color: var(--text-primary);
+    background: var(--surface-2);
+}
+
+.linkIcon {
+    font-size: 1rem;
+}
+
+/* --- Auth Area --- */
+.authArea {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-shrink: 0;
+}
+
+/* --- User Menu / Dropdown --- */
+.userMenu {
+    position: relative;
+}
+
+.userBtn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #fff;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    box-shadow: 0 0 0 2px transparent;
+}
+
+.userBtn:hover {
+    box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.dropdown {
+    position: absolute;
+    top: calc(100% + var(--space-3));
+    right: 0;
+    min-width: 180px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-2);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: var(--transition-fast);
+}
+
+.userMenu:hover .dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdownItem {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.dropdownItem:hover {
+    color: var(--text-primary);
+    background: var(--surface-2);
+}
+
+.signOutBtn {
+    color: var(--color-error);
+}
+
+.signOutBtn:hover {
+    background: rgba(239, 68, 68, 0.08);
+}
+
+/* --- Hamburger (Mobile) --- */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    padding: var(--space-2);
+    cursor: pointer;
+    background: none;
+    border: none;
+    margin-left: auto;
+}
+
+.bar,
+.barOpen,
+.barOpenBottom,
+.barHide {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: var(--transition-fast);
+}
+
+.barOpen {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.barHide {
+    opacity: 0;
+}
+
+.barOpenBottom {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* --- Mobile Menu --- */
+.mobileMenu {
+    display: none;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-4) var(--space-6);
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.mobileLink {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+}
+
+.mobileLink:hover {
+    color: var(--text-primary);
+    background: var(--surface-2);
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+    .links {
+        display: none;
+    }
+
+    .authArea {
+        display: none;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .mobileMenu {
+        display: flex;
+    }
+}
