@@ -25,29 +25,22 @@ export default function ImageUploader({ label = "Photos", maxImages = 4, onChang
             const newUrls: string[] = [];
 
             for (const file of filesArray) {
-                const res = await fetch("/api/upload-url", {
+                const formData = new FormData();
+                formData.append("file", file);
+
+                const res = await fetch("/api/upload", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        fileName: file.name,
-                        fileType: file.type,
-                    }),
+                    body: formData,
                 });
 
                 const data = await res.json();
 
                 if (!res.ok) {
-                    throw new Error(data.error || "Failed to get upload URL.");
+                    throw new Error(data.error || "Upload failed.");
                 }
 
-                await fetch(data.uploadUrl, {
-                    method: "PUT",
-                    headers: { "Content-Type": file.type },
-                    body: file,
-                });
-
-                if (data.fileUrl) {
-                    newUrls.push(data.fileUrl);
+                if (data.url) {
+                    newUrls.push(data.url);
                 }
             }
 
