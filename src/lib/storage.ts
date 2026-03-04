@@ -16,7 +16,14 @@ export function getS3Client() {
                 accessKeyId: process.env.S3_ACCESS_KEY_ID,
                 secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
             },
-            ...(endpoint ? { endpoint } : {}),
+            // For non-AWS endpoints like Cloudflare R2 we MUST use
+            // path-style URLs to avoid TLS hostname mismatch.
+            ...(endpoint
+                ? {
+                      endpoint,
+                      forcePathStyle: true,
+                  }
+                : {}),
         });
     }
 
