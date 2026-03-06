@@ -2,35 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import nodemailer from "nodemailer";
-
-async function sendEmail(to: string, subject: string, text: string) {
-    const host = process.env.SMTP_HOST;
-    const port = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASSWORD;
-    const from = process.env.SMTP_FROM_EMAIL || "no-reply@fixmybike.local";
-
-    if (!host || !user || !pass) {
-        // Email is optional – if SMTP is not configured we simply don't send.
-        console.warn("[contact] SMTP not configured, skipping email send.");
-        return;
-    }
-
-    const transporter = nodemailer.createTransport({
-        host,
-        port,
-        secure: port === 465,
-        auth: { user, pass },
-    });
-
-    await transporter.sendMail({
-        from,
-        to,
-        subject,
-        text,
-    });
-}
+import { sendEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
     try {
@@ -87,20 +59,19 @@ export async function POST(req: NextRequest) {
         const listingLabel = partListingId
             ? "Part listing"
             : bikeListingId
-            ? "Bike listing"
-            : mechanicProfileId
-            ? "Mechanic profile"
-            : wantedPostId
-            ? "Wanted post"
-            : "Listing";
+                ? "Bike listing"
+                : mechanicProfileId
+                    ? "Mechanic profile"
+                    : wantedPostId
+                        ? "Wanted post"
+                        : "Listing";
 
         const emailText = [
             `You received a new message on FixMyBike.`,
             ``,
-            `From: ${
-                fromUserId
-                    ? `${session?.user?.name || "FixMyBike user"} <${session?.user?.email || "hidden"}>`
-                    : `${name || "Interested buyer"} <${email || "no email provided"}>`
+            `From: ${fromUserId
+                ? `${session?.user?.name || "FixMyBike user"} <${session?.user?.email || "hidden"}>`
+                : `${name || "Interested buyer"} <${email || "no email provided"}>`
             }`,
             `Regarding: ${listingLabel}`,
             subject ? `Subject: ${subject}` : null,
@@ -113,11 +84,11 @@ export async function POST(req: NextRequest) {
             .join("\n");
 
         // Don't block API on email failure
-        void sendEmail(
-            toUser.email,
-            subject || "New message on FixMyBike",
-            emailText
-        );
+        void sendEmail({
+            to: toUser.email,
+            subject: subject || "New message on FixMyBike",
+            text: emailText
+        });
 
         return NextResponse.json({ contact }, { status: 201 });
     } catch (error) {

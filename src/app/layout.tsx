@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,6 +27,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     siteName: "FixMyBike",
   },
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -42,6 +44,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <Analytics />
         </AuthProvider>
       </body>
     </html>

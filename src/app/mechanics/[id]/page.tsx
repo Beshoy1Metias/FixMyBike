@@ -1,9 +1,29 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import ContactSellerForm from "@/components/ContactSellerForm/ContactSellerForm";
 
 interface MechanicDetailPageProps {
-    params: { id: string };
+    params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: MechanicDetailPageProps): Promise<Metadata> {
+    const { id } = await params;
+    const mech = await prisma.mechanicProfile.findUnique({
+        where: { id },
+        include: { user: true }
+    });
+
+    if (!mech) return { title: "Mechanic Not Found" };
+
+    return {
+        title: `${mech.user.name || "Mechanic Profile"} - Fix My Bike`,
+        description: mech.skills ? `Mechanic specializing in ${mech.skills}` : "Expert bike mechanic services",
+        openGraph: {
+            title: `${mech.user.name || "Mechanic"} | ${mech.location}`,
+            description: mech.skills ? `Specialties: ${mech.skills}` : "Need bike repairs? View this mechanic profile.",
+        },
+    };
 }
 
 const SKILL_BADGE: Record<string, string> = {
@@ -14,8 +34,9 @@ const SKILL_BADGE: Record<string, string> = {
 };
 
 export default async function MechanicDetailPage({ params }: MechanicDetailPageProps) {
+    const { id } = await params;
     const mech = await prisma.mechanicProfile.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: {
             user: {
                 select: { id: true, name: true },

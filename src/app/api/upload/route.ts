@@ -47,7 +47,6 @@ export async function POST(req: NextRequest) {
         Key: key,
         Body: body,
         ContentType: (file as any).type || "application/octet-stream",
-        ACL: "public-read",
     });
 
     await s3.send(command);

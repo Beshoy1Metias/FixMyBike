@@ -50,7 +50,6 @@ export async function POST(req: NextRequest) {
             Bucket: bucket,
             Key: key,
             ContentType: fileType,
-            ACL: "public-read",
         });
 
         const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });

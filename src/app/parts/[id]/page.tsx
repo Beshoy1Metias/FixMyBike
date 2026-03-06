@@ -1,15 +1,39 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import ListingCard from "@/components/ListingCard/ListingCard";
 import ContactSellerForm from "@/components/ContactSellerForm/ContactSellerForm";
 
 interface PartDetailPageProps {
-    params: { id: string };
+    params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: PartDetailPageProps): Promise<Metadata> {
+    const { id } = await params;
+    const part = await prisma.partListing.findUnique({
+        where: { id },
+        include: { photos: { orderBy: { isPrimary: "desc" } } }
+    });
+
+    if (!part) return { title: "Part Not Found" };
+
+    const primaryPhoto = part.photos[0]?.url;
+
+    return {
+        title: `${part.title} - Fix My Bike`,
+        description: part.description.substring(0, 160),
+        openGraph: {
+            title: `${part.title} | €${part.price}`,
+            description: part.description.substring(0, 160),
+            images: primaryPhoto ? [{ url: primaryPhoto }] : [],
+        },
+    };
 }
 
 export default async function PartDetailPage({ params }: PartDetailPageProps) {
+    const { id } = await params;
     const part = await prisma.partListing.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: {
             photos: {
                 orderBy: { isPrimary: "desc" },

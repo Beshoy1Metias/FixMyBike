@@ -1,14 +1,38 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import ContactSellerForm from "@/components/ContactSellerForm/ContactSellerForm";
 
 interface BikeDetailPageProps {
-    params: { id: string };
+    params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: BikeDetailPageProps): Promise<Metadata> {
+    const { id } = await params;
+    const bike = await prisma.bikeListing.findUnique({
+        where: { id },
+        include: { photos: { orderBy: { isPrimary: "desc" } } }
+    });
+
+    if (!bike) return { title: "Bike Not Found" };
+
+    const primaryPhoto = bike.photos[0]?.url;
+
+    return {
+        title: `${bike.title} - Fix My Bike`,
+        description: bike.description.substring(0, 160),
+        openGraph: {
+            title: `${bike.title} | €${bike.price}`,
+            description: bike.description.substring(0, 160),
+            images: primaryPhoto ? [{ url: primaryPhoto }] : [],
+        },
+    };
 }
 
 export default async function BikeDetailPage({ params }: BikeDetailPageProps) {
+    const { id } = await params;
     const bike = await prisma.bikeListing.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: {
             photos: {
                 orderBy: { isPrimary: "desc" },

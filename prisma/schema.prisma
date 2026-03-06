@@ -36,9 +36,15 @@ model User {
   bikeListings      BikeListing[]
   wantedPosts       WantedPost[]
   reviewsGiven      Review[]         @relation("ReviewAuthor")
-  reviewsReceived   Review[]         @relation("ReviewTarget")
+  reviewsReceived         Review[]         @relation("ReviewTarget")
   contactMessagesSent     ContactMessage[] @relation("ContactFromUser")
   contactMessagesReceived ContactMessage[] @relation("ContactToUser")
+  savedSearches           SavedSearch[]
+
+  // Real-time chat relations
+  conversationsAsParticipant1 Conversation[]   @relation("Participant1")
+  conversationsAsParticipant2 Conversation[]   @relation("Participant2")
+  messagesSent                Message[]
 
   @@map("users")
 }
@@ -361,4 +367,58 @@ model ContactMessage {
   wantedPost      WantedPost?      @relation(fields: [wantedPostId], references: [id])
 
   @@map("contact_messages")
+}
+
+// ============================================================
+// SAVED SEARCHES (Alerts)
+// ============================================================
+
+model SavedSearch {
+  id          String    @id @default(cuid())
+  userId      String
+  query       String?   // Free text search
+  category    String?   // e.g. "BIKE", "PART"
+  bikeType    BikeType?
+  partCategory PartCategory?
+  minPrice    Float?
+  maxPrice    Float?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("saved_searches")
+}
+
+// ============================================================
+// REAL-TIME MESSAGING (Pusher)
+// ============================================================
+
+model Conversation {
+  id             String    @id @default(cuid())
+  participant1Id String
+  participant2Id String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  participant1   User      @relation("Participant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2   User      @relation("Participant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+  messages       Message[]
+
+  @@unique([participant1Id, participant2Id])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  text           String       @db.Text
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
 }

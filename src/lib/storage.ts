@@ -20,9 +20,9 @@ export function getS3Client() {
             // path-style URLs to avoid TLS hostname mismatch.
             ...(endpoint
                 ? {
-                      endpoint,
-                      forcePathStyle: true,
-                  }
+                    endpoint,
+                    forcePathStyle: true,
+                }
                 : {}),
         });
     }
@@ -33,13 +33,21 @@ export function getS3Client() {
 export function getPublicFileUrl(key: string) {
     const bucket = process.env.S3_BUCKET_NAME;
     const region = process.env.S3_REGION;
-    const endpoint = process.env.S3_PUBLIC_BASE_URL || process.env.S3_ENDPOINT;
+
+    // R2 public bucket URL: https://pub-xxx.r2.dev/<key>  (no bucket name in path)
+    const r2PublicUrl = process.env.R2_PUBLIC_URL;
+
+    // Legacy: custom domain or S3_PUBLIC_BASE_URL that includes bucket name in path
+    const legacyPublic = process.env.S3_PUBLIC_BASE_URL;
 
     if (!bucket) return null;
 
-    if (endpoint) {
-        // Generic S3-compatible or custom domain, e.g. https://cdn.example.com or https://account.r2.cloudflarestorage.com
-        return `${endpoint.replace(/\/$/, "")}/${bucket}/${key}`;
+    if (r2PublicUrl) {
+        return `${r2PublicUrl.replace(/\/$/, "")}/${key}`;
+    }
+
+    if (legacyPublic) {
+        return `${legacyPublic.replace(/\/$/, "")}/${bucket}/${key}`;
     }
 
     if (!region) return null;

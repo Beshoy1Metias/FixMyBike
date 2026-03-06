@@ -1,14 +1,32 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import ContactSellerForm from "@/components/ContactSellerForm/ContactSellerForm";
 
 interface WantedDetailPageProps {
-    params: { id: string };
+    params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: WantedDetailPageProps): Promise<Metadata> {
+    const { id } = await params;
+    const post = await prisma.wantedPost.findUnique({ where: { id } });
+
+    if (!post) return { title: "Wanted Post Not Found" };
+
+    return {
+        title: `Wanted: ${post.title} - Fix My Bike`,
+        description: post.description.substring(0, 160),
+        openGraph: {
+            title: `Wanted: ${post.title}`,
+            description: post.description.substring(0, 160),
+        },
+    };
 }
 
 export default async function WantedDetailPage({ params }: WantedDetailPageProps) {
+    const { id } = await params;
     const post = await prisma.wantedPost.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: {
             user: {
                 select: { id: true, name: true },
