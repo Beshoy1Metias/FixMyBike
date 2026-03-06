@@ -8,13 +8,13 @@ export default function Home() {
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
           <div className={styles.heroContent}>
-            <span className="page-header__eyebrow">🚲 The Bike Community Marketplace</span>
+            <span className="page-header__eyebrow">🚲 Padova's Bike Community Marketplace</span>
             <h1 className={`text-display ${styles.heroTitle}`}>
-              Fix, Buy & Sell<br />
-              <span className="gradient-text">Your Bike.</span>
+              Fix, Buy &amp; Sell<br />
+              <span className="gradient-text">Your Bike in Padova.</span>
             </h1>
             <p className="text-body-lg">
-              Connect with skilled local mechanics, buy and sell parts, or find the bike you&apos;ve always wanted. Everything bikes, all in one place.
+              Connect with skilled local mechanics, buy and sell parts, or find the bike you&apos;ve always wanted — all based right here in Padova.
             </p>
             <div className={styles.heroCta}>
               <Link href="/mechanics" className="btn btn-primary btn-lg">
@@ -29,16 +29,16 @@ export default function Home() {
             <div className={styles.heroImageBlob} />
             <div className={styles.heroStats}>
               <div className={styles.stat}>
-                <span className={styles.statNum}>2,400+</span>
-                <span className={styles.statLabel}>Mechanics</span>
+                <span className={styles.statNum}>Padova</span>
+                <span className={styles.statLabel}>Based &amp; Focused</span>
               </div>
               <div className={styles.stat}>
-                <span className={styles.statNum}>12k+</span>
-                <span className={styles.statLabel}>Parts Listed</span>
+                <span className={styles.statNum}>Free</span>
+                <span className={styles.statLabel}>To List &amp; Browse</span>
               </div>
               <div className={styles.stat}>
-                <span className={styles.statNum}>3,800+</span>
-                <span className={styles.statLabel}>Bikes Sold</span>
+                <span className={styles.statNum}>Local</span>
+                <span className={styles.statLabel}>Mechanics &amp; Sellers</span>
               </div>
             </div>
           </div>
@@ -118,10 +118,10 @@ export default function Home() {
           <div className={styles.ctaCard}>
             <div className={styles.ctaGlow} />
             <h2 className="text-heading-1">
-              Ready to get your bike fixed?
+              Padova&apos;s bike community starts here.
             </h2>
             <p className="text-body-lg">
-              Join thousands of cyclists who trust FixMyBike.
+              Join local cyclists, mechanics, and sellers across Padova. It&apos;s free to get started.
             </p>
             <div className={styles.ctaActions}>
               <Link href="/auth/register" className="btn btn-primary btn-lg">

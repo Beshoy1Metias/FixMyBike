@@ -1,14 +1,21 @@
 import type { NextConfig } from "next";
 
-import withPWAInit from "@ducanh2912/next-pwa";
-
-const withPWA = withPWAInit({
-  dest: "public",
-  disable: process.env.NODE_ENV === "development",
-});
-
 const nextConfig: NextConfig = {
-  // output: "export" usually required for Capacitor Native, but breaks dynamic routes without explicit `generateStaticParams`. PWA fallback preferred by Next.js apps.
+  // Allow images from Cloudflare R2 public buckets and any pub-*.r2.dev domain
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.r2.dev",
+      },
+      {
+        protocol: "https",
+        hostname: "**.googleusercontent.com", // Google OAuth avatars
+      },
+    ],
+  },
+  // Don't expose Next.js version in response headers
+  poweredByHeader: false,
 };
 
-export default withPWA(nextConfig);
+export default nextConfig;

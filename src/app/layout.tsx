@@ -14,20 +14,29 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "FixMyBike — Marketplace for Bike Mechanics, Parts & Sales",
-    template: "%s | FixMyBike",
+    default: "FixMyBike Padova — Bici, Meccanici & Ricambi a Padova",
+    template: "%s | FixMyBike Padova",
   },
   description:
-    "Find local bike mechanics, buy or sell bike parts and accessories, or list your bike for sale. Fix My Bike is the #1 marketplace for cyclists.",
-  keywords: ["bike repair", "bicycle mechanics", "bike parts", "bikes for sale", "cycling marketplace"],
+    "Trova meccanici di bici a Padova, compra e vendi ricambi e accessori per bici, o metti in vendita la tua bici. Il marketplace di riferimento per i ciclisti di Padova e dintorni.",
+  keywords: [
+    "meccanico bici Padova",
+    "riparazione bici Padova",
+    "ricambi bici Padova",
+    "bici usate Padova",
+    "bike repair Padova",
+    "bicycle mechanic Padova",
+    "bike parts Padova",
+    "cycling Padova",
+    "bici Padova",
+  ],
   openGraph: {
-    title: "FixMyBike — Bike Mechanics, Parts & Sales Marketplace",
-    description: "Find local bike mechanics, buy or sell bike parts and accessories, or list your bike for sale.",
+    title: "FixMyBike Padova — Bici, Meccanici & Ricambi",
+    description: "Trova meccanici di bici a Padova, compra e vendi ricambi, o metti in vendita la tua bici.",
     type: "website",
-    locale: "en_US",
+    locale: "it_IT",
     siteName: "FixMyBike",
   },
-  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

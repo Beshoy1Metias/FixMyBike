@@ -1,10 +1,8 @@
 import { MetadataRoute } from "next";
 import prisma from "@/lib/prisma";
 
-export const dynamic = "force-static";
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = "https://fixmybike.com";
+    const baseUrl = process.env.NEXTAUTH_URL || "https://fixmybike.com";
 
     // Fetch dynamic routes
     const bikes = await prisma.bikeListing.findMany({ select: { id: true, updatedAt: true } });
