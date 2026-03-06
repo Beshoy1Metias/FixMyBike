@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Keep Prisma out of the Next.js bundle — it must stay as a server-only runtime dependency
+  serverExternalPackages: ["@prisma/client", "prisma"],
+
   // Allow images from Cloudflare R2 public buckets and any pub-*.r2.dev domain
   images: {
     remotePatterns: [
