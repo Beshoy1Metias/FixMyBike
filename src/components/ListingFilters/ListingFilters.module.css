@@ -1,0 +1,126 @@
+.wrapper {
+    margin-bottom: var(--space-8);
+}
+
+.desktopBar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.searchWrapper {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filtersGroup {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.sortGroup {
+    width: 180px;
+}
+
+.mobileFilterToggle {
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+    .filtersGroup :global(.form-select) {
+        display: none;
+    }
+
+    .mobileFilterToggle {
+        display: flex;
+    }
+}
+
+@media (max-width: 640px) {
+    .searchWrapper {
+        width: 100%;
+        flex: none;
+    }
+
+    .sortGroup {
+        width: 100%;
+    }
+
+    .desktopBar {
+        gap: var(--space-2);
+    }
+}
+
+/* Mobile Drawer */
+.mobileDrawerOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.mobileDrawer {
+    width: 100%;
+    max-width: 400px;
+    background: var(--surface);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+.drawerHeader {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.drawerBody {
+    padding: var(--space-6);
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.drawerFooter {
+    padding: var(--space-4);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: var(--space-2);
+}
+
+.drawerFooter button {
+    flex: 1;
+}

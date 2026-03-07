@@ -3,9 +3,45 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
+        const { searchParams } = new URL(req.url);
+        const q = searchParams.get("q");
+        const minPrice = searchParams.get("minPrice");
+        const maxPrice = searchParams.get("maxPrice");
+        const condition = searchParams.get("condition");
+        const bikeType = searchParams.get("bikeType");
+        const frameSize = searchParams.get("frameSize");
+        const wheelSize = searchParams.get("wheelSize");
+        const location = searchParams.get("location");
+
+        const where: any = {
+            isSold: false,
+        };
+
+        if (q) {
+            where.OR = [
+                { title: { contains: q, mode: "insensitive" } },
+                { description: { contains: q, mode: "insensitive" } },
+                { brand: { contains: q, mode: "insensitive" } },
+                { model: { contains: q, mode: "insensitive" } },
+            ];
+        }
+
+        if (minPrice || maxPrice) {
+            where.price = {};
+            if (minPrice) where.price.gte = Number(minPrice);
+            if (maxPrice) where.price.lte = Number(maxPrice);
+        }
+
+        if (condition) where.condition = condition;
+        if (bikeType) where.bikeType = bikeType;
+        if (frameSize) where.frameSize = frameSize;
+        if (wheelSize) where.wheelSize = { contains: wheelSize, mode: "insensitive" };
+        if (location) where.location = { contains: location, mode: "insensitive" };
+
         const bikes = await prisma.bikeListing.findMany({
+            where,
             orderBy: { createdAt: "desc" },
             include: {
                 photos: {
@@ -15,7 +51,7 @@ export async function GET() {
                     select: { id: true, name: true, image: true },
                 },
             },
-            take: 40,
+            take: 50,
         });
 
         return NextResponse.json({ bikes });

@@ -3,9 +3,40 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
+        const { searchParams } = new URL(req.url);
+        const q = searchParams.get("q");
+        const minPrice = searchParams.get("minPrice");
+        const maxPrice = searchParams.get("maxPrice");
+        const condition = searchParams.get("condition");
+        const category = searchParams.get("category");
+        const location = searchParams.get("location");
+
+        const where: any = {
+            isSold: false,
+        };
+
+        if (q) {
+            where.OR = [
+                { title: { contains: q, mode: "insensitive" } },
+                { description: { contains: q, mode: "insensitive" } },
+                { brand: { contains: q, mode: "insensitive" } },
+            ];
+        }
+
+        if (minPrice || maxPrice) {
+            where.price = {};
+            if (minPrice) where.price.gte = Number(minPrice);
+            if (maxPrice) where.price.lte = Number(maxPrice);
+        }
+
+        if (condition) where.condition = condition;
+        if (category) where.category = category;
+        if (location) where.location = { contains: location, mode: "insensitive" };
+
         const parts = await prisma.partListing.findMany({
+            where,
             orderBy: { createdAt: "desc" },
             include: {
                 photos: {
@@ -15,7 +46,7 @@ export async function GET() {
                     select: { id: true, name: true, image: true },
                 },
             },
-            take: 40,
+            take: 50,
         });
 
         return NextResponse.json({ parts });

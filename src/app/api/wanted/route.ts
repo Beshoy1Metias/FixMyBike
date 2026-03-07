@@ -3,16 +3,43 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
+        const { searchParams } = new URL(req.url);
+        const q = searchParams.get("q");
+        const maxBudget = searchParams.get("maxBudget");
+        const bikeType = searchParams.get("bikeType");
+        const frameSize = searchParams.get("frameSize");
+        const location = searchParams.get("location");
+
+        const where: any = {
+            isFulfilled: false,
+        };
+
+        if (q) {
+            where.OR = [
+                { title: { contains: q, mode: "insensitive" } },
+                { description: { contains: q, mode: "insensitive" } },
+            ];
+        }
+
+        if (maxBudget) {
+            where.maxBudget = { lte: Number(maxBudget) };
+        }
+
+        if (bikeType) where.bikeType = bikeType;
+        if (frameSize) where.frameSize = frameSize;
+        if (location) where.location = { contains: location, mode: "insensitive" };
+
         const posts = await prisma.wantedPost.findMany({
+            where,
             orderBy: { createdAt: "desc" },
             include: {
                 user: {
-                    select: { id: true, name: true },
+                    select: { id: true, name: true, image: true },
                 },
             },
-            take: 40,
+            take: 50,
         });
 
         return NextResponse.json({ posts });

@@ -3,16 +3,55 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
+        const { searchParams } = new URL(req.url);
+        const q = searchParams.get("q");
+        const skillLevel = searchParams.get("skillLevel");
+        const minRate = searchParams.get("minRate");
+        const maxRate = searchParams.get("maxRate");
+        const location = searchParams.get("location");
+
+        const where: any = {
+            isAvailable: true,
+        };
+
+        if (q) {
+            where.OR = [
+                { bio: { contains: q, mode: "insensitive" } },
+                { skills: { contains: q, mode: "insensitive" } },
+                { location: { contains: q, mode: "insensitive" } },
+                { user: { name: { contains: q, mode: "insensitive" } } },
+            ];
+        }
+
+        if (skillLevel) where.skillLevel = skillLevel;
+        
+        if (minRate || maxRate) {
+            where.hourlyRate = {};
+            if (minRate) where.hourlyRate.gte = Number(minRate);
+            if (maxRate) where.hourlyRate.lte = Number(maxRate);
+        }
+
+        if (location) {
+            if (where.OR) {
+                // If q is present, we already have an OR. We should probably keep location separate or combine.
+                // For now, let's just add it to where directly if not already in OR
+                where.location = { contains: location, mode: "insensitive" };
+            } else {
+                where.location = { contains: location, mode: "insensitive" };
+            }
+        }
+
         const mechanics = await prisma.mechanicProfile.findMany({
+            where,
             orderBy: { createdAt: "desc" },
             include: {
                 user: {
-                    select: { id: true, name: true },
+                    select: { id: true, name: true, image: true },
                 },
             },
-            take: 40,
+            take: 50,
         });
 
         return NextResponse.json({ mechanics });
