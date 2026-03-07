@@ -4,17 +4,45 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
 import styles from "./Navbar.module.css";
+import LanguageSwitcher from "@/components/LanguageSwitcher/LanguageSwitcher";
+import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
 
-const NAV_LINKS = [
-    { href: "/mechanics", label: "Find a Mechanic", icon: "🔧" },
-    { href: "/parts", label: "Parts & Gear", icon: "⚙️" },
-    { href: "/bikes", label: "Bikes for Sale", icon: "🚲" },
-    { href: "/wanted", label: "Wanted Bikes", icon: "🔍" },
-];
+const NAV_TEXT = {
+    en: {
+        mechanics: "Find a Mechanic",
+        parts: "Parts & Gear",
+        bikes: "Bikes for Sale",
+        wanted: "Wanted Bikes",
+        dashboard: "Dashboard",
+        postListing: "Post a Listing",
+        messages: "Messages",
+        profile: "Profile",
+        signOut: "Sign Out",
+        logIn: "Log In",
+        signUp: "Sign Up",
+        signUpFree: "Sign Up Free",
+    },
+    it: {
+        mechanics: "Trova un meccanico",
+        parts: "Ricambi & accessori",
+        bikes: "Bici in vendita",
+        wanted: "Cerco bici",
+        dashboard: "Dashboard",
+        postListing: "Pubblica un annuncio",
+        messages: "Messaggi",
+        profile: "Profilo",
+        signOut: "Esci",
+        logIn: "Accedi",
+        signUp: "Registrati",
+        signUpFree: "Registrati gratis",
+    },
+} as const;
 
 export default function Navbar() {
     const { data: session, status } = useSession();
     const [menuOpen, setMenuOpen] = useState(false);
+    const { language } = useLanguage();
+    const t = NAV_TEXT[language];
 
     return (
         <nav className={styles.navbar}>
@@ -29,18 +57,35 @@ export default function Navbar() {
 
                 {/* Desktop Nav Links */}
                 <ul className={styles.links}>
-                    {NAV_LINKS.map((link) => (
-                        <li key={link.href}>
-                            <Link href={link.href} className={styles.link}>
-                                <span className={styles.linkIcon}>{link.icon}</span>
-                                {link.label}
-                            </Link>
-                        </li>
-                    ))}
+                    <li>
+                        <Link href="/mechanics" className={styles.link}>
+                            <span className={styles.linkIcon}>🔧</span>
+                            {t.mechanics}
+                        </Link>
+                    </li>
+                    <li>
+                        <Link href="/parts" className={styles.link}>
+                            <span className={styles.linkIcon}>⚙️</span>
+                            {t.parts}
+                        </Link>
+                    </li>
+                    <li>
+                        <Link href="/bikes" className={styles.link}>
+                            <span className={styles.linkIcon}>🚲</span>
+                            {t.bikes}
+                        </Link>
+                    </li>
+                    <li>
+                        <Link href="/wanted" className={styles.link}>
+                            <span className={styles.linkIcon}>🔍</span>
+                            {t.wanted}
+                        </Link>
+                    </li>
                 </ul>
 
                 {/* Auth Area */}
                 <div className={styles.authArea}>
+                    <LanguageSwitcher />
                     {status === "loading" ? (
                         <div className="spinner" />
                     ) : session ? (
@@ -52,25 +97,25 @@ export default function Navbar() {
                                 <span>{session.user.name?.charAt(0).toUpperCase() ?? "U"}</span>
                             </Link>
                             <div className={styles.dropdown}>
-                                <Link href="/dashboard" className={styles.dropdownItem}>Dashboard</Link>
-                                <Link href="/listings/new" className={styles.dropdownItem}>Post a Listing</Link>
-                                <Link href="/messages" className={styles.dropdownItem}>Messages</Link>
-                                <Link href="/profile" className={styles.dropdownItem}>Profile</Link>
+                                <Link href="/dashboard" className={styles.dropdownItem}>{t.dashboard}</Link>
+                                <Link href="/listings/new" className={styles.dropdownItem}>{t.postListing}</Link>
+                                <Link href="/messages" className={styles.dropdownItem}>{t.messages}</Link>
+                                <Link href="/profile" className={styles.dropdownItem}>{t.profile}</Link>
                                 <button
                                     className={`${styles.dropdownItem} ${styles.signOutBtn}`}
                                     onClick={() => signOut({ callbackUrl: "/" })}
                                 >
-                                    Sign Out
+                                    {t.signOut}
                                 </button>
                             </div>
                         </div>
                     ) : (
                         <>
                             <Link href="/auth/login" className="btn btn-secondary btn-sm">
-                                Log In
+                                {t.logIn}
                             </Link>
                             <Link href="/auth/register" className="btn btn-primary btn-sm">
-                                Sign Up
+                                {t.signUp}
                             </Link>
                         </>
                     )}
@@ -91,16 +136,34 @@ export default function Navbar() {
             {/* Mobile Menu */}
             {menuOpen && (
                 <div className={styles.mobileMenu}>
-                    {NAV_LINKS.map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className={styles.mobileLink}
-                            onClick={() => setMenuOpen(false)}
-                        >
-                            {link.icon} {link.label}
-                        </Link>
-                    ))}
+                    <Link
+                        href="/mechanics"
+                        className={styles.mobileLink}
+                        onClick={() => setMenuOpen(false)}
+                    >
+                        🔧 {t.mechanics}
+                    </Link>
+                    <Link
+                        href="/parts"
+                        className={styles.mobileLink}
+                        onClick={() => setMenuOpen(false)}
+                    >
+                        ⚙️ {t.parts}
+                    </Link>
+                    <Link
+                        href="/bikes"
+                        className={styles.mobileLink}
+                        onClick={() => setMenuOpen(false)}
+                    >
+                        🚲 {t.bikes}
+                    </Link>
+                    <Link
+                        href="/wanted"
+                        className={styles.mobileLink}
+                        onClick={() => setMenuOpen(false)}
+                    >
+                        🔍 {t.wanted}
+                    </Link>
                     <hr className="divider" />
                     {session ? (
                         <>
@@ -109,19 +172,19 @@ export default function Navbar() {
                                 className={styles.mobileLink}
                                 onClick={() => setMenuOpen(false)}
                             >
-                                💬 Messages
+                                💬 {t.messages}
                             </Link>
                             <button
                                 className={styles.mobileLink}
                                 onClick={() => { signOut({ callbackUrl: "/" }); setMenuOpen(false); }}
                             >
-                                Sign Out
+                                {t.signOut}
                             </button>
                         </>
                     ) : (
                         <>
-                            <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Log In</Link>
-                            <Link href="/auth/register" className="btn btn-primary" onClick={() => setMenuOpen(false)}>Sign Up Free</Link>
+                            <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.logIn}</Link>
+                            <Link href="/auth/register" className="btn btn-primary" onClick={() => setMenuOpen(false)}>{t.signUpFree}</Link>
                         </>
                     )}
                 </div>

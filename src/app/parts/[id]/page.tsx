@@ -3,6 +3,8 @@ import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import ListingCard from "@/components/ListingCard/ListingCard";
 import ContactSellerForm from "@/components/ContactSellerForm/ContactSellerForm";
+import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
+import { getCurrentLanguage } from "@/lib/language";
 
 interface PartDetailPageProps {
     params: Promise<{ id: string }>;
@@ -32,6 +34,7 @@ export async function generateMetadata({ params }: PartDetailPageProps): Promise
 
 export default async function PartDetailPage({ params }: PartDetailPageProps) {
     const { id } = await params;
+    const lang = getCurrentLanguage();
     const part = await prisma.partListing.findUnique({
         where: { id },
         include: {
@@ -106,7 +109,7 @@ export default async function PartDetailPage({ params }: PartDetailPageProps) {
 
                     <div>
                         <h2 className="text-heading-3" style={{ marginBottom: "var(--space-3)" }}>
-                            Seller
+                            {lang === "it" ? "Venditore" : "Seller"}
                         </h2>
                         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
                             <div
@@ -154,10 +157,15 @@ export default async function PartDetailPage({ params }: PartDetailPageProps) {
                         />
                     </div>
 
-                    {/* Simple suggestion: show other recent parts */}
-                    <div>
-                        {/* This is a lightweight server-side recommendation using the same component styling */}
-                        {/* In a fuller implementation we might query related items here. */}
+                    <div className="card">
+                        <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+                            <div className="text-sm text-secondary-color">
+                                {lang === "it"
+                                    ? "Vuoi continuare la trattativa direttamente in app?"
+                                    : "Want to continue the conversation directly in app?"}
+                            </div>
+                            <MessageInAppButton receiverId={part.user.id} />
+                        </div>
                     </div>
                 </div>
             </div>

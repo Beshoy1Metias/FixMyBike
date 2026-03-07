@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import ContactSellerForm from "@/components/ContactSellerForm/ContactSellerForm";
+import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
+import { getCurrentLanguage } from "@/lib/language";
 
 interface MechanicDetailPageProps {
     params: Promise<{ id: string }>;
@@ -35,6 +37,7 @@ const SKILL_BADGE: Record<string, string> = {
 
 export default async function MechanicDetailPage({ params }: MechanicDetailPageProps) {
     const { id } = await params;
+    const lang = getCurrentLanguage();
     const mech = await prisma.mechanicProfile.findUnique({
         where: { id },
         include: {
@@ -53,7 +56,9 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
             <div className="container" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "var(--space-8)" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
                     <div className="page-header" style={{ textAlign: "left", paddingTop: 0, paddingBottom: 0 }}>
-                        <span className="page-header__eyebrow">🔧 Mechanic Profile</span>
+                        <span className="page-header__eyebrow">
+                            {lang === "it" ? "🔧 Profilo meccanico" : "🔧 Mechanic Profile"}
+                        </span>
                         <h1 className="text-heading-1">{mech.user.name || "Mechanic"}</h1>
                         <p className="text-body-lg" style={{ maxWidth: 640 }}>
                             {mech.bio}
@@ -79,7 +84,11 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
                             <div className="text-sm text-secondary-color">📍 {mech.location}</div>
                             <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
                                 <span className="badge badge-primary">{SKILL_BADGE[mech.skillLevel]}</span>
-                                {!mech.isAvailable && <span className="badge badge-gray">Currently unavailable</span>}
+                                {!mech.isAvailable && (
+                                    <span className="badge badge-gray">
+                                        {lang === "it" ? "Al momento non disponibile" : "Currently unavailable"}
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -105,17 +114,26 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
                         <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                             {mech.hourlyRate && (
                                 <div className="text-sm text-secondary-color">
-                                    Hourly Rate: <strong>€{mech.hourlyRate.toLocaleString()}</strong>
+                                    {lang === "it" ? "Tariffa oraria" : "Hourly Rate"}:{" "}
+                                    <strong>€{mech.hourlyRate.toLocaleString()}</strong>
                                 </div>
                             )}
                             {mech.phoneNumber && (
                                 <div className="text-sm text-secondary-color">
-                                    Phone: <strong>{mech.phoneNumber}</strong>
+                                    {lang === "it" ? "Telefono" : "Phone"}: <strong>{mech.phoneNumber}</strong>
                                 </div>
                             )}
                             <div className="text-sm text-secondary-color">
-                                Status:{" "}
-                                <strong>{mech.isAvailable ? "Available for work" : "Not available"}</strong>
+                                {lang === "it" ? "Stato" : "Status"}:{" "}
+                                <strong>
+                                    {mech.isAvailable
+                                        ? lang === "it"
+                                            ? "Disponibile per lavori"
+                                            : "Available for work"
+                                        : lang === "it"
+                                            ? "Non disponibile"
+                                            : "Not available"}
+                                </strong>
                             </div>
                         </div>
                     </div>
@@ -125,6 +143,17 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
                             toUserId={mech.user.id}
                             listing={{ type: "mechanic", profileId: mech.id }}
                         />
+                    </div>
+
+                    <div className="card">
+                        <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+                            <div className="text-sm text-secondary-color">
+                                {lang === "it"
+                                    ? "Scrivi al meccanico direttamente su FixMyBike."
+                                    : "Message this mechanic directly inside FixMyBike."}
+                            </div>
+                            <MessageInAppButton receiverId={mech.user.id} />
+                        </div>
                     </div>
                 </div>
             </div>

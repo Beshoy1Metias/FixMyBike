@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import ContactSellerForm from "@/components/ContactSellerForm/ContactSellerForm";
+import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
+import { getCurrentLanguage } from "@/lib/language";
 
 interface BikeDetailPageProps {
     params: Promise<{ id: string }>;
@@ -31,6 +33,7 @@ export async function generateMetadata({ params }: BikeDetailPageProps): Promise
 
 export default async function BikeDetailPage({ params }: BikeDetailPageProps) {
     const { id } = await params;
+    const lang = getCurrentLanguage();
     const bike = await prisma.bikeListing.findUnique({
         where: { id },
         include: {
@@ -105,7 +108,7 @@ export default async function BikeDetailPage({ params }: BikeDetailPageProps) {
 
                     <div>
                         <h2 className="text-heading-3" style={{ marginBottom: "var(--space-3)" }}>
-                            Seller
+                            {lang === "it" ? "Venditore" : "Seller"}
                         </h2>
                         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
                             <div
@@ -164,6 +167,17 @@ export default async function BikeDetailPage({ params }: BikeDetailPageProps) {
                             toUserId={bike.user.id}
                             listing={{ type: "bike", listingId: bike.id }}
                         />
+                    </div>
+
+                    <div className="card">
+                        <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+                            <div className="text-sm text-secondary-color">
+                                {lang === "it"
+                                    ? "Preferisci scrivere direttamente su FixMyBike?"
+                                    : "Prefer to chat directly on FixMyBike?"}
+                            </div>
+                            <MessageInAppButton receiverId={bike.user.id} />
+                        </div>
                     </div>
                 </div>
             </div>
