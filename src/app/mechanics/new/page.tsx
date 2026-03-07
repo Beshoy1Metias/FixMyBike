@@ -3,8 +3,10 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import LocationPicker from "@/components/Map/LocationPicker";
+import dynamic from "next/dynamic";
 import FadeIn from "@/components/Animations/FadeIn";
+
+const LocationPicker = dynamic(() => import("@/components/Map/LocationPicker"), { ssr: false });
 
 const SKILL_LEVELS = [
     { value: "BEGINNER", label: "Beginner" },

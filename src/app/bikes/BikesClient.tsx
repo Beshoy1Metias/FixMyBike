@@ -7,7 +7,8 @@ import ListingFilters from "@/components/ListingFilters/ListingFilters";
 import styles from "./bikes.module.css";
 import FadeIn from "@/components/Animations/FadeIn";
 import StaggerContainer from "@/components/Animations/StaggerContainer";
-import Map from "@/components/Map/Map";
+
+const Map = dynamic(() => import("@/components/Map/Map"), { ssr: false });
 
 interface BikesClientProps {
     initialBikes: any[];

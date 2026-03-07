@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, HTMLMotionProps } from "framer-motion";
+import { motion, HTMLMotionProps, Variants } from "framer-motion";
 import { ReactNode } from "react";
 
 interface FadeInProps extends HTMLMotionProps<"div"> {
@@ -20,7 +20,7 @@ export default function FadeIn({
     className,
     ...props
 }: FadeInProps) {
-    const variants = {
+    const variants: Variants = {
         hidden: {
             opacity: 0,
             x: direction === "left" ? distance : direction === "right" ? -distance : 0,

@@ -3,9 +3,11 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
-import LocationPicker from "@/components/Map/LocationPicker";
 import FadeIn from "@/components/Animations/FadeIn";
+
+const LocationPicker = dynamic(() => import("@/components/Map/LocationPicker"), { ssr: false });
 
 const CONDITIONS = [
     { value: "NEW", label: "New" },

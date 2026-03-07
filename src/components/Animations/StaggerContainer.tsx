@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, HTMLMotionProps } from "framer-motion";
+import { motion, HTMLMotionProps, Variants } from "framer-motion";
 import { ReactNode } from "react";
 
 interface StaggerContainerProps extends HTMLMotionProps<"div"> {
@@ -16,19 +16,21 @@ export default function StaggerContainer({
     className,
     ...props
 }: StaggerContainerProps) {
+    const variants: Variants = {
+        visible: {
+            transition: {
+                staggerChildren: stagger,
+                delayChildren: delay,
+            },
+        },
+    };
+
     return (
         <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            variants={{
-                visible: {
-                    transition: {
-                        staggerChildren: stagger,
-                        delayChildren: delay,
-                    },
-                },
-            }}
+            variants={variants}
             className={className}
             {...props}
         >
