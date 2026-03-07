@@ -263,6 +263,15 @@
     flex-shrink: 0;
 }
 
+.mobileMenuBody {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: var(--space-8);
+}
+
 .mobileMenuTitle {
     font-size: 1.25rem;
     font-weight: 800;

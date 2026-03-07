@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import styles from "./Navbar.module.css";
 import LanguageSwitcher from "@/components/LanguageSwitcher/LanguageSwitcher";
 import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
@@ -41,8 +42,13 @@ const NAV_TEXT = {
 export default function Navbar() {
     const { data: session, status } = useSession();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const { language } = useLanguage();
     const t = NAV_TEXT[language];
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Lock body scroll when menu is open
     useEffect(() => {
@@ -55,6 +61,62 @@ export default function Navbar() {
             document.body.style.overflow = "auto";
         };
     }, [menuOpen]);
+
+    const mobileMenuContent = (
+        <>
+            <div className={styles.backdrop} onClick={() => setMenuOpen(false)} />
+            <div className={styles.mobileMenu}>
+                <div className={styles.mobileMenuHeader}>
+                    <span className={styles.mobileMenuTitle}>Menu</span>
+                    <button className={styles.closeBtn} onClick={() => setMenuOpen(false)}>✕</button>
+                </div>
+                <div className={styles.mobileMenuBody}>
+                    <Link href="/mechanics" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+                        🔧 {t.mechanics}
+                    </Link>
+                    <Link href="/parts" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+                        ⚙️ {t.parts}
+                    </Link>
+                    <Link href="/bikes" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+                        🚲 {t.bikes}
+                    </Link>
+                    <Link href="/wanted" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+                        🔍 {t.wanted}
+                    </Link>
+                    
+                    <div className={styles.mobileDivider} />
+                    
+                    {session ? (
+                        <>
+                            <Link href="/listings/new" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+                                ➕ {t.postListing}
+                            </Link>
+                            <Link href="/dashboard" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+                                👤 {t.dashboard}
+                            </Link>
+                            <Link href="/messages" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+                                💬 {t.messages}
+                            </Link>
+                            <Link href="/profile" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+                                ⚙️ {t.profile}
+                            </Link>
+                            <button
+                                className={`${styles.mobileLink} ${styles.signOutBtnMobile}`}
+                                onClick={() => { signOut({ callbackUrl: "/" }); setMenuOpen(false); }}
+                            >
+                                🚪 {t.signOut}
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>🔑 {t.logIn}</Link>
+                            <Link href="/auth/register" className={`${styles.mobileLink} ${styles.mobileLinkPrimary}`} onClick={() => setMenuOpen(false)}>✨ {t.signUpFree}</Link>
+                        </>
+                    )}
+                </div>
+            </div>
+        </>
+    );
 
     return (
         <nav className={styles.navbar}>
@@ -150,92 +212,7 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile Menu */}
-            {menuOpen && (
-                <>
-                    <div className={styles.backdrop} onClick={() => setMenuOpen(false)} />
-                    <div className={styles.mobileMenu}>
-                        <div className={styles.mobileMenuHeader}>
-                            <span className={styles.mobileMenuTitle}>Menu</span>
-                            <button className={styles.closeBtn} onClick={() => setMenuOpen(false)}>✕</button>
-                        </div>
-                        <Link
-                            href="/mechanics"
-                            className={styles.mobileLink}
-                            onClick={() => setMenuOpen(false)}
-                        >
-                            🔧 {t.mechanics}
-                        </Link>
-                        <Link
-                            href="/parts"
-                            className={styles.mobileLink}
-                            onClick={() => setMenuOpen(false)}
-                        >
-                            ⚙️ {t.parts}
-                        </Link>
-                        <Link
-                            href="/bikes"
-                            className={styles.mobileLink}
-                            onClick={() => setMenuOpen(false)}
-                        >
-                            🚲 {t.bikes}
-                        </Link>
-                        <Link
-                            href="/wanted"
-                            className={styles.mobileLink}
-                            onClick={() => setMenuOpen(false)}
-                        >
-                            🔍 {t.wanted}
-                        </Link>
-                        
-                        <div className={styles.mobileDivider} />
-                        
-                        {session ? (
-                            <>
-                                <Link
-                                    href="/listings/new"
-                                    className={styles.mobileLink}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    ➕ {t.postListing}
-                                </Link>
-                                <Link
-                                    href="/dashboard"
-                                    className={styles.mobileLink}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    👤 {t.dashboard}
-                                </Link>
-                                <Link
-                                    href="/messages"
-                                    className={styles.mobileLink}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    💬 {t.messages}
-                                </Link>
-                                <Link
-                                    href="/profile"
-                                    className={styles.mobileLink}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    ⚙️ {t.profile}
-                                </Link>
-                                <button
-                                    className={`${styles.mobileLink} ${styles.signOutBtnMobile}`}
-                                    onClick={() => { signOut({ callbackUrl: "/" }); setMenuOpen(false); }}
-                                >
-                                    🚪 {t.signOut}
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>🔑 {t.logIn}</Link>
-                                <Link href="/auth/register" className={`${styles.mobileLink} ${styles.mobileLinkPrimary}`} onClick={() => setMenuOpen(false)}>✨ {t.signUpFree}</Link>
-                            </>
-                        )}
-                    </div>
-                </>
-            )}
+            {mounted && menuOpen && createPortal(mobileMenuContent, document.body)}
         </nav>
     );
 }
