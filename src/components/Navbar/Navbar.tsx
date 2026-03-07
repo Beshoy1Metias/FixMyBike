@@ -89,48 +89,53 @@ export default function Navbar() {
                     {status === "loading" ? (
                         <div className="spinner" />
                     ) : session ? (
-                        <div className={styles.userMenu}>
+                        <div className={styles.userRow}>
                             <Link href="/messages" className={styles.userBtn} aria-label="Messages">
                                 💬
                             </Link>
-                            <Link href="/dashboard" className={styles.userBtn}>
-                                <span>{session.user.name?.charAt(0).toUpperCase() ?? "U"}</span>
-                            </Link>
-                            <div className={styles.dropdown}>
-                                <Link href="/dashboard" className={styles.dropdownItem}>{t.dashboard}</Link>
-                                <Link href="/listings/new" className={styles.dropdownItem}>{t.postListing}</Link>
-                                <Link href="/messages" className={styles.dropdownItem}>{t.messages}</Link>
-                                <Link href="/profile" className={styles.dropdownItem}>{t.profile}</Link>
-                                <button
-                                    className={`${styles.dropdownItem} ${styles.signOutBtn}`}
-                                    onClick={() => signOut({ callbackUrl: "/" })}
-                                >
-                                    {t.signOut}
-                                </button>
+                            <div className={styles.userMenu}>
+                                <div className={styles.userBtn}>
+                                    <span>{session.user.name?.charAt(0).toUpperCase() ?? "U"}</span>
+                                </div>
+                                <div className={styles.dropdown}>
+                                    <Link href="/dashboard" className={styles.dropdownItem}>{t.dashboard}</Link>
+                                    <Link href="/listings/new" className={styles.dropdownItem}>{t.postListing}</Link>
+                                    <Link href="/messages" className={styles.dropdownItem}>{t.messages}</Link>
+                                    <Link href="/profile" className={styles.dropdownItem}>{t.profile}</Link>
+                                    <button
+                                        className={`${styles.dropdownItem} ${styles.signOutBtn}`}
+                                        onClick={() => signOut({ callbackUrl: "/" })}
+                                    >
+                                        {t.signOut}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ) : (
-                        <>
+                        <div className={styles.authButtons}>
                             <Link href="/auth/login" className="btn btn-secondary btn-sm">
                                 {t.logIn}
                             </Link>
                             <Link href="/auth/register" className="btn btn-primary btn-sm">
                                 {t.signUp}
                             </Link>
-                        </>
+                        </div>
                     )}
                 </div>
 
-                {/* Mobile Hamburger */}
-                <button
-                    className={styles.hamburger}
-                    onClick={() => setMenuOpen(!menuOpen)}
-                    aria-label="Toggle menu"
-                >
-                    <span className={menuOpen ? styles.barOpen : styles.bar} />
-                    <span className={menuOpen ? styles.barHide : styles.bar} />
-                    <span className={menuOpen ? styles.barOpenBottom : styles.bar} />
-                </button>
+                {/* Mobile Actions (Visible on small screens) */}
+                <div className={styles.mobileActions}>
+                    <LanguageSwitcher />
+                    <button
+                        className={styles.hamburger}
+                        onClick={() => setMenuOpen(!menuOpen)}
+                        aria-label="Toggle menu"
+                    >
+                        <span className={menuOpen ? styles.barOpen : styles.bar} />
+                        <span className={menuOpen ? styles.barHide : styles.bar} />
+                        <span className={menuOpen ? styles.barOpenBottom : styles.bar} />
+                    </button>
+                </div>
             </div>
 
             {/* Mobile Menu */}
@@ -168,6 +173,13 @@ export default function Navbar() {
                     {session ? (
                         <>
                             <Link
+                                href="/dashboard"
+                                className={styles.mobileLink}
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                👤 {t.dashboard}
+                            </Link>
+                            <Link
                                 href="/messages"
                                 className={styles.mobileLink}
                                 onClick={() => setMenuOpen(false)}
@@ -183,8 +195,8 @@ export default function Navbar() {
                         </>
                     ) : (
                         <>
-                            <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.logIn}</Link>
-                            <Link href="/auth/register" className="btn btn-primary" onClick={() => setMenuOpen(false)}>{t.signUpFree}</Link>
+                            <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>🔑 {t.logIn}</Link>
+                            <Link href="/auth/register" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>✨ {t.signUpFree}</Link>
                         </>
                     )}
                 </div>

@@ -79,29 +79,43 @@
 .authArea {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-6);
     flex-shrink: 0;
+}
+
+.userRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.authButtons {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
 }
 
 /* --- User Menu / Dropdown --- */
 .userMenu {
     position: relative;
+    padding: var(--space-1) 0;
 }
 
 .userBtn {
-    width: 38px;
-    height: 38px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #fff;
     cursor: pointer;
     transition: var(--transition-fast);
     box-shadow: 0 0 0 2px transparent;
+    text-decoration: none;
 }
 
 .userBtn:hover {
@@ -110,9 +124,9 @@
 
 .dropdown {
     position: absolute;
-    top: calc(100% + var(--space-3));
+    top: 100%;
     right: 0;
-    min-width: 180px;
+    min-width: 200px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -120,7 +134,7 @@
     box-shadow: var(--shadow-lg);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-4px);
+    transform: translateY(8px);
     transition: var(--transition-fast);
 }
 
@@ -134,9 +148,9 @@
     display: block;
     width: 100%;
     text-align: left;
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-3) var(--space-4);
     border-radius: var(--radius-sm);
-    font-size: 0.875rem;
+    font-size: 0.95rem;
     font-weight: 500;
     color: var(--text-secondary);
     transition: var(--transition-fast);
@@ -144,6 +158,7 @@
     border: none;
     cursor: pointer;
     font-family: inherit;
+    text-decoration: none;
 }
 
 .dropdownItem:hover {
@@ -153,6 +168,9 @@
 
 .signOutBtn {
     color: var(--color-error);
+    border-top: 1px solid var(--border);
+    margin-top: var(--space-1);
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
 }
 
 .signOutBtn:hover {
@@ -160,15 +178,21 @@
 }
 
 /* --- Hamburger (Mobile) --- */
-.hamburger {
+.mobileActions {
     display: none;
+    align-items: center;
+    gap: var(--space-4);
+    margin-left: auto;
+}
+
+.hamburger {
+    display: flex;
     flex-direction: column;
     gap: 5px;
     padding: var(--space-2);
     cursor: pointer;
     background: none;
     border: none;
-    margin-left: auto;
 }
 
 .bar,
@@ -224,7 +248,7 @@
     gap: var(--space-3);
     padding: var(--space-3) var(--space-4);
     border-radius: var(--radius);
-    font-size: 1.1rem; /* Larger font for mobile */
+    font-size: 1.15rem;
     font-weight: 500;
     color: var(--text-secondary);
     transition: var(--transition-fast);
@@ -233,7 +257,8 @@
     cursor: pointer;
     font-family: inherit;
     text-align: left;
-    min-height: 54px; /* Large touch target */
+    min-height: 56px;
+    text-decoration: none;
 }
 
 .mobileLink:hover {
@@ -242,20 +267,19 @@
 }
 
 /* --- Responsive --- */
-@media (max-width: 900px) {
-    .links {
-        display: none;
+@media (max-width: 1024px) {
+    .inner {
+        gap: var(--space-4);
     }
+}
 
+@media (max-width: 900px) {
+    .links,
     .authArea {
         display: none;
     }
 
-    .hamburger {
-        display: flex;
-    }
-
-    .mobileMenu {
+    .mobileActions {
         display: flex;
     }
 }
