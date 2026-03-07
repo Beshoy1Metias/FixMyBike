@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ListingCard from "@/components/ListingCard/ListingCard";
+import prisma from "@/lib/prisma";
 import styles from "./bikes.module.css";
 
 export const metadata: Metadata = {
@@ -20,17 +21,6 @@ const BIKE_TYPES = [
     { label: "City", icon: "🏙️" },
 ];
 
-const MOCK_BIKES = [
-    { id: "1", title: "Trek Domane SL 7 2023 — Size M", price: 3200, condition: "LIKE_NEW", bikeType: "ROAD", frameSize: "M", brand: "Trek", location: "Amsterdam", year: 2023 },
-    { id: "2", title: "Specialized Stumpjumper EVO 2022 — Size L", price: 2800, condition: "GOOD", bikeType: "MOUNTAIN", frameSize: "L", brand: "Specialized", location: "Geneva", year: 2022 },
-    { id: "3", title: "Canyon Grail CF SL 8 — Size XL", price: 2400, condition: "GOOD", bikeType: "GRAVEL", frameSize: "XL", brand: "Canyon", location: "Madrid", year: 2022 },
-    { id: "4", title: "Giant Contend AR 1 — Size S", price: 980, condition: "GOOD", bikeType: "ROAD", frameSize: "S", brand: "Giant", location: "Vienna", year: 2021 },
-    { id: "5", title: "Cube Stereo Hybrid 140 E-MTB", price: 3800, condition: "LIKE_NEW", bikeType: "ELECTRIC", frameSize: "M", brand: "Cube", location: "Munich", year: 2023 },
-    { id: "6", title: "Marin Nicasio 2 — Gravel Commuter", price: 750, condition: "GOOD", bikeType: "GRAVEL", frameSize: "M", brand: "Marin", location: "Bristol", year: 2020 },
-    { id: "7", title: "Santa Cruz Hightower 2023 — Size L", price: 4100, condition: "LIKE_NEW", bikeType: "MOUNTAIN", frameSize: "L", brand: "Santa Cruz", location: "Zurich", year: 2023 },
-    { id: "8", title: "Brompton M6L Folding Bike — 2023", price: 1050, condition: "LIKE_NEW", bikeType: "FOLDING", frameSize: "ONE_SIZE", brand: "Brompton", location: "London", year: 2023 },
-];
-
 const CONDITION_LABELS: Record<string, string> = {
     NEW: "New",
     LIKE_NEW: "Like New",
@@ -39,7 +29,16 @@ const CONDITION_LABELS: Record<string, string> = {
     POOR: "Poor",
 };
 
-export default function BikesPage() {
+export default async function BikesPage() {
+    const bikes = await prisma.bikeListing.findMany({
+        orderBy: { createdAt: "desc" },
+        include: {
+            photos: {
+                orderBy: { isPrimary: "desc" },
+            },
+        },
+        take: 40,
+    });
     return (
         <div className="section">
             <div className="container">
@@ -94,17 +93,24 @@ export default function BikesPage() {
 
                 {/* Grid */}
                 <div className="grid-4">
-                    {MOCK_BIKES.map((bike) => (
+                    {bikes.map((bike) => (
                         <ListingCard
                             key={bike.id}
                             href={`/bikes/${bike.id}`}
+                            image={bike.photos[0]?.url ?? null}
                             title={bike.title}
                             price={bike.price}
                             condition={CONDITION_LABELS[bike.condition]}
                             location={bike.location}
                             badge={bike.bikeType.charAt(0) + bike.bikeType.slice(1).toLowerCase()}
                             badgeVariant={bike.bikeType === "ELECTRIC" ? "accent" : "primary"}
-                            meta={`${bike.brand} · ${bike.year} · Size ${bike.frameSize}`}
+                            meta={[
+                                bike.brand,
+                                bike.year ? String(bike.year) : null,
+                                bike.frameSize ? `Size ${bike.frameSize}` : null,
+                            ]
+                                .filter(Boolean)
+                                .join(" · ")}
                         />
                     ))}
                 </div>

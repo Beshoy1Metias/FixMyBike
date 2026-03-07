@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import prisma from "@/lib/prisma";
 import styles from "./wanted.module.css";
 
 export const metadata: Metadata = {
@@ -7,16 +8,28 @@ export const metadata: Metadata = {
     description: "Looking to buy a bike? Post your desired specs and budget. Let sellers come to you with matching offers.",
 };
 
-const MOCK_WANTED = [
-    { id: "1", title: "Looking for a Road Bike — Size M", user: "Alex P.", location: "Berlin", maxBudget: 1500, bikeType: "Road", frameSize: "M", description: "After a Shimano 105 or Ultegra spec road bike around 2020-2023. Good condition preferred. Happy to consider most brands.", postedAt: "2h ago" },
-    { id: "2", title: "Wanted: XC Hardtail 29er — Size L", user: "Jess M.", location: "Lyon", maxBudget: 900, bikeType: "Mountain", frameSize: "L", description: "Looking for a hardtail 29er for XC racing. Need it to have a decent fork (RockShox or Fox) and 1x drivetrain.", postedAt: "5h ago" },
-    { id: "3", title: "Looking to buy an E-Bike — City spec", user: "Daniel R.", location: "Amsterdam", maxBudget: 2500, bikeType: "E-Bike", frameSize: "M", description: "Want a city e-bike with integrated lights, rack, and fenders. Bosch motor preferred. Any good brand considered.", postedAt: "1d ago" },
-    { id: "4", title: "Gravel Bike wanted — any colour, Size S", user: "Priya S.", location: "London", maxBudget: 2000, bikeType: "Gravel", frameSize: "S", description: "After an adventure/gravel bike, ideally with clearance for wide tyres. SRAM or Shimano 1x is fine. GRX preferred.", postedAt: "2d ago" },
-    { id: "5", title: "Seeking Brompton or Dahon folder", user: "Lukas F.", location: "Vienna", maxBudget: 1200, bikeType: "Folding", frameSize: "One Size", description: "Need a good quality folding bike for commuting + train travel. Brompton, Dahon, or similar. Decent condition only.", postedAt: "3d ago" },
-    { id: "6", title: "BMX wanted for my kid (age 10)", user: "Maria G.", location: "Madrid", maxBudget: 300, bikeType: "BMX", frameSize: "S", description: "Looking for a 20\" BMX for my 10-year-old. Just needs to be solid and well maintained. Happy to refurbish a bit.", postedAt: "4d ago" },
-];
+function formatPostedAt(date: Date) {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    if (diffMinutes < 60) return `${diffMinutes || 1}m ago`;
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+}
 
-export default function WantedPage() {
+export default async function WantedPage() {
+    const posts = await prisma.wantedPost.findMany({
+        orderBy: { createdAt: "desc" },
+        include: {
+            user: {
+                select: { id: true, name: true },
+            },
+        },
+        take: 40,
+    });
     return (
         <div className="section">
             <div className="container">
@@ -56,11 +69,11 @@ export default function WantedPage() {
 
                 {/* Wanted Posts List */}
                 <div className={styles.postList}>
-                    {MOCK_WANTED.map((post) => (
+                    {posts.map((post) => (
                         <Link href={`/wanted/${post.id}`} key={post.id} className={styles.postCard}>
                             <div className={styles.postLeft}>
                                 <div className={styles.postAvatar}>
-                                    {post.user.charAt(0)}
+                                    {(post.user.name || "B").charAt(0)}
                                 </div>
                             </div>
                             <div className={styles.postBody}>
@@ -68,22 +81,28 @@ export default function WantedPage() {
                                     <div>
                                         <h3 className={styles.postTitle}>{post.title}</h3>
                                         <div className={styles.postMeta}>
-                                            <span>👤 {post.user}</span>
+                                            <span>👤 {post.user.name || "FixMyBike buyer"}</span>
                                             <span>📍 {post.location}</span>
-                                            <span>🕐 {post.postedAt}</span>
+                                            <span>🕐 {formatPostedAt(post.createdAt)}</span>
                                         </div>
                                     </div>
                                     <div className={styles.postRight}>
-                                        <div className={styles.postBudget}>
-                                            <span className={styles.budgetLabel}>Budget</span>
-                                            <span className="price-sm">up to €{post.maxBudget.toLocaleString()}</span>
-                                        </div>
+                                        {post.maxBudget && (
+                                            <div className={styles.postBudget}>
+                                                <span className={styles.budgetLabel}>Budget</span>
+                                                <span className="price-sm">up to €{post.maxBudget.toLocaleString()}</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <p className={styles.postDesc}>{post.description}</p>
                                 <div className={styles.postTags}>
-                                    <span className="badge badge-primary">{post.bikeType}</span>
-                                    <span className="badge badge-gray">Size {post.frameSize}</span>
+                                    {post.bikeType && (
+                                        <span className="badge badge-primary">{post.bikeType}</span>
+                                    )}
+                                    {post.frameSize && (
+                                        <span className="badge badge-gray">Size {post.frameSize}</span>
+                                    )}
                                 </div>
                             </div>
                         </Link>

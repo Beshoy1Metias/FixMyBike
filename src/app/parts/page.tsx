@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ListingCard from "@/components/ListingCard/ListingCard";
+import prisma from "@/lib/prisma";
 import styles from "./parts.module.css";
 
 export const metadata: Metadata = {
@@ -20,17 +21,6 @@ const CATEGORIES = [
     { label: "Accessories", icon: "🎒" },
 ];
 
-const MOCK_PARTS = [
-    { id: "1", title: "Shimano 105 R7000 Groupset — 11sp", price: 420, condition: "LIKE_NEW", category: "DRIVETRAIN", location: "Munich", brand: "Shimano" },
-    { id: "2", title: "SRAM Rival AXS 12sp Rear Derailleur", price: 195, condition: "GOOD", category: "DRIVETRAIN", location: "Lyon", brand: "SRAM" },
-    { id: "3", title: "Hunt 4Season Disc Wheelset 700c", price: 380, condition: "GOOD", category: "WHEELS", location: "Manchester", brand: "Hunt" },
-    { id: "4", title: "Fox 36 Float 29\" 160mm Fork", price: 680, condition: "LIKE_NEW", category: "FORKS", location: "Innsbruck", brand: "Fox" },
-    { id: "5", title: "Fizik Antares R3 Saddle — Black", price: 110, condition: "NEW", category: "SADDLE", location: "Rome", brand: "Fizik" },
-    { id: "6", title: "Hope Tech 4 Brake Set — Front & Rear", price: 220, condition: "GOOD", category: "BRAKES", location: "Sheffield", brand: "Hope" },
-    { id: "7", title: "Thomson Elite Stem 90mm 31.8", price: 55, condition: "GOOD", category: "HANDLEBARS", location: "Hamburg", brand: "Thomson" },
-    { id: "8", title: "Lezyne Mega Drive 1800i Lights Set", price: 75, condition: "LIKE_NEW", category: "LIGHTS", location: "Brussels", brand: "Lezyne" },
-];
-
 const CONDITION_LABELS: Record<string, string> = {
     NEW: "New",
     LIKE_NEW: "Like New",
@@ -39,7 +29,16 @@ const CONDITION_LABELS: Record<string, string> = {
     POOR: "Poor",
 };
 
-export default function PartsPage() {
+export default async function PartsPage() {
+    const parts = await prisma.partListing.findMany({
+        orderBy: { createdAt: "desc" },
+        include: {
+            photos: {
+                orderBy: { isPrimary: "desc" },
+            },
+        },
+        take: 40,
+    });
     return (
         <div className="section">
             <div className="container">
@@ -86,17 +85,21 @@ export default function PartsPage() {
 
                 {/* Grid */}
                 <div className="grid-4">
-                    {MOCK_PARTS.map((part) => (
+                    {parts.map((part) => (
                         <ListingCard
                             key={part.id}
                             href={`/parts/${part.id}`}
+                            image={part.photos[0]?.url ?? null}
                             title={part.title}
                             price={part.price}
                             condition={CONDITION_LABELS[part.condition]}
                             location={part.location}
                             badge={CONDITION_LABELS[part.condition]}
                             badgeVariant={part.condition === "NEW" ? "success" : part.condition === "LIKE_NEW" ? "accent" : "gray"}
-                            tags={[part.brand, part.category.charAt(0) + part.category.slice(1).toLowerCase()]}
+                            tags={[
+                                part.brand ?? "",
+                                part.category.charAt(0) + part.category.slice(1).toLowerCase(),
+                            ].filter(Boolean)}
                         />
                     ))}
                 </div>

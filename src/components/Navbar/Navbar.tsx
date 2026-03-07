@@ -45,12 +45,16 @@ export default function Navbar() {
                         <div className="spinner" />
                     ) : session ? (
                         <div className={styles.userMenu}>
+                            <Link href="/messages" className={styles.userBtn} aria-label="Messages">
+                                💬
+                            </Link>
                             <Link href="/dashboard" className={styles.userBtn}>
                                 <span>{session.user.name?.charAt(0).toUpperCase() ?? "U"}</span>
                             </Link>
                             <div className={styles.dropdown}>
                                 <Link href="/dashboard" className={styles.dropdownItem}>Dashboard</Link>
                                 <Link href="/listings/new" className={styles.dropdownItem}>Post a Listing</Link>
+                                <Link href="/messages" className={styles.dropdownItem}>Messages</Link>
                                 <Link href="/profile" className={styles.dropdownItem}>Profile</Link>
                                 <button
                                     className={`${styles.dropdownItem} ${styles.signOutBtn}`}
@@ -99,12 +103,21 @@ export default function Navbar() {
                     ))}
                     <hr className="divider" />
                     {session ? (
-                        <button
-                            className={styles.mobileLink}
-                            onClick={() => { signOut({ callbackUrl: "/" }); setMenuOpen(false); }}
-                        >
-                            Sign Out
-                        </button>
+                        <>
+                            <Link
+                                href="/messages"
+                                className={styles.mobileLink}
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                💬 Messages
+                            </Link>
+                            <button
+                                className={styles.mobileLink}
+                                onClick={() => { signOut({ callbackUrl: "/" }); setMenuOpen(false); }}
+                            >
+                                Sign Out
+                            </button>
+                        </>
                     ) : (
                         <>
                             <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Log In</Link>
