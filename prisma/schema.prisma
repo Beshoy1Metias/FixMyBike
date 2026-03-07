@@ -28,6 +28,7 @@ model User {
   emailVerified DateTime?
   image         String?
   passwordHash  String?
+  stripeCustomerId String?  @unique
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -46,6 +47,8 @@ model User {
   contactMessagesSent     ContactMessage[] @relation("ContactFromUser")
   contactMessagesReceived ContactMessage[] @relation("ContactToUser")
   savedSearches           SavedSearch[]
+  ordersAsBuyer           Order[]          @relation("BuyerOrders")
+  ordersAsSeller          Order[]          @relation("SellerOrders")
 
   // Real-time chat relations
   conversationsAsParticipant1 Conversation[]   @relation("Participant1")
@@ -54,6 +57,43 @@ model User {
 
   @@map("users")
 }
+
+// ... (Account, Session, VerificationToken models remain same)
+
+// ============================================================
+// PAYMENTS & TRANSACTIONS
+// ============================================================
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model Order {
+  id                    String      @id @default(cuid())
+  buyerId               String
+  sellerId              String
+  bikeListingId         String?     @unique
+  partListingId         String?     @unique
+  amount                Float
+  currency              String      @default("GBP")
+  status                OrderStatus @default(PENDING)
+  stripePaymentIntentId String?     @unique
+  stripeSessionId       String?     @unique
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  buyer       User         @relation("BuyerOrders", fields: [buyerId], references: [id])
+  seller      User         @relation("SellerOrders", fields: [sellerId], references: [id])
+  bikeListing BikeListing? @relation(fields: [bikeListingId], references: [id])
+  partListing PartListing? @relation(fields: [partListingId], references: [id])
+
+  @@map("orders")
+}
+
+// ... (Service Marketplace models remain same)
 
 // NextAuth required models
 model Account {
@@ -223,6 +263,7 @@ model PartListing {
   user            User              @relation(fields: [userId], references: [id])
   photos          PartListingPhoto[]
   contactMessages ContactMessage[]
+  order           Order?
 
   @@map("part_listings")
 }
@@ -288,6 +329,7 @@ model BikeListing {
   user            User               @relation(fields: [userId], references: [id])
   photos          BikeListingPhoto[]
   contactMessages ContactMessage[]
+  order           Order?
 
   @@map("bike_listings")
 }
