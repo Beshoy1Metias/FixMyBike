@@ -42,7 +42,7 @@ const TEXT = {
 } as const;
 
 export default async function MechanicsPage() {
-    const lang = getCurrentLanguage();
+    const lang = await getCurrentLanguage();
     const t = TEXT[lang];
     const mechanics = await prisma.mechanicProfile.findMany({
         orderBy: { createdAt: "desc" },

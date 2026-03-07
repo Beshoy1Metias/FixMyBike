@@ -29,8 +29,8 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    const anyFile = file as any;
-    const originalName: string = anyFile.name || "upload";
+    const fileCast = file as File;
+    const originalName: string = fileCast.name || "upload";
     const extension = originalName.includes(".")
         ? originalName.split(".").pop()
         : "jpg";
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
         Bucket: bucket,
         Key: key,
         Body: body,
-        ContentType: (file as any).type || "application/octet-stream",
+        ContentType: fileCast.type || "application/octet-stream",
     });
 
     await s3.send(command);

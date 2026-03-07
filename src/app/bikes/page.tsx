@@ -80,7 +80,7 @@ const TEXT = {
 } as const;
 
 export default async function BikesPage() {
-    const lang = getCurrentLanguage();
+    const lang = await getCurrentLanguage();
     const t = TEXT[lang];
     const bikes = await prisma.bikeListing.findMany({
         orderBy: { createdAt: "desc" },

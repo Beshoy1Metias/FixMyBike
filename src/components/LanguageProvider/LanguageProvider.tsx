@@ -25,6 +25,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const [language, setLanguageState] = useState<Language>("en");
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLanguageState(readLanguageFromCookie());
     }, []);
 

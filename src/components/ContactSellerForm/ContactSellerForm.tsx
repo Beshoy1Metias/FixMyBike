@@ -33,7 +33,19 @@ export default function ContactSellerForm({ toUserId, listing }: ContactSellerFo
         setLoading(true);
 
         try {
-            const payload: any = {
+            interface ContactPayload {
+                toUserId: string;
+                subject?: string;
+                message: string;
+                email?: string;
+                name?: string;
+                partListingId?: string;
+                bikeListingId?: string;
+                mechanicProfileId?: string;
+                wantedPostId?: string;
+            }
+
+            const payload: ContactPayload = {
                 toUserId,
                 subject: form.subject || undefined,
                 message: form.message,

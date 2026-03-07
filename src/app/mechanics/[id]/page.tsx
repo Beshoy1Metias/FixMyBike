@@ -37,7 +37,7 @@ const SKILL_BADGE: Record<string, string> = {
 
 export default async function MechanicDetailPage({ params }: MechanicDetailPageProps) {
     const { id } = await params;
-    const lang = getCurrentLanguage();
+    const lang = await getCurrentLanguage();
     const mech = await prisma.mechanicProfile.findUnique({
         where: { id },
         include: {

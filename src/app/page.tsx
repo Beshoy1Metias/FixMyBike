@@ -97,8 +97,8 @@ const TEXT = {
   },
 } as const;
 
-export default function Home() {
-  const lang = getCurrentLanguage();
+export default async function Home() {
+  const lang = await getCurrentLanguage();
   const t = TEXT[lang];
 
   return (

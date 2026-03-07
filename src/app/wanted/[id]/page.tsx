@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: WantedDetailPageProps): Promi
 
 export default async function WantedDetailPage({ params }: WantedDetailPageProps) {
     const { id } = await params;
-    const lang = getCurrentLanguage();
+    const lang = await getCurrentLanguage();
     const post = await prisma.wantedPost.findUnique({
         where: { id },
         include: {

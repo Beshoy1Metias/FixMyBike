@@ -54,7 +54,7 @@ const TEXT = {
 } as const;
 
 export default async function WantedPage() {
-    const lang = getCurrentLanguage();
+    const lang = await getCurrentLanguage();
     const t = TEXT[lang];
     const posts = await prisma.wantedPost.findMany({
         orderBy: { createdAt: "desc" },

@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: PartDetailPageProps): Promise
 
 export default async function PartDetailPage({ params }: PartDetailPageProps) {
     const { id } = await params;
-    const lang = getCurrentLanguage();
+    const lang = await getCurrentLanguage();
     const part = await prisma.partListing.findUnique({
         where: { id },
         include: {

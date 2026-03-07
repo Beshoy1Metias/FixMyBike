@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: BikeDetailPageProps): Promise
 
 export default async function BikeDetailPage({ params }: BikeDetailPageProps) {
     const { id } = await params;
-    const lang = getCurrentLanguage();
+    const lang = await getCurrentLanguage();
     const bike = await prisma.bikeListing.findUnique({
         where: { id },
         include: {

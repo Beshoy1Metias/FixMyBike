@@ -45,8 +45,8 @@ const TEXT = {
     },
 } as const;
 
-export default function DashboardPage() {
-    const lang = getCurrentLanguage();
+export default async function DashboardPage() {
+    const lang = await getCurrentLanguage();
     const t = TEXT[lang];
     return (
         <div className="section">

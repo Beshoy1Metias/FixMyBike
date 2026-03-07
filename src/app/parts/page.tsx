@@ -52,7 +52,7 @@ const TEXT = {
 } as const;
 
 export default async function PartsPage() {
-    const lang = getCurrentLanguage();
+    const lang = await getCurrentLanguage();
     const t = TEXT[lang];
     const parts = await prisma.partListing.findMany({
         orderBy: { createdAt: "desc" },
