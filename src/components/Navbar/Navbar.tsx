@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./Navbar.module.css";
 import LanguageSwitcher from "@/components/LanguageSwitcher/LanguageSwitcher";
 import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
@@ -43,6 +43,18 @@ export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const { language } = useLanguage();
     const t = NAV_TEXT[language];
+
+    // Lock body scroll when menu is open
+    useEffect(() => {
+        if (menuOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
+        }
+        return () => {
+            document.body.style.overflow = "auto";
+        };
+    }, [menuOpen]);
 
     return (
         <nav className={styles.navbar}>
