@@ -6,6 +6,7 @@ import Footer from "@/components/Footer/Footer";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { LanguageProvider } from "@/components/LanguageProvider/LanguageProvider";
+import PushNotificationProvider from "@/components/PushNotificationProvider/PushNotificationProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -49,6 +50,7 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <body>
         <AuthProvider>
+          <PushNotificationProvider />
           <LanguageProvider>
             <Navbar />
             <main style={{ paddingTop: "var(--navbar-height)" }}>

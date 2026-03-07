@@ -232,7 +232,7 @@ ul {
   gap: var(--space-2);
   padding: var(--space-3) var(--space-6);
   border-radius: var(--radius);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
@@ -240,6 +240,7 @@ ul {
   cursor: pointer;
   border: none;
   outline: none;
+  min-height: 48px;
 }
 
 .btn-sm {
@@ -339,11 +340,12 @@ ul {
   border-radius: var(--radius);
   color: var(--text-primary);
   padding: var(--space-3) var(--space-4);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-family: inherit;
   width: 100%;
   transition: var(--transition-fast);
   outline: none;
+  min-height: 48px;
 }
 
 .form-input::placeholder,
