@@ -3,6 +3,8 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import LocationPicker from "@/components/Map/LocationPicker";
+import FadeIn from "@/components/Animations/FadeIn";
 
 const SKILL_LEVELS = [
     { value: "BEGINNER", label: "Beginner" },
@@ -18,6 +20,8 @@ export default function NewMechanicProfilePage() {
     const [form, setForm] = useState({
         bio: "",
         location: "",
+        latitude: null as number | null,
+        longitude: null as number | null,
         phoneNumber: "",
         skillLevel: "INTERMEDIATE",
         hourlyRate: "",
@@ -83,8 +87,25 @@ export default function NewMechanicProfilePage() {
         }
     };
 
+    const handleLocationSelect = async (lat: number, lng: number) => {
+        setForm(prev => ({ ...prev, latitude: lat, longitude: lng }));
+        
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            const data = await res.json();
+            if (data && data.address) {
+                const city = data.address.city || data.address.town || data.address.village || "";
+                const country = data.address.country || "";
+                const locationStr = city && country ? `${city}, ${country}` : data.display_name;
+                setForm(prev => ({ ...prev, location: locationStr }));
+            }
+        } catch (error) {
+            console.error("Reverse geocoding failed:", error);
+        }
+    };
+
     return (
-        <div className="section">
+        <FadeIn className="section">
             <div className="container">
                 <div className="page-header" style={{ textAlign: "left" }}>
                     <span className="page-header__eyebrow">🔧 Service Marketplace</span>
@@ -99,7 +120,7 @@ export default function NewMechanicProfilePage() {
                         <div className="grid-2">
                             <div className="form-group">
                                 <label htmlFor="location" className="form-label">
-                                    Location
+                                    Location text
                                 </label>
                                 <input
                                     id="location"
@@ -121,6 +142,10 @@ export default function NewMechanicProfilePage() {
                                     onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
                                 />
                             </div>
+                        </div>
+
+                        <div className="form-group">
+                            <LocationPicker onLocationSelect={handleLocationSelect} />
                         </div>
 
                         <div className="grid-3">
@@ -216,7 +241,7 @@ export default function NewMechanicProfilePage() {
                     </form>
                 </div>
             </div>
-        </div>
+        </FadeIn>
     );
 }
 

@@ -54,7 +54,14 @@ export async function GET(req: NextRequest) {
             take: 50,
         });
 
-        return NextResponse.json({ bikes });
+        // Add proper typing for response
+        const mappedBikes = bikes.map(bike => ({
+            ...bike,
+            latitude: bike.latitude,
+            longitude: bike.longitude
+        }));
+
+        return NextResponse.json({ bikes: mappedBikes });
     } catch (error) {
         console.error("[GET /api/bikes] Error:", error);
         return NextResponse.json(
@@ -85,6 +92,8 @@ export async function POST(req: NextRequest) {
             wheelSize,
             color,
             location,
+            latitude,
+            longitude,
             photoUrls,
         } = await req.json();
 
@@ -110,6 +119,8 @@ export async function POST(req: NextRequest) {
                 wheelSize,
                 color,
                 location,
+                latitude: latitude ? Number(latitude) : null,
+                longitude: longitude ? Number(longitude) : null,
                 photos: photoUrls && Array.isArray(photoUrls)
                     ? {
                           create: photoUrls.map((url: string, index: number) => ({

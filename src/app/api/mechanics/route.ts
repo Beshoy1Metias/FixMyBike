@@ -53,8 +53,15 @@ export async function GET(req: NextRequest) {
             },
             take: 50,
         });
+        
+        // Add proper typing for response
+        const mappedMechanics = mechanics.map(mech => ({
+            ...mech,
+            latitude: mech.latitude,
+            longitude: mech.longitude
+        }));
 
-        return NextResponse.json({ mechanics });
+        return NextResponse.json({ mechanics: mappedMechanics });
     } catch (error) {
         console.error("[GET /api/mechanics] Error:", error);
         return NextResponse.json(
@@ -72,7 +79,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { bio, location, phoneNumber, skillLevel, hourlyRate, skills, isAvailable } = await req.json();
+        const { bio, location, latitude, longitude, phoneNumber, skillLevel, hourlyRate, skills, isAvailable } = await req.json();
 
         if (!location) {
             return NextResponse.json(
@@ -86,6 +93,8 @@ export async function POST(req: NextRequest) {
             update: {
                 bio,
                 location,
+                latitude: latitude ? Number(latitude) : null,
+                longitude: longitude ? Number(longitude) : null,
                 phoneNumber,
                 skillLevel: skillLevel || undefined,
                 hourlyRate: hourlyRate ? Number(hourlyRate) : null,
@@ -96,6 +105,8 @@ export async function POST(req: NextRequest) {
                 userId: session.user.id,
                 bio,
                 location,
+                latitude: latitude ? Number(latitude) : null,
+                longitude: longitude ? Number(longitude) : null,
                 phoneNumber,
                 skillLevel: skillLevel || undefined,
                 hourlyRate: hourlyRate ? Number(hourlyRate) : null,

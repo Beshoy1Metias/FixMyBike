@@ -4,6 +4,8 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
+import LocationPicker from "@/components/Map/LocationPicker";
+import FadeIn from "@/components/Animations/FadeIn";
 
 const CONDITIONS = [
     { value: "NEW", label: "New" },
@@ -53,6 +55,8 @@ export default function NewBikeListingPage() {
         wheelSize: "",
         color: "",
         location: "",
+        latitude: null as number | null,
+        longitude: null as number | null,
     });
     const [photoUrls, setPhotoUrls] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
@@ -116,8 +120,26 @@ export default function NewBikeListingPage() {
         }
     };
 
+    const handleLocationSelect = async (lat: number, lng: number) => {
+        setForm(prev => ({ ...prev, latitude: lat, longitude: lng }));
+        
+        // Optional: Reverse geocoding to fill location text
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            const data = await res.json();
+            if (data && data.address) {
+                const city = data.address.city || data.address.town || data.address.village || "";
+                const country = data.address.country || "";
+                const locationStr = city && country ? `${city}, ${country}` : data.display_name;
+                setForm(prev => ({ ...prev, location: locationStr }));
+            }
+        } catch (error) {
+            console.error("Reverse geocoding failed:", error);
+        }
+    };
+
     return (
-        <div className="section">
+        <FadeIn className="section">
             <div className="container">
                 <div className="page-header" style={{ textAlign: "left" }}>
                     <span className="page-header__eyebrow">🚲 Sell a Bike</span>
@@ -284,7 +306,7 @@ export default function NewBikeListingPage() {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="location" className="form-label">
-                                    Location
+                                    Location text
                                 </label>
                                 <input
                                     id="location"
@@ -295,6 +317,10 @@ export default function NewBikeListingPage() {
                                     required
                                 />
                             </div>
+                        </div>
+                        
+                        <div className="form-group">
+                            <LocationPicker onLocationSelect={handleLocationSelect} />
                         </div>
 
                         <div className="form-group">
@@ -332,7 +358,7 @@ export default function NewBikeListingPage() {
                     </form>
                 </div>
             </div>
-        </div>
+        </FadeIn>
     );
 }
 

@@ -1,8 +1,11 @@
 import Link from "next/link";
 import styles from "./page.module.css";
 import { getCurrentLanguage } from "@/lib/language";
+import FadeIn from "@/components/Animations/FadeIn";
+import StaggerContainer from "@/components/Animations/StaggerContainer";
 
 const TEXT = {
+  // ... (keep existing text object as is, just importing FadeIn/StaggerContainer)
   en: {
     heroEyebrow: "🚲 Padova's Bike Community Marketplace",
     heroTitleLine1: "Fix, Buy & Sell",
@@ -106,7 +109,7 @@ export default async function Home() {
       {/* ---- HERO ---- */}
       <section className={styles.hero}>
         <div className={`container ${styles.heroInner}`}>
-          <div className={styles.heroContent}>
+          <FadeIn className={styles.heroContent} direction="right">
             <span className="page-header__eyebrow">{t.heroEyebrow}</span>
             <h1 className={`text-display ${styles.heroTitle}`}>
               {t.heroTitleLine1}
@@ -124,8 +127,8 @@ export default async function Home() {
                 {t.heroSecondaryCta}
               </Link>
             </div>
-          </div>
-          <div className={styles.heroImage}>
+          </FadeIn>
+          <FadeIn className={styles.heroImage} direction="left" delay={0.2}>
             <div className={styles.heroImageBlob} />
             <div className={styles.heroStats}>
               <div className={styles.stat}>
@@ -153,77 +156,85 @@ export default async function Home() {
                 </span>
               </div>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* ---- CATEGORIES ---- */}
       <section className={`section ${styles.categories}`}>
         <div className="container">
-          <div className={styles.sectionHead}>
+          <FadeIn className={styles.sectionHead} direction="up">
             <h2 className="text-heading-1">{t.categoriesTitle}</h2>
             <p className="text-body-lg">{t.categoriesBody}</p>
-          </div>
-          <div className={styles.categoryGrid}>
-            <Link href="/mechanics" className={styles.categoryCard}>
-              <div className={styles.categoryIcon}>🔧</div>
-              <h3 className="text-heading-3">{t.catMechanicTitle}</h3>
-              <p className="text-sm text-secondary-color">
-                {t.catMechanicBody}
-              </p>
-              <span className={styles.categoryArrow}>→</span>
-            </Link>
-            <Link href="/parts" className={styles.categoryCard}>
-              <div className={styles.categoryIcon}>⚙️</div>
-              <h3 className="text-heading-3">{t.catPartsTitle}</h3>
-              <p className="text-sm text-secondary-color">
-                {t.catPartsBody}
-              </p>
-              <span className={styles.categoryArrow}>→</span>
-            </Link>
-            <Link href="/bikes" className={styles.categoryCard}>
-              <div className={styles.categoryIcon}>🚲</div>
-              <h3 className="text-heading-3">{t.catBikesTitle}</h3>
-              <p className="text-sm text-secondary-color">
-                {t.catBikesBody}
-              </p>
-              <span className={styles.categoryArrow}>→</span>
-            </Link>
-            <Link href="/wanted" className={styles.categoryCard}>
-              <div className={styles.categoryIcon}>🔍</div>
-              <h3 className="text-heading-3">{t.catWantedTitle}</h3>
-              <p className="text-sm text-secondary-color">
-                {t.catWantedBody}
-              </p>
-              <span className={styles.categoryArrow}>→</span>
-            </Link>
-          </div>
+          </FadeIn>
+          <StaggerContainer className={styles.categoryGrid} stagger={0.1}>
+            <FadeIn>
+              <Link href="/mechanics" className={styles.categoryCard}>
+                <div className={styles.categoryIcon}>🔧</div>
+                <h3 className="text-heading-3">{t.catMechanicTitle}</h3>
+                <p className="text-sm text-secondary-color">
+                  {t.catMechanicBody}
+                </p>
+                <span className={styles.categoryArrow}>→</span>
+              </Link>
+            </FadeIn>
+            <FadeIn>
+              <Link href="/parts" className={styles.categoryCard}>
+                <div className={styles.categoryIcon}>⚙️</div>
+                <h3 className="text-heading-3">{t.catPartsTitle}</h3>
+                <p className="text-sm text-secondary-color">
+                  {t.catPartsBody}
+                </p>
+                <span className={styles.categoryArrow}>→</span>
+              </Link>
+            </FadeIn>
+            <FadeIn>
+              <Link href="/bikes" className={styles.categoryCard}>
+                <div className={styles.categoryIcon}>🚲</div>
+                <h3 className="text-heading-3">{t.catBikesTitle}</h3>
+                <p className="text-sm text-secondary-color">
+                  {t.catBikesBody}
+                </p>
+                <span className={styles.categoryArrow}>→</span>
+              </Link>
+            </FadeIn>
+            <FadeIn>
+              <Link href="/wanted" className={styles.categoryCard}>
+                <div className={styles.categoryIcon}>🔍</div>
+                <h3 className="text-heading-3">{t.catWantedTitle}</h3>
+                <p className="text-sm text-secondary-color">
+                  {t.catWantedBody}
+                </p>
+                <span className={styles.categoryArrow}>→</span>
+              </Link>
+            </FadeIn>
+          </StaggerContainer>
         </div>
       </section>
 
       {/* ---- HOW IT WORKS ---- */}
       <section className={`section ${styles.howItWorks}`}>
         <div className="container">
-          <div className={styles.sectionHead}>
+          <FadeIn className={styles.sectionHead}>
             <h2 className="text-heading-1">{t.howTitle}</h2>
             <p className="text-body-lg">{t.howBody}</p>
-          </div>
-          <div className="grid-3">
+          </FadeIn>
+          <StaggerContainer className="grid-3" stagger={0.2}>
             {t.steps.map((item) => (
-              <div key={item.step} className={styles.step}>
+              <FadeIn key={item.step} className={styles.step}>
                 <span className={styles.stepNum}>{item.step}</span>
                 <h3 className="text-heading-3">{item.title}</h3>
                 <p className="text-sm text-secondary-color">{item.desc}</p>
-              </div>
+              </FadeIn>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
       {/* ---- CTA BANNER ---- */}
       <section className={`section ${styles.ctaBanner}`}>
         <div className="container">
-          <div className={styles.ctaCard}>
+          <FadeIn className={styles.ctaCard} distance={40}>
             <div className={styles.ctaGlow} />
             <h2 className="text-heading-1">
               {t.ctaTitle}
@@ -236,7 +247,7 @@ export default async function Home() {
                 {t.ctaButton}
               </Link>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
     </>

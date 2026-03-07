@@ -152,6 +152,8 @@ model MechanicProfile {
   userId      String     @unique
   bio         String?    @db.Text
   location    String
+  latitude    Float?     // For map coordinates
+  longitude   Float?     // For map coordinates
   phoneNumber String?
   skillLevel  SkillLevel @default(INTERMEDIATE)
   hourlyRate  Float?
@@ -197,6 +199,8 @@ model ServiceRequest {
   title       String
   description String        @db.Text
   location    String
+  latitude    Float?
+  longitude   Float?
   budget      Float?
   status      RequestStatus @default(OPEN)
   createdAt   DateTime      @default(now())
@@ -256,6 +260,8 @@ model PartListing {
   category    PartCategory
   brand       String?
   location    String
+  latitude    Float?
+  longitude   Float?
   isSold      Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -322,6 +328,8 @@ model BikeListing {
   wheelSize   String?   // e.g. "26\"", "27.5\"", "29\"", "700c"
   color       String?
   location    String
+  latitude    Float?
+  longitude   Float?
   isSold      Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -359,6 +367,8 @@ model WantedPost {
   bikeType    BikeType?
   frameSize   FrameSize?
   location    String
+  latitude    Float?
+  longitude   Float?
   isFulfilled Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
