@@ -9,6 +9,11 @@ interface MessageInAppButtonProps {
     receiverId: string;
 }
 
+const TEXT = {
+    en: "💬 Message in app",
+    it: "💬 Scrivi in chat",
+};
+
 export default function MessageInAppButton({ receiverId }: MessageInAppButtonProps) {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -16,7 +21,7 @@ export default function MessageInAppButton({ receiverId }: MessageInAppButtonPro
     const { language } = useLanguage();
     const [loading, setLoading] = useState(false);
 
-    const label = language === "it" ? "💬 Messaggia in app" : "💬 Message in app";
+    const label = TEXT[language];
 
     const handleClick = async () => {
         if (status === "loading") return;
@@ -60,4 +65,3 @@ export default function MessageInAppButton({ receiverId }: MessageInAppButtonPro
         </button>
     );
 }
-

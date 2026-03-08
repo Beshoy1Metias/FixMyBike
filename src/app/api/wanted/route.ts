@@ -3,8 +3,25 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
+const TEXT = {
+    en: {
+        errorLoad: "Failed to load wanted posts.",
+        errorRequired: "Title, description, and location are required.",
+        errorCreate: "Failed to create wanted post.",
+        errorUnauthorized: "Unauthorized",
+    },
+    it: {
+        errorLoad: "Impossibile caricare le richieste.",
+        errorRequired: "Titolo, descrizione e località sono richiesti.",
+        errorCreate: "Impossibile creare la richiesta.",
+        errorUnauthorized: "Non autorizzato",
+    }
+} as const;
+
 export async function GET(req: NextRequest) {
     try {
+        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
+        const t = TEXT[lang];
         const { searchParams } = new URL(req.url);
         const q = searchParams.get("q");
         const maxBudget = searchParams.get("maxBudget");
@@ -51,8 +68,9 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ posts: mappedPosts });
     } catch (error) {
         console.error("[GET /api/wanted] Error:", error);
+        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
         return NextResponse.json(
-            { error: "Failed to load wanted posts." },
+            { error: TEXT[lang].errorLoad },
             { status: 500 }
         );
     }
@@ -60,17 +78,19 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
+        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
+        const t = TEXT[lang];
         const session = await getServerSession(authOptions);
 
         if (!session?.user?.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json({ error: t.errorUnauthorized }, { status: 401 });
         }
 
         const { title, description, maxBudget, bikeType, frameSize, location, latitude, longitude } = await req.json();
 
         if (!title || !description || !location) {
             return NextResponse.json(
-                { error: "Title, description, and location are required." },
+                { error: t.errorRequired },
                 { status: 400 }
             );
         }
@@ -92,10 +112,10 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ post }, { status: 201 });
     } catch (error) {
         console.error("[POST /api/wanted] Error:", error);
+        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
         return NextResponse.json(
-            { error: "Failed to create wanted post." },
+            { error: TEXT[lang].errorCreate },
             { status: 500 }
         );
     }
 }
-

@@ -60,11 +60,27 @@ const PILL_LABELS: Record<string, Record<string, string>> = {
     }
 };
 
+const UI_TEXT = {
+    en: {
+        list: "List",
+        map: "Map",
+        size: "Size",
+        noResults: "No bikes found with these filters.",
+    },
+    it: {
+        list: "Lista",
+        map: "Mappa",
+        size: "Taglia",
+        noResults: "Nessuna bici trovata con questi filtri.",
+    },
+};
+
 export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
     const [bikes, setBikes] = useState(initialBikes);
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState<any>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
+    const t = UI_TEXT[lang];
 
     const fetchBikes = async (newFilters: any) => {
         setLoading(true);
@@ -120,13 +136,13 @@ export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-4)" }}>
                 {/* Type pills */}
                 <div className={styles.typePills} style={{ margin: 0 }}>
-                    {BIKE_TYPES.map((t) => (
+                    {BIKE_TYPES.map((type) => (
                         <button 
-                            key={t.label} 
-                            className={`${styles.pill} ${(filters.bikeType || "") === t.key ? styles.pillActive : ""}`}
-                            onClick={() => handlePillClick(t.key)}
+                            key={type.label} 
+                            className={`${styles.pill} ${(filters.bikeType || "") === type.key ? styles.pillActive : ""}`}
+                            onClick={() => handlePillClick(type.key)}
                         >
-                            {t.icon && <span>{t.icon}</span>} {PILL_LABELS[lang][t.label]}
+                            {type.icon && <span>{type.icon}</span>} {PILL_LABELS[lang][type.label]}
                         </button>
                     ))}
                 </div>
@@ -138,14 +154,14 @@ export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
                         className={`btn btn-sm ${viewMode === "list" ? "btn-primary" : "btn-ghost"}`}
                         style={{ padding: "4px 12px", minHeight: "32px" }}
                     >
-                        List
+                        {t.list}
                     </button>
                     <button 
                         onClick={() => setViewMode("map")}
                         className={`btn btn-sm ${viewMode === "map" ? "btn-primary" : "btn-ghost"}`}
                         style={{ padding: "4px 12px", minHeight: "32px" }}
                     >
-                        Map
+                        {t.map}
                     </button>
                 </div>
             </div>
@@ -174,7 +190,7 @@ export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
                                     meta={[
                                         bike.brand,
                                         bike.year ? String(bike.year) : null,
-                                        bike.frameSize ? `Size ${bike.frameSize}` : null,
+                                        bike.frameSize ? `${t.size} ${bike.frameSize}` : null,
                                     ]
                                         .filter(Boolean)
                                         .join(" · ")}
@@ -183,7 +199,7 @@ export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
                         ))
                     ) : (
                         <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "var(--space-20) 0" }}>
-                            <p className="text-muted">{lang === "it" ? "Nessuna bici trovata con questi filtri." : "No bikes found with these filters."}</p>
+                            <p className="text-muted">{t.noResults}</p>
                         </div>
                     )}
                 </StaggerContainer>

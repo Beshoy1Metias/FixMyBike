@@ -5,11 +5,45 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import styles from "../auth.module.css";
+import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
+
+const TEXT = {
+    en: {
+        title: "Welcome back",
+        subtitle: "Sign in to your account",
+        successAlert: "Account created! You can now log in.",
+        googleBtn: "Continue with Google",
+        divider: "or sign in with email",
+        labelEmail: "Email",
+        labelPassword: "Password",
+        placeholderPassword: "Your password",
+        submit: "Sign In",
+        switchText: "Don't have an account?",
+        switchLink: "Sign up for free",
+        errorInvalid: "Invalid email or password.",
+    },
+    it: {
+        title: "Bentornato",
+        subtitle: "Accedi al tuo account",
+        successAlert: "Account creato! Ora puoi accedere.",
+        googleBtn: "Continua con Google",
+        divider: "o accedi con la tua email",
+        labelEmail: "Email",
+        labelPassword: "Password",
+        placeholderPassword: "La tua password",
+        submit: "Accedi",
+        switchText: "Non hai un account?",
+        switchLink: "Registrati gratis",
+        errorInvalid: "Email o password non valide.",
+    },
+} as const;
 
 function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const justRegistered = searchParams.get("registered") === "1";
+    const justRegistered = searchParams?.get("registered") === "1";
+    const { language } = useLanguage();
+    const t = TEXT[language];
 
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
@@ -33,7 +67,7 @@ function LoginForm() {
         });
 
         if (res?.error) {
-            setError("Invalid email or password.");
+            setError(t.errorInvalid);
             setLoading(false);
             return;
         }
@@ -47,13 +81,13 @@ function LoginForm() {
             <div className={styles.card}>
                 <div className={styles.cardHead}>
                     <Link href="/" className={styles.logoLink}>🔧 FixMyBike</Link>
-                    <h1 className={styles.title}>Welcome back</h1>
-                    <p className={styles.subtitle}>Sign in to your account</p>
+                    <h1 className={styles.title}>{t.title}</h1>
+                    <p className={styles.subtitle}>{t.subtitle}</p>
                 </div>
 
                 {justRegistered && (
                     <div className={styles.successAlert}>
-                        Account created! You can now log in.
+                        {t.successAlert}
                     </div>
                 )}
 
@@ -69,12 +103,12 @@ function LoginForm() {
                     ) : (
                         <GoogleIcon />
                     )}
-                    Continue with Google
+                    {t.googleBtn}
                 </button>
 
                 {/* Divider */}
                 <div className={styles.divider}>
-                    <span>or sign in with email</span>
+                    <span>{t.divider}</span>
                 </div>
 
                 {/* Email/Password form */}
@@ -82,7 +116,7 @@ function LoginForm() {
                     {error && <div className={styles.errorAlert}>{error}</div>}
 
                     <div className="form-group">
-                        <label htmlFor="email" className="form-label">Email</label>
+                        <label htmlFor="email" className="form-label">{t.labelEmail}</label>
                         <input
                             id="email"
                             type="email"
@@ -96,12 +130,12 @@ function LoginForm() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password" className="form-label">Password</label>
+                        <label htmlFor="password" className="form-label">{t.labelPassword}</label>
                         <input
                             id="password"
                             type="password"
                             className="form-input"
-                            placeholder="Your password"
+                            placeholder={t.placeholderPassword}
                             autoComplete="current-password"
                             value={form.password}
                             onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -110,13 +144,13 @@ function LoginForm() {
                     </div>
 
                     <button type="submit" className="btn btn-primary" style={{ width: "100%" }} disabled={loading}>
-                        {loading ? <span className="spinner" /> : "Sign In"}
+                        {loading ? <span className="spinner" /> : t.submit}
                     </button>
                 </form>
 
                 <p className={styles.switchLink}>
-                    Don&apos;t have an account?{" "}
-                    <Link href="/auth/register">Sign up for free</Link>
+                    {t.switchText}{" "}
+                    <Link href="/auth/register">{t.switchLink}</Link>
                 </p>
             </div>
         </div>

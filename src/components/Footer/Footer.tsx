@@ -1,29 +1,95 @@
+"use client";
+
 import Link from "next/link";
 import styles from "./Footer.module.css";
+import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
 
-const footerLinks = {
-    Marketplace: [
-        { href: "/mechanics", label: "Find a Mechanic" },
-        { href: "/parts", label: "Parts & Gear" },
-        { href: "/bikes", label: "Bikes for Sale" },
-        { href: "/wanted", label: "Wanted Bikes" },
-        { href: "/community", label: "Community" },
-    ],
-    Account: [
-        { href: "/auth/login", label: "Log In" },
-        { href: "/auth/register", label: "Sign Up" },
-        { href: "/dashboard", label: "Dashboard" },
-        { href: "/listings/new", label: "Post a Listing" },
-    ],
-    Company: [
-        { href: "/about", label: "About Us" },
-        { href: "/contact", label: "Contact & Feedback" },
-        { href: "/privacy", label: "Privacy Policy" },
-        { href: "/terms", label: "Terms of Service" },
-    ],
-};
+const TEXT = {
+    en: {
+        tagline: "The marketplace where bikes get fixed, bought, and sold. Built by riders, for riders.",
+        copyright: "All rights reserved.",
+        sections: {
+            Marketplace: "Marketplace",
+            Account: "Account",
+            Company: "Company",
+        },
+        links: {
+            mechanics: "Find a Mechanic",
+            parts: "Parts & Gear",
+            bikes: "Bikes for Sale",
+            wanted: "Wanted Bikes",
+            community: "Community",
+            login: "Log In",
+            register: "Sign Up",
+            dashboard: "Dashboard",
+            post: "Post a Listing",
+            about: "About Us",
+            contact: "Contact & Feedback",
+            privacy: "Privacy Policy",
+            terms: "Terms of Service",
+        }
+    },
+    it: {
+        tagline: "Il marketplace dove le bici vengono riparate, comprate e vendute. Creato dai ciclisti, per i ciclisti.",
+        copyright: "Tutti i diritti riservati.",
+        sections: {
+            Marketplace: "Marketplace",
+            Account: "Profilo",
+            Company: "Azienda",
+        },
+        links: {
+            mechanics: "Trova un meccanico",
+            parts: "Ricambi e accessori",
+            bikes: "Bici in vendita",
+            wanted: "Cerco bici",
+            community: "Community",
+            login: "Accedi",
+            register: "Registrati",
+            dashboard: "Dashboard",
+            post: "Pubblica un annuncio",
+            about: "Chi siamo",
+            contact: "Contatti e Feedback",
+            privacy: "Privacy Policy",
+            terms: "Termini di Servizio",
+        }
+    }
+} as const;
 
 export default function Footer() {
+    const { language } = useLanguage();
+    const t = TEXT[language];
+
+    const footerSections = [
+        {
+            title: t.sections.Marketplace,
+            links: [
+                { href: "/mechanics", label: t.links.mechanics },
+                { href: "/parts", label: t.links.parts },
+                { href: "/bikes", label: t.links.bikes },
+                { href: "/wanted", label: t.links.wanted },
+                { href: "/community", label: t.links.community },
+            ]
+        },
+        {
+            title: t.sections.Account,
+            links: [
+                { href: "/auth/login", label: t.links.login },
+                { href: "/auth/register", label: t.links.register },
+                { href: "/dashboard", label: t.links.dashboard },
+                { href: "/listings/new", label: t.links.post },
+            ]
+        },
+        {
+            title: t.sections.Company,
+            links: [
+                { href: "/about", label: t.links.about },
+                { href: "/contact", label: t.links.contact },
+                { href: "/privacy", label: t.links.privacy },
+                { href: "/terms", label: t.links.terms },
+            ]
+        }
+    ];
+
     return (
         <footer className={styles.footer}>
             <div className={`container ${styles.inner}`}>
@@ -33,7 +99,7 @@ export default function Footer() {
                         <span>Fix<strong>My</strong>Bike</span>
                     </div>
                     <p className={styles.tagline}>
-                        The marketplace where bikes get fixed, bought, and sold. Built by riders, for riders.
+                        {t.tagline}
                     </p>
                     <div className={styles.socials}>
                         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className={styles.social}>
@@ -48,11 +114,11 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {Object.entries(footerLinks).map(([section, links]) => (
-                    <div key={section} className={styles.linkGroup}>
-                        <h4 className={styles.groupTitle}>{section}</h4>
+                {footerSections.map((section) => (
+                    <div key={section.title} className={styles.linkGroup}>
+                        <h4 className={styles.groupTitle}>{section.title}</h4>
                         <ul className={styles.linkList}>
-                            {links.map((link) => (
+                            {section.links.map((link) => (
                                 <li key={link.href}>
                                     <Link href={link.href} className={styles.footerLink}>
                                         {link.label}
@@ -67,7 +133,7 @@ export default function Footer() {
             <div className={styles.bottom}>
                 <div className="container">
                     <p className={styles.copyright}>
-                        © {new Date().getFullYear()} FixMyBike. All rights reserved.
+                        © {new Date().getFullYear()} FixMyBike. {t.copyright}
                     </p>
                 </div>
             </div>

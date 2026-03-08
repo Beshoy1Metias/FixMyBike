@@ -3,9 +3,48 @@
 import { FormEvent, useState } from "react";
 import { useSession } from "next-auth/react";
 import FadeIn from "@/components/Animations/FadeIn";
+import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
+
+const TEXT = {
+    en: {
+        title: "Contact the Owner",
+        lead: "Have a suggestion for FixMyBike? Found a bug? Or just want to say hi? Send a message below.",
+        successTitle: "Message Sent!",
+        successBody: "Thanks for reaching out. Your feedback helps make FixMyBike better.",
+        sendAnother: "Send another message",
+        labelName: "Name",
+        labelEmail: "Email",
+        labelSubject: "Subject",
+        placeholderSubject: "Suggestion, Bug, Feature Request...",
+        labelMessage: "Message",
+        placeholderMessage: "Tell me what's on your mind...",
+        submit: "Send Message",
+        loading: "Sending...",
+        errorGeneric: "Something went wrong. Please try again.",
+    },
+    it: {
+        title: "Contatta il proprietario",
+        lead: "Hai un suggerimento per FixMyBike? Hai trovato un bug? O vuoi solo salutarci? Invia un messaggio qui sotto.",
+        successTitle: "Messaggio inviato!",
+        successBody: "Grazie per averci contattato. Il tuo feedback aiuta a migliorare FixMyBike.",
+        sendAnother: "Invia un altro messaggio",
+        labelName: "Nome",
+        labelEmail: "Email",
+        labelSubject: "Oggetto",
+        placeholderSubject: "Suggerimento, Bug, Richiesta funzionalità...",
+        labelMessage: "Messaggio",
+        placeholderMessage: "Dimmi cosa ne pensi...",
+        submit: "Invia Messaggio",
+        loading: "Invio in corso...",
+        errorGeneric: "Qualcosa è andato storto. Riprova più tardi.",
+    },
+} as const;
 
 export default function ContactOwnerPage() {
     const { data: session } = useSession();
+    const { language } = useLanguage();
+    const t = TEXT[language];
+
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -33,10 +72,10 @@ export default function ContactOwnerPage() {
                 setForm({ name: "", email: "", subject: "", message: "" });
             } else {
                 const data = await res.json();
-                setError(data.error || "Failed to send message.");
+                setError(data.error || t.errorGeneric);
             }
         } catch (err) {
-            setError("Something went wrong. Please try again.");
+            setError(t.errorGeneric);
         } finally {
             setLoading(false);
         }
@@ -46,9 +85,9 @@ export default function ContactOwnerPage() {
         <FadeIn className="section">
             <div className="container" style={{ maxWidth: "600px" }}>
                 <div className="page-header" style={{ textAlign: "left" }}>
-                    <h1 className="text-heading-1">Contact the Owner</h1>
+                    <h1 className="text-heading-1">{t.title}</h1>
                     <p className="text-body-lg">
-                        Have a suggestion for FixMyBike? Found a bug? Or just want to say hi? Send a message below.
+                        {t.lead}
                     </p>
                 </div>
 
@@ -56,10 +95,10 @@ export default function ContactOwnerPage() {
                     <div className="card">
                         <div className="card-body" style={{ textAlign: "center", padding: "var(--space-10)" }}>
                             <div style={{ fontSize: "3rem", marginBottom: "var(--space-4)" }}>📬</div>
-                            <h2 className="text-heading-2">Message Sent!</h2>
-                            <p className="text-muted">Thanks for reaching out. Your feedback helps make FixMyBike better.</p>
+                            <h2 className="text-heading-2">{t.successTitle}</h2>
+                            <p className="text-muted">{t.successBody}</p>
                             <button className="btn btn-primary" onClick={() => setSuccess(false)} style={{ marginTop: "var(--space-6)" }}>
-                                Send another message
+                                {t.sendAnother}
                             </button>
                         </div>
                     </div>
@@ -69,7 +108,7 @@ export default function ContactOwnerPage() {
                             {!session && (
                                 <div className="grid-2">
                                     <div className="form-group">
-                                        <label className="form-label">Name</label>
+                                        <label className="form-label">{t.labelName}</label>
                                         <input
                                             className="form-input"
                                             value={form.name}
@@ -78,7 +117,7 @@ export default function ContactOwnerPage() {
                                         />
                                     </div>
                                     <div className="form-group">
-                                        <label className="form-label">Email</label>
+                                        <label className="form-label">{t.labelEmail}</label>
                                         <input
                                             type="email"
                                             className="form-input"
@@ -91,10 +130,10 @@ export default function ContactOwnerPage() {
                             )}
 
                             <div className="form-group">
-                                <label className="form-label">Subject</label>
+                                <label className="form-label">{t.labelSubject}</label>
                                 <input
                                     className="form-input"
-                                    placeholder="Suggestion, Bug, Feature Request..."
+                                    placeholder={t.placeholderSubject}
                                     value={form.subject}
                                     onChange={(e) => setForm({ ...form, subject: e.target.value })}
                                     required
@@ -102,11 +141,11 @@ export default function ContactOwnerPage() {
                             </div>
 
                             <div className="form-group">
-                                <label className="form-label">Message</label>
+                                <label className="form-label">{t.labelMessage}</label>
                                 <textarea
                                     className="form-textarea"
                                     rows={6}
-                                    placeholder="Tell me what's on your mind..."
+                                    placeholder={t.placeholderMessage}
                                     value={form.message}
                                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                                     required
@@ -116,7 +155,7 @@ export default function ContactOwnerPage() {
                             {error && <div className="form-error">{error}</div>}
 
                             <button type="submit" className="btn btn-primary" disabled={loading}>
-                                {loading ? "Sending..." : "Send Message"}
+                                {loading ? t.loading : t.submit}
                             </button>
                         </form>
                     </div>

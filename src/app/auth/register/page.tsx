@@ -5,9 +5,46 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import styles from "../auth.module.css";
+import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
+
+const TEXT = {
+    en: {
+        title: "Create your account",
+        subtitle: "Join the cycling community",
+        googleBtn: "Continue with Google",
+        divider: "or sign up with email",
+        labelName: "Full Name",
+        placeholderName: "John Smith",
+        labelEmail: "Email",
+        labelPassword: "Password",
+        placeholderPassword: "Min. 8 characters",
+        submit: "Create Account",
+        switchText: "Already have an account?",
+        switchLink: "Log in",
+        errorGeneric: "Something went wrong.",
+    },
+    it: {
+        title: "Crea il tuo account",
+        subtitle: "Unisciti alla community ciclistica",
+        googleBtn: "Continua con Google",
+        divider: "o registrati con la tua email",
+        labelName: "Nome Completo",
+        placeholderName: "Mario Rossi",
+        labelEmail: "Email",
+        labelPassword: "Password",
+        placeholderPassword: "Min. 8 caratteri",
+        submit: "Crea Account",
+        switchText: "Hai già un account?",
+        switchLink: "Accedi",
+        errorGeneric: "Qualcosa è andato storto.",
+    },
+} as const;
 
 export default function RegisterPage() {
     const router = useRouter();
+    const { language } = useLanguage();
+    const t = TEXT[language];
+
     const [form, setForm] = useState({ name: "", email: "", password: "" });
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -32,7 +69,7 @@ export default function RegisterPage() {
         const data = await res.json();
 
         if (!res.ok) {
-            setError(data.error || "Something went wrong.");
+            setError(data.error || t.errorGeneric);
             setLoading(false);
             return;
         }
@@ -45,8 +82,8 @@ export default function RegisterPage() {
             <div className={styles.card}>
                 <div className={styles.cardHead}>
                     <Link href="/" className={styles.logoLink}>🔧 FixMyBike</Link>
-                    <h1 className={styles.title}>Create your account</h1>
-                    <p className={styles.subtitle}>Join the cycling community</p>
+                    <h1 className={styles.title}>{t.title}</h1>
+                    <p className={styles.subtitle}>{t.subtitle}</p>
                 </div>
 
                 {/* Google Sign-In */}
@@ -61,12 +98,12 @@ export default function RegisterPage() {
                     ) : (
                         <GoogleIcon />
                     )}
-                    Continue with Google
+                    {t.googleBtn}
                 </button>
 
                 {/* Divider */}
                 <div className={styles.divider}>
-                    <span>or sign up with email</span>
+                    <span>{t.divider}</span>
                 </div>
 
                 {/* Email/Password form */}
@@ -74,12 +111,12 @@ export default function RegisterPage() {
                     {error && <div className={styles.errorAlert}>{error}</div>}
 
                     <div className="form-group">
-                        <label htmlFor="name" className="form-label">Full Name</label>
+                        <label htmlFor="name" className="form-label">{t.labelName}</label>
                         <input
                             id="name"
                             type="text"
                             className="form-input"
-                            placeholder="John Smith"
+                            placeholder={t.placeholderName}
                             autoComplete="name"
                             value={form.name}
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -88,7 +125,7 @@ export default function RegisterPage() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="email" className="form-label">Email</label>
+                        <label htmlFor="email" className="form-label">{t.labelEmail}</label>
                         <input
                             id="email"
                             type="email"
@@ -102,12 +139,12 @@ export default function RegisterPage() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password" className="form-label">Password</label>
+                        <label htmlFor="password" className="form-label">{t.labelPassword}</label>
                         <input
                             id="password"
                             type="password"
                             className="form-input"
-                            placeholder="Min. 8 characters"
+                            placeholder={t.placeholderPassword}
                             autoComplete="new-password"
                             value={form.password}
                             onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -117,13 +154,13 @@ export default function RegisterPage() {
                     </div>
 
                     <button type="submit" className="btn btn-primary" style={{ width: "100%" }} disabled={loading}>
-                        {loading ? <span className="spinner" /> : "Create Account"}
+                        {loading ? <span className="spinner" /> : t.submit}
                     </button>
                 </form>
 
                 <p className={styles.switchLink}>
-                    Already have an account?{" "}
-                    <Link href="/auth/login">Log in</Link>
+                    {t.switchText}{" "}
+                    <Link href="/auth/login">{t.switchLink}</Link>
                 </p>
             </div>
         </div>

@@ -22,11 +22,33 @@ const SKILL_BADGE: Record<string, { en: string; it: string }> = {
     PROFESSIONAL: { en: "Pro", it: "Professionista" },
 };
 
+const UI_TEXT = {
+    en: {
+        list: "List",
+        map: "Map",
+        available: "Available",
+        unavailable: "Unavailable",
+        perHour: "/hr",
+        noResults: "No mechanics found.",
+        mechanic: "Mechanic",
+    },
+    it: {
+        list: "Lista",
+        map: "Mappa",
+        available: "Disponibile",
+        unavailable: "Non disponibile",
+        perHour: "/ora",
+        noResults: "Nessun meccanico trovato.",
+        mechanic: "Meccanico",
+    },
+};
+
 export default function MechanicsClient({ initialMechanics, lang }: MechanicsClientProps) {
     const [mechanics, setMechanics] = useState(initialMechanics);
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState<any>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
+    const t = UI_TEXT[lang];
 
     const fetchMechanics = async (newFilters: any) => {
         setLoading(true);
@@ -56,7 +78,7 @@ export default function MechanicsClient({ initialMechanics, lang }: MechanicsCli
 
     const mapListings = mechanics.map(m => ({
         id: m.id,
-        title: m.user.name || "Mechanic",
+        title: m.user.name || t.mechanic,
         latitude: m.latitude,
         longitude: m.longitude,
         price: m.hourlyRate,
@@ -74,14 +96,14 @@ export default function MechanicsClient({ initialMechanics, lang }: MechanicsCli
                         className={`btn btn-sm ${viewMode === "list" ? "btn-primary" : "btn-ghost"}`}
                         style={{ padding: "4px 12px", minHeight: "32px" }}
                     >
-                        List
+                        {t.list}
                     </button>
                     <button 
                         onClick={() => setViewMode("map")}
                         className={`btn btn-sm ${viewMode === "map" ? "btn-primary" : "btn-ghost"}`}
                         style={{ padding: "4px 12px", minHeight: "32px" }}
                     >
-                        Map
+                        {t.map}
                     </button>
                 </div>
             </div>
@@ -102,19 +124,19 @@ export default function MechanicsClient({ initialMechanics, lang }: MechanicsCli
                                     {/* Avatar */}
                                     <div className={styles.mechAvatar}>
                                         <span>{(m.user.name || "M").charAt(0)}</span>
-                                        {m.isAvailable && <span className={styles.availDot} title="Available" />}
+                                        {m.isAvailable && <span className={styles.availDot} title={t.available} />}
                                     </div>
                                     <div className={styles.mechInfo}>
                                         <div className={styles.mechTop}>
                                             <div>
-                                                <h3 className={styles.mechName}>{m.user.name || "Mechanic"}</h3>
+                                                <h3 className={styles.mechName}>{m.user.name || t.mechanic}</h3>
                                                 <p className={styles.mechLocation}>📍 {m.location}</p>
                                             </div>
                                             <div className={styles.mechBadges}>
                                                 <span className={`badge badge-${m.skillLevel === "PROFESSIONAL" ? "primary" : m.skillLevel === "EXPERT" ? "accent" : "gray"}`}>
                                                     {SKILL_BADGE[m.skillLevel][lang]}
                                                 </span>
-                                                {!m.isAvailable && <span className="badge badge-gray">{lang === "it" ? "Non disponibile" : "Unavailable"}</span>}
+                                                {!m.isAvailable && <span className="badge badge-gray">{t.unavailable}</span>}
                                             </div>
                                         </div>
                                         {m.bio && <p className={styles.mechBio}>{m.bio}</p>}
@@ -131,7 +153,7 @@ export default function MechanicsClient({ initialMechanics, lang }: MechanicsCli
                                             {m.hourlyRate && (
                                                 <span className="price-sm">
                                                     €{m.hourlyRate.toLocaleString()}
-                                                    <span className="text-muted text-xs"> /hr</span>
+                                                    <span className="text-muted text-xs"> {t.perHour}</span>
                                                 </span>
                                             )}
                                         </div>
@@ -141,7 +163,7 @@ export default function MechanicsClient({ initialMechanics, lang }: MechanicsCli
                         ))
                     ) : (
                         <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "var(--space-20) 0" }}>
-                            <p className="text-muted">{lang === "it" ? "Nessun meccanico trovato." : "No mechanics found."}</p>
+                            <p className="text-muted">{t.noResults}</p>
                         </div>
                     )}
                 </StaggerContainer>

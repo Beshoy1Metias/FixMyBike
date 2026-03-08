@@ -5,33 +5,100 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import FadeIn from "@/components/Animations/FadeIn";
+import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
 
 const LocationPicker = dynamic(() => import("@/components/Map/LocationPicker"), { ssr: false });
 
-const BIKE_TYPES = [
-    { value: "", label: "Any type" },
-    { value: "ROAD", label: "Road" },
-    { value: "MOUNTAIN", label: "Mountain" },
-    { value: "GRAVEL", label: "Gravel" },
-    { value: "ELECTRIC", label: "E-Bike" },
-    { value: "FOLDING", label: "Folding" },
-    { value: "BMX", label: "BMX" },
-];
+const BIKE_TYPES = {
+    en: [
+        { value: "", label: "Any type" },
+        { value: "ROAD", label: "Road" },
+        { value: "MOUNTAIN", label: "Mountain" },
+        { value: "GRAVEL", label: "Gravel" },
+        { value: "ELECTRIC", label: "E-Bike" },
+        { value: "FOLDING", label: "Folding" },
+        { value: "BMX", label: "BMX" },
+    ],
+    it: [
+        { value: "", label: "Qualsiasi tipo" },
+        { value: "ROAD", label: "Strada" },
+        { value: "MOUNTAIN", label: "MTB" },
+        { value: "GRAVEL", label: "Gravel" },
+        { value: "ELECTRIC", label: "E-Bike" },
+        { value: "FOLDING", label: "Pieghevole" },
+        { value: "BMX", label: "BMX" },
+    ]
+};
 
-const FRAME_SIZES = [
-    { value: "", label: "Any size" },
-    { value: "XS", label: "XS" },
-    { value: "S", label: "S" },
-    { value: "M", label: "M" },
-    { value: "L", label: "L" },
-    { value: "XL", label: "XL" },
-    { value: "XXL", label: "XXL" },
-    { value: "ONE_SIZE", label: "One Size" },
-];
+const FRAME_SIZES = {
+    en: [
+        { value: "", label: "Any size" },
+        { value: "XS", label: "XS" },
+        { value: "S", label: "S" },
+        { value: "M", label: "M" },
+        { value: "L", label: "L" },
+        { value: "XL", label: "XL" },
+        { value: "XXL", label: "XXL" },
+        { value: "ONE_SIZE", label: "One Size" },
+    ],
+    it: [
+        { value: "", label: "Qualsiasi taglia" },
+        { value: "XS", label: "XS" },
+        { value: "S", label: "S" },
+        { value: "M", label: "M" },
+        { value: "L", label: "L" },
+        { value: "XL", label: "XL" },
+        { value: "XXL", label: "XXL" },
+        { value: "ONE_SIZE", label: "Taglia Unica" },
+    ]
+};
+
+const TEXT = {
+    en: {
+        eyebrow: "🔍 Wanted Bikes",
+        title: "Post a Wanted Ad",
+        lead: "Tell sellers exactly what kind of bike you're looking for and your budget. They'll reach out if they have a match.",
+        labelTitle: "Title",
+        placeholderTitle: "Looking for a Gravel Bike — Size M",
+        labelBudget: "Max Budget (€)",
+        labelType: "Bike Type",
+        labelSize: "Frame Size",
+        labelLocation: "Location text",
+        placeholderLocation: "City, Country",
+        labelDescription: "Description",
+        placeholderDescription: "Describe the type of bike, components, and condition you are after.",
+        cancel: "Cancel",
+        submit: "Post Wanted Ad",
+        loading: "Posting...",
+        errorAuth: "You need an account to post a wanted ad.",
+        errorGeneric: "Failed to create wanted post.",
+    },
+    it: {
+        eyebrow: "🔍 Cerco bici",
+        title: "Pubblica una richiesta",
+        lead: "Spiega ai venditori esattamente che tipo di bici cerchi e il tuo budget. Ti contatteranno se hanno quello che fa per te.",
+        labelTitle: "Titolo",
+        placeholderTitle: "Cerco bici Gravel — Taglia M",
+        labelBudget: "Budget Massimo (€)",
+        labelType: "Tipo di bici",
+        labelSize: "Taglia telaio",
+        labelLocation: "Località (testo)",
+        placeholderLocation: "Città, Paese",
+        labelDescription: "Descrizione",
+        placeholderDescription: "Descrivi il tipo di bici, i componenti e le condizioni che cerchi.",
+        cancel: "Annulla",
+        submit: "Pubblica richiesta",
+        loading: "Pubblicazione...",
+        errorAuth: "Devi aver effettuato l'accesso per pubblicare una richiesta.",
+        errorGeneric: "Errore nella creazione della richiesta.",
+    }
+} as const;
 
 export default function NewWantedPostPage() {
     const router = useRouter();
     const { data: session, status } = useSession();
+    const { language } = useLanguage();
+    const t = TEXT[language];
 
     const [form, setForm] = useState({
         title: "",
@@ -64,7 +131,7 @@ export default function NewWantedPostPage() {
                 <div className="container">
                     <div className="empty-state">
                         <p className="empty-state__icon">🔒</p>
-                        <p>You need an account to post a wanted ad.</p>
+                        <p>{t.errorAuth}</p>
                     </div>
                 </div>
             </div>
@@ -89,7 +156,7 @@ export default function NewWantedPostPage() {
             const data = await res.json();
 
             if (!res.ok) {
-                setError(data.error || "Failed to create wanted post.");
+                setError(data.error || t.errorGeneric);
                 setLoading(false);
                 return;
             }
@@ -106,7 +173,7 @@ export default function NewWantedPostPage() {
         setForm(prev => ({ ...prev, latitude: lat, longitude: lng }));
         
         try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${lat}&lon=${lng}`);
             const data = await res.json();
             if (data && data.address) {
                 const city = data.address.city || data.address.town || data.address.village || "";
@@ -123,23 +190,21 @@ export default function NewWantedPostPage() {
         <FadeIn className="section">
             <div className="container">
                 <div className="page-header" style={{ textAlign: "left" }}>
-                    <span className="page-header__eyebrow">🔍 Wanted Bikes</span>
-                    <h1 className="text-heading-1">Post a Wanted Ad</h1>
+                    <span className="page-header__eyebrow">{t.eyebrow}</span>
+                    <h1 className="text-heading-1">{t.title}</h1>
                     <p className="text-body-lg" style={{ maxWidth: 560 }}>
-                        Tell sellers exactly what kind of bike you&apos;re looking for and your budget. They&apos;ll reach out if they have a match.
+                        {t.lead}
                     </p>
                 </div>
 
                 <div className="card">
                     <form onSubmit={handleSubmit} className="card-body" style={{ display: "grid", gap: "var(--space-6)" }}>
                         <div className="form-group">
-                            <label htmlFor="title" className="form-label">
-                                Title
-                            </label>
+                            <label htmlFor="title" className="form-label">{t.labelTitle}</label>
                             <input
                                 id="title"
                                 className="form-input"
-                                placeholder="Looking for a Gravel Bike — Size M"
+                                placeholder={t.placeholderTitle}
                                 value={form.title}
                                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                                 required
@@ -148,9 +213,7 @@ export default function NewWantedPostPage() {
 
                         <div className="grid-3">
                             <div className="form-group">
-                                <label htmlFor="maxBudget" className="form-label">
-                                    Max Budget (€)
-                                </label>
+                                <label htmlFor="maxBudget" className="form-label">{t.labelBudget}</label>
                                 <input
                                     id="maxBudget"
                                     type="number"
@@ -162,49 +225,39 @@ export default function NewWantedPostPage() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="bikeType" className="form-label">
-                                    Bike Type
-                                </label>
+                                <label htmlFor="bikeType" className="form-label">{t.labelType}</label>
                                 <select
                                     id="bikeType"
                                     className="form-select"
                                     value={form.bikeType}
                                     onChange={(e) => setForm({ ...form, bikeType: e.target.value })}
                                 >
-                                    {BIKE_TYPES.map((t) => (
-                                        <option key={t.value} value={t.value}>
-                                            {t.label}
-                                        </option>
+                                    {BIKE_TYPES[language].map((type) => (
+                                        <option key={type.value} value={type.value}>{type.label}</option>
                                     ))}
                                 </select>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="frameSize" className="form-label">
-                                    Frame Size
-                                </label>
+                                <label htmlFor="frameSize" className="form-label">{t.labelSize}</label>
                                 <select
                                     id="frameSize"
                                     className="form-select"
                                     value={form.frameSize}
                                     onChange={(e) => setForm({ ...form, frameSize: e.target.value })}
                                 >
-                                    {FRAME_SIZES.map((s) => (
-                                        <option key={s.value} value={s.value}>
-                                            {s.label}
-                                        </option>
+                                    {FRAME_SIZES[language].map((size) => (
+                                        <option key={size.value} value={size.value}>{size.label}</option>
                                     ))}
                                 </select>
                             </div>
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="location" className="form-label">
-                                Location text
-                            </label>
+                            <label htmlFor="location" className="form-label">{t.labelLocation}</label>
                             <input
                                 id="location"
                                 className="form-input"
-                                placeholder="City, Country"
+                                placeholder={t.placeholderLocation}
                                 value={form.location}
                                 onChange={(e) => setForm({ ...form, location: e.target.value })}
                                 required
@@ -216,13 +269,11 @@ export default function NewWantedPostPage() {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="description" className="form-label">
-                                Description
-                            </label>
+                            <label htmlFor="description" className="form-label">{t.labelDescription}</label>
                             <textarea
                                 id="description"
                                 className="form-textarea"
-                                placeholder="Describe the type of bike, components, and condition you are after."
+                                placeholder={t.placeholderDescription}
                                 value={form.description}
                                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                                 required
@@ -239,10 +290,10 @@ export default function NewWantedPostPage() {
                                 onClick={() => router.back()}
                                 disabled={loading}
                             >
-                                Cancel
+                                {t.cancel}
                             </button>
                             <button type="submit" className="btn btn-primary" disabled={loading}>
-                                {loading ? <span className="spinner" /> : "Post Wanted Ad"}
+                                {loading ? <span className="spinner" /> : t.submit}
                             </button>
                         </div>
                     </form>

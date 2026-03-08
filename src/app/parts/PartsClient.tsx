@@ -23,7 +23,7 @@ const CATEGORIES = [
     { key: "HANDLEBARS", labelEn: "Handlebars", labelIt: "Manubri", icon: "🏍️" },
     { key: "SADDLES", labelEn: "Saddles", labelIt: "Selle", icon: "🪑" },
     { key: "FORKS", labelEn: "Forks", labelIt: "Forcelle", icon: "🔱" },
-    { key: "PEDALS", labelEn: "Pedals", labelIt: "Pedali", icon: "👟" },
+    { key: "PEDALS", labelEn: "Pedali", labelIt: "Pedali", icon: "👟" },
     { key: "LIGHTS", labelEn: "Lights", labelIt: "Luci", icon: "💡" },
     { key: "ACCESSORIES", labelEn: "Accessories", labelIt: "Accessori", icon: "🎒" },
 ];
@@ -36,11 +36,25 @@ const CONDITION_LABELS: Record<string, { en: string; it: string }> = {
     POOR: { en: "Poor", it: "Da sistemare" },
 };
 
+const UI_TEXT = {
+    en: {
+        list: "List",
+        map: "Map",
+        noResults: "No parts found with these filters.",
+    },
+    it: {
+        list: "Lista",
+        map: "Mappa",
+        noResults: "Nessun ricambio trovato con questi filtri.",
+    },
+};
+
 export default function PartsClient({ initialParts, lang }: PartsClientProps) {
     const [parts, setParts] = useState(initialParts);
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState<any>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
+    const t = UI_TEXT[lang];
 
     const fetchParts = async (newFilters: any) => {
         setLoading(true);
@@ -113,14 +127,14 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
                         className={`btn btn-sm ${viewMode === "list" ? "btn-primary" : "btn-ghost"}`}
                         style={{ padding: "4px 12px", minHeight: "32px" }}
                     >
-                        List
+                        {t.list}
                     </button>
                     <button 
                         onClick={() => setViewMode("map")}
                         className={`btn btn-sm ${viewMode === "map" ? "btn-primary" : "btn-ghost"}`}
                         style={{ padding: "4px 12px", minHeight: "32px" }}
                     >
-                        Map
+                        {t.map}
                     </button>
                 </div>
             </div>
@@ -155,7 +169,7 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
                         ))
                     ) : (
                         <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "var(--space-20) 0" }}>
-                            <p className="text-muted">{lang === "it" ? "Nessun ricambio trovato." : "No parts found."}</p>
+                            <p className="text-muted">{t.noResults}</p>
                         </div>
                     )}
                 </StaggerContainer>

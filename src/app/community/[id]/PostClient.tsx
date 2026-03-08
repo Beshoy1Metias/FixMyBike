@@ -22,6 +22,7 @@ const UI_TEXT = {
         posting: "Posting...",
         noComments: "No comments yet. Be the first to reply!",
         signInToJoin: "Please sign in to join the discussion.",
+        anonymous: "User",
     },
     it: {
         postedBy: "Pubblicato da",
@@ -31,6 +32,20 @@ const UI_TEXT = {
         posting: "Invio in corso...",
         noComments: "Ancora nessun commento. Sii il primo a rispondere!",
         signInToJoin: "Per favore, accedi per partecipare alla discussione.",
+        anonymous: "Utente",
+    },
+};
+
+const CATEGORIES = {
+    en: {
+        GENERAL: "General",
+        APP_FEEDBACK: "App Feedback",
+        BIKE_TALK: "Bike Talk",
+    },
+    it: {
+        GENERAL: "Generale",
+        APP_FEEDBACK: "Feedback App",
+        BIKE_TALK: "Parliamo di Bici",
     },
 };
 
@@ -92,6 +107,11 @@ export default function PostClient({ post, lang }: PostClientProps) {
         }
     };
 
+    const getCategoryLabel = (key: string) => {
+        const catMap = CATEGORIES[lang] as Record<string, string>;
+        return catMap[key] || key;
+    };
+
     return (
         <div className="section">
             <div className="container" style={{ maxWidth: "900px" }}>
@@ -99,12 +119,12 @@ export default function PostClient({ post, lang }: PostClientProps) {
                     <div className="card" style={{ marginBottom: "var(--space-8)" }}>
                         <div className="card-body">
                             <div className={styles.postTop}>
-                                <span className={styles.postCategory}>{post.category}</span>
+                                <span className={styles.postCategory}>{getCategoryLabel(post.category)}</span>
                                 <span className={styles.postDate}>{new Date(post.createdAt).toLocaleDateString(lang === "it" ? "it-IT" : "en-US")}</span>
                             </div>
                             <h1 className="text-heading-1" style={{ margin: "var(--space-2) 0" }}>{post.title}</h1>
                             <div className={styles.postFooter} style={{ borderBottom: "1px solid var(--border)", paddingBottom: "var(--space-4)", marginBottom: "var(--space-4)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span>{t.postedBy} <strong>{post.user.name || "User"}</strong></span>
+                                <span>{t.postedBy} <strong>{post.user.name || t.anonymous}</strong></span>
                                 {session?.user?.id !== post.user.id && (
                                     <MessageInAppButton receiverId={post.user.id} />
                                 )}
@@ -156,7 +176,7 @@ export default function PostClient({ post, lang }: PostClientProps) {
                                 }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "var(--space-1)" }}>
                                         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-                                            <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>{comment.user.name || "User"}</span>
+                                            <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>{comment.user.name || t.anonymous}</span>
                                             {session?.user?.id !== comment.user.id && (
                                                 <button 
                                                     className="btn btn-ghost btn-xs" 

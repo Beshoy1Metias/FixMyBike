@@ -27,11 +27,11 @@ export async function generateMetadata({ params }: MechanicDetailPageProps): Pro
     };
 }
 
-const SKILL_BADGE: Record<string, string> = {
-    BEGINNER: "Beginner",
-    INTERMEDIATE: "Intermediate",
-    EXPERT: "Expert",
-    PROFESSIONAL: "Pro",
+const SKILL_BADGE: Record<string, { en: string; it: string }> = {
+    BEGINNER: { en: "Beginner", it: "Principiante" },
+    INTERMEDIATE: { en: "Intermediate", it: "Intermedio" },
+    EXPERT: { en: "Expert", it: "Esperto" },
+    PROFESSIONAL: { en: "Pro", it: "Professionista" },
 };
 
 export default async function MechanicDetailPage({ params }: MechanicDetailPageProps) {
@@ -50,14 +50,35 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
         notFound();
     }
 
+    const t = {
+        en: {
+            eyebrow: "🔧 Mechanic Profile",
+            skills: "Skills",
+            hourlyRate: "Hourly Rate",
+            phone: "Phone",
+            status: "Status",
+            available: "Available for work",
+            notAvailable: "Not available",
+            messageLead: "Message this mechanic directly inside FixMyBike."
+        },
+        it: {
+            eyebrow: "🔧 Profilo Meccanico",
+            skills: "Competenze",
+            hourlyRate: "Tariffa Oraria",
+            phone: "Telefono",
+            status: "Stato",
+            available: "Disponibile per lavori",
+            notAvailable: "Non disponibile",
+            messageLead: "Scrivi al meccanico direttamente su FixMyBike."
+        }
+    }[lang];
+
     return (
         <div className="section">
             <div className="container" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "var(--space-8)" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
                     <div className="page-header" style={{ textAlign: "left", paddingTop: 0, paddingBottom: 0 }}>
-                        <span className="page-header__eyebrow">
-                            {lang === "it" ? "🔧 Profilo meccanico" : "🔧 Mechanic Profile"}
-                        </span>
+                        <span className="page-header__eyebrow">{t.eyebrow}</span>
                         <h1 className="text-heading-1">{mech.user.name || "Mechanic"}</h1>
                         <p className="text-body-lg" style={{ maxWidth: 640 }}>
                             {mech.bio}
@@ -82,7 +103,7 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
                             <div className="text-body">{mech.user.name || "FixMyBike mechanic"}</div>
                             <div className="text-sm text-secondary-color">📍 {mech.location}</div>
                             <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
-                                <span className="badge badge-primary">{SKILL_BADGE[mech.skillLevel]}</span>
+                                <span className="badge badge-primary">{SKILL_BADGE[mech.skillLevel][lang]}</span>
                                 {!mech.isAvailable && (
                                     <span className="badge badge-gray">
                                         {lang === "it" ? "Al momento non disponibile" : "Currently unavailable"}
@@ -95,7 +116,7 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
                     {mech.skills && (
                         <div>
                             <h2 className="text-heading-3" style={{ marginBottom: "var(--space-3)" }}>
-                                Skills
+                                {t.skills}
                             </h2>
                             <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
                                 {mech.skills.split(",").map((s) => (
@@ -113,25 +134,18 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
                         <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                             {mech.hourlyRate && (
                                 <div className="text-sm text-secondary-color">
-                                    {lang === "it" ? "Tariffa oraria" : "Hourly Rate"}:{" "}
-                                    <strong>€{mech.hourlyRate.toLocaleString()}</strong>
+                                    {t.hourlyRate}: <strong>€{mech.hourlyRate.toLocaleString()}</strong>
                                 </div>
                             )}
                             {mech.phoneNumber && (
                                 <div className="text-sm text-secondary-color">
-                                    {lang === "it" ? "Telefono" : "Phone"}: <strong>{mech.phoneNumber}</strong>
+                                    {t.phone}: <strong>{mech.phoneNumber}</strong>
                                 </div>
                             )}
                             <div className="text-sm text-secondary-color">
-                                {lang === "it" ? "Stato" : "Status"}:{" "}
+                                {t.status}:{" "}
                                 <strong>
-                                    {mech.isAvailable
-                                        ? lang === "it"
-                                            ? "Disponibile per lavori"
-                                            : "Available for work"
-                                        : lang === "it"
-                                            ? "Non disponibile"
-                                            : "Not available"}
+                                    {mech.isAvailable ? t.available : t.notAvailable}
                                 </strong>
                             </div>
                         </div>
@@ -140,9 +154,7 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
                     <div className="card">
                         <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                             <div className="text-sm text-secondary-color">
-                                {lang === "it"
-                                    ? "Scrivi al meccanico direttamente su FixMyBike."
-                                    : "Message this mechanic directly inside FixMyBike."}
+                                {t.messageLead}
                             </div>
                             <MessageInAppButton receiverId={mech.user.id} />
                         </div>

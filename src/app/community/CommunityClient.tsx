@@ -36,6 +36,7 @@ const UI_TEXT = {
         by: "By",
         comments: "comments",
         noPosts: "No discussions found in this category.",
+        anonymous: "User",
     },
     it: {
         categories: "Categorie",
@@ -46,6 +47,7 @@ const UI_TEXT = {
         by: "Di",
         comments: "commenti",
         noPosts: "Nessuna discussione trovata in questa categoria.",
+        anonymous: "Utente",
     },
 };
 
@@ -77,6 +79,11 @@ export default function CommunityClient({ initialPosts, lang }: CommunityClientP
     const handleCategoryChange = (cat: string) => {
         setCategory(cat);
         fetchPosts(cat);
+    };
+
+    const getCategoryLabel = (key: string) => {
+        const found = CATEGORIES[lang].find(c => c.key === key);
+        return found ? found.label : key;
     };
 
     return (
@@ -121,12 +128,12 @@ export default function CommunityClient({ initialPosts, lang }: CommunityClientP
                                     </div>
                                     <div className={styles.postContent}>
                                         <div className={styles.postTop}>
-                                            <span className={styles.postCategory}>{post.category}</span>
+                                            <span className={styles.postCategory}>{getCategoryLabel(post.category)}</span>
                                             <span className={styles.postDate}>{formatTime(post.createdAt, lang)}</span>
                                         </div>
                                         <h3 className={styles.postTitle}>{post.title}</h3>
                                         <div className={styles.postFooter}>
-                                            <span>{t.by} {post.user.name || "User"}</span>
+                                            <span>{t.by} {post.user.name || t.anonymous}</span>
                                             <span className={styles.commentCount}>💬 {post._count.comments} {t.comments}</span>
                                         </div>
                                     </div>

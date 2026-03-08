@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import styles from "./ListingFilters.module.css";
 
 interface ListingFiltersProps {
@@ -29,6 +29,32 @@ const TEXT = {
         all: "All",
         maxBudget: "Max Budget",
         location: "Location",
+        under: "Under",
+        maxRate: "Max Rate",
+        categories: {
+            BRAKES: "Brakes",
+            DRIVETRAIN: "Drivetrain",
+            WHEELS: "Wheels",
+            HANDLEBARS: "Handlebars",
+            SADDLE: "Saddle",
+            FRAME: "Frame",
+            FORKS: "Forks",
+            PEDALS: "Pedals",
+            LIGHTS: "Lights",
+            ACCESSORIES: "Accessories",
+        },
+        conditions: {
+            NEW: "New",
+            LIKE_NEW: "Like New",
+            GOOD: "Good",
+            FAIR: "Fair",
+        },
+        skills: {
+            BEGINNER: "Beginner",
+            INTERMEDIATE: "Intermediate",
+            EXPERT: "Expert",
+            PROFESSIONAL: "Professional",
+        }
     },
     it: {
         searchPlaceholder: "Cerca...",
@@ -48,6 +74,32 @@ const TEXT = {
         all: "Tutte",
         maxBudget: "Budget massimo",
         location: "Città",
+        under: "Sotto",
+        maxRate: "Tariffa max",
+        categories: {
+            BRAKES: "Freni",
+            DRIVETRAIN: "Trasmissione",
+            WHEELS: "Ruote",
+            HANDLEBARS: "Manubri",
+            SADDLE: "Sella",
+            FRAME: "Telaio",
+            FORKS: "Forcelle",
+            PEDALS: "Pedali",
+            LIGHTS: "Luci",
+            ACCESSORIES: "Accessori",
+        },
+        conditions: {
+            NEW: "Nuovo",
+            LIKE_NEW: "Come nuovo",
+            GOOD: "Buono",
+            FAIR: "Discreto",
+        },
+        skills: {
+            BEGINNER: "Principiante",
+            INTERMEDIATE: "Intermedio",
+            EXPERT: "Esperto",
+            PROFESSIONAL: "Professionista",
+        }
     },
 };
 
@@ -117,10 +169,10 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
                 onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
             >
                 <option value="">{t.maxBudget}</option>
-                <option value="500">Under €500</option>
-                <option value="1000">Under €1,000</option>
-                <option value="2000">Under €2,000</option>
-                <option value="5000">Under €5,000</option>
+                <option value="500">{t.under} €500</option>
+                <option value="1000">{t.under} €1,000</option>
+                <option value="2000">{t.under} €2,000</option>
+                <option value="5000">{t.under} €5,000</option>
             </select>
         </>
     );
@@ -133,16 +185,9 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
                 onChange={(e) => handleFilterChange("category", e.target.value)}
             >
                 <option value="">{t.category}</option>
-                <option value="BRAKES">Brakes</option>
-                <option value="DRIVETRAIN">Drivetrain</option>
-                <option value="WHEELS">Wheels</option>
-                <option value="HANDLEBARS">Handlebars</option>
-                <option value="SADDLE">Saddle</option>
-                <option value="FRAME">Frame</option>
-                <option value="FORKS">Forks</option>
-                <option value="PEDALS">Pedals</option>
-                <option value="LIGHTS">Lights</option>
-                <option value="ACCESSORIES">Accessories</option>
+                {Object.entries(t.categories).map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                ))}
             </select>
             <select 
                 className="form-select" 
@@ -150,10 +195,9 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
                 onChange={(e) => handleFilterChange("condition", e.target.value)}
             >
                 <option value="">{t.condition}</option>
-                <option value="NEW">New</option>
-                <option value="LIKE_NEW">Like New</option>
-                <option value="GOOD">Good</option>
-                <option value="FAIR">Fair</option>
+                {Object.entries(t.conditions).map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                ))}
             </select>
             <select 
                 className="form-select" 
@@ -161,10 +205,10 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
                 onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
             >
                 <option value="">{t.maxBudget}</option>
-                <option value="50">Under €50</option>
-                <option value="100">Under €100</option>
-                <option value="200">Under €200</option>
-                <option value="500">Under €500</option>
+                <option value="50">{t.under} €50</option>
+                <option value="100">{t.under} €100</option>
+                <option value="200">{t.under} €200</option>
+                <option value="500">{t.under} €500</option>
             </select>
         </>
     );
@@ -177,20 +221,19 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
                 onChange={(e) => handleFilterChange("skillLevel", e.target.value)}
             >
                 <option value="">{t.skillLevel}</option>
-                <option value="BEGINNER">Beginner</option>
-                <option value="INTERMEDIATE">Intermediate</option>
-                <option value="EXPERT">Expert</option>
-                <option value="PROFESSIONAL">Professional</option>
+                {Object.entries(t.skills).map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                ))}
             </select>
             <select 
                 className="form-select" 
                 value={filters.maxRate || ""} 
                 onChange={(e) => handleFilterChange("maxRate", e.target.value)}
             >
-                <option value="">{lang === "it" ? "Tariffa max" : "Max Rate"}</option>
-                <option value="30">Under €30/hr</option>
-                <option value="50">Under €50/hr</option>
-                <option value="80">Under €80/hr</option>
+                <option value="">{t.maxRate}</option>
+                <option value="30">{t.under} €30/hr</option>
+                <option value="50">{t.under} €50/hr</option>
+                <option value="80">{t.under} €80/hr</option>
             </select>
             <input 
                 className="form-input"
@@ -221,9 +264,9 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
                 onChange={(e) => handleFilterChange("maxBudget", e.target.value)}
             >
                 <option value="">{t.maxBudget}</option>
-                <option value="500">Under €500</option>
-                <option value="1000">Under €1,000</option>
-                <option value="2000">Under €2,000</option>
+                <option value="500">{t.under} €500</option>
+                <option value="1000">{t.under} €1,000</option>
+                <option value="2000">{t.under} €2,000</option>
             </select>
         </>
     );

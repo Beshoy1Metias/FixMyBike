@@ -35,11 +35,35 @@ function formatPostedAt(date: Date, lang: "en" | "it") {
     return d.toLocaleDateString(lang === "it" ? "it-IT" : undefined);
 }
 
+const UI_TEXT = {
+    en: {
+        list: "List",
+        map: "Map",
+        buyer: "Buyer",
+        anonymous: "FixMyBike buyer",
+        budget: "Budget",
+        upTo: "up to",
+        size: "Size",
+        noResults: "No wanted posts found.",
+    },
+    it: {
+        list: "Lista",
+        map: "Mappa",
+        buyer: "Acquirente",
+        anonymous: "Acquirente FixMyBike",
+        budget: "Budget",
+        upTo: "fino a",
+        size: "Taglia",
+        noResults: "Nessuna richiesta trovata.",
+    },
+};
+
 export default function WantedClient({ initialPosts, lang }: WantedClientProps) {
     const [posts, setPosts] = useState(initialPosts);
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState<any>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
+    const t = UI_TEXT[lang];
 
     const fetchPosts = async (newFilters: any) => {
         setLoading(true);
@@ -87,14 +111,14 @@ export default function WantedClient({ initialPosts, lang }: WantedClientProps) 
                         className={`btn btn-sm ${viewMode === "list" ? "btn-primary" : "btn-ghost"}`}
                         style={{ padding: "4px 12px", minHeight: "32px" }}
                     >
-                        List
+                        {t.list}
                     </button>
                     <button 
                         onClick={() => setViewMode("map")}
                         className={`btn btn-sm ${viewMode === "map" ? "btn-primary" : "btn-ghost"}`}
                         style={{ padding: "4px 12px", minHeight: "32px" }}
                     >
-                        Map
+                        {t.map}
                     </button>
                 </div>
             </div>
@@ -122,7 +146,7 @@ export default function WantedClient({ initialPosts, lang }: WantedClientProps) 
                                             <div>
                                                 <h3 className={styles.postTitle}>{post.title}</h3>
                                                 <div className={styles.postMeta}>
-                                                    <span>👤 {post.user.name || (lang === "it" ? "Utente FixMyBike" : "FixMyBike buyer")}</span>
+                                                    <span>👤 {post.user.name || t.anonymous}</span>
                                                     <span>📍 {post.location}</span>
                                                     <span>🕐 {formatPostedAt(post.createdAt, lang)}</span>
                                                 </div>
@@ -130,10 +154,9 @@ export default function WantedClient({ initialPosts, lang }: WantedClientProps) 
                                             <div className={styles.postRight}>
                                                 {post.maxBudget && (
                                                     <div className={styles.postBudget}>
-                                                        <span className={styles.budgetLabel}>{lang === "it" ? "Budget" : "Budget"}</span>
+                                                        <span className={styles.budgetLabel}>{t.budget}</span>
                                                         <span className="price-sm">
-                                                            {lang === "it" ? "fino a " : "up to "}
-                                                            €{post.maxBudget.toLocaleString()}
+                                                            {t.upTo} €{post.maxBudget.toLocaleString()}
                                                         </span>
                                                     </div>
                                                 )}
@@ -146,7 +169,7 @@ export default function WantedClient({ initialPosts, lang }: WantedClientProps) 
                                             )}
                                             {post.frameSize && (
                                                 <span className="badge badge-gray">
-                                                    {lang === "it" ? "Taglia" : "Size"} {post.frameSize}
+                                                    {t.size} {post.frameSize}
                                                 </span>
                                             )}
                                         </div>
@@ -156,7 +179,7 @@ export default function WantedClient({ initialPosts, lang }: WantedClientProps) 
                         ))
                     ) : (
                         <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "var(--space-20) 0" }}>
-                            <p className="text-muted">{lang === "it" ? "Nessuna richiesta trovata." : "No wanted posts found."}</p>
+                            <p className="text-muted">{t.noResults}</p>
                         </div>
                     )}
                 </StaggerContainer>

@@ -3,20 +3,37 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 
+const TEXT = {
+    en: {
+        errorRequired: "Name, email, and password are required.",
+        errorPassword: "Password must be at least 8 characters.",
+        errorExists: "An account with that email already exists.",
+        errorInternal: "Internal server error.",
+    },
+    it: {
+        errorRequired: "Nome, email e password sono richiesti.",
+        errorPassword: "La password deve contenere almeno 8 caratteri.",
+        errorExists: "Esiste già un account con questa email.",
+        errorInternal: "Errore interno del server.",
+    }
+} as const;
+
 export async function POST(req: NextRequest) {
     try {
+        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
+        const t = TEXT[lang];
         const { name, email, password } = await req.json();
 
         if (!email || !password || !name) {
             return NextResponse.json(
-                { error: "Name, email, and password are required." },
+                { error: t.errorRequired },
                 { status: 400 }
             );
         }
 
         if (password.length < 8) {
             return NextResponse.json(
-                { error: "Password must be at least 8 characters." },
+                { error: t.errorPassword },
                 { status: 400 }
             );
         }
@@ -24,7 +41,7 @@ export async function POST(req: NextRequest) {
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (existingUser) {
             return NextResponse.json(
-                { error: "An account with that email already exists." },
+                { error: t.errorExists },
                 { status: 409 }
             );
         }

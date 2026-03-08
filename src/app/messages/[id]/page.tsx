@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { getPusherClient } from "@/lib/pusher";
+import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
 
 interface Sender {
     id: string;
@@ -19,10 +20,40 @@ interface Message {
     sender: Sender;
 }
 
+const TEXT = {
+    en: {
+        eyebrow: "💬 Conversation",
+        chat: "Chat",
+        noMessages: "No messages yet. Say hi to start the conversation.",
+        placeholder: "Type your message…",
+        send: "Send",
+        errorLoad: "Failed to load conversation.",
+        errorSend: "Failed to send message.",
+        signInEyebrow: "💬 Conversation",
+        signInTitle: "Sign in to view this conversation",
+        signInLead: "You need to be logged in to read and send messages.",
+    },
+    it: {
+        eyebrow: "💬 Conversazione",
+        chat: "Chat",
+        noMessages: "Ancora nessun messaggio. Saluta per iniziare la conversazione!",
+        placeholder: "Scrivi un messaggio…",
+        send: "Invia",
+        errorLoad: "Impossibile caricare la conversazione.",
+        errorSend: "Impossibile inviare il messaggio.",
+        signInEyebrow: "💬 Conversazione",
+        signInTitle: "Accedi per vedere questa conversazione",
+        signInLead: "Devi aver effettuato l'accesso per leggere e inviare messaggi.",
+    },
+} as const;
+
 export default function ConversationPage() {
     const params = useParams<{ id: string }>();
-    const conversationId = params.id;
+    const conversationId = params?.id;
     const { data: session, status } = useSession();
+    const { language } = useLanguage();
+    const t = TEXT[language];
+    
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -40,19 +71,19 @@ export default function ConversationPage() {
                 const res = await fetch(`/api/messages?conversationId=${conversationId}`);
                 const data = await res.json();
                 if (!res.ok) {
-                    setError(data.error || "Failed to load conversation.");
+                    setError(data.error || t.errorLoad);
                 } else {
                     setMessages(data);
                 }
             } catch (e) {
-                setError("Failed to load conversation.");
+                setError(t.errorLoad);
             } finally {
                 setLoading(false);
             }
         };
 
         void load();
-    }, [conversationId, session?.user?.id]);
+    }, [conversationId, session?.user?.id, t.errorLoad]);
 
     useEffect(() => {
         if (!conversationId || !session?.user?.id) return;
@@ -61,7 +92,11 @@ export default function ConversationPage() {
         const channel = client.subscribe(`conversation-${conversationId}`);
 
         const handler = (message: Message) => {
-            setMessages((prev) => [...prev, message]);
+            setMessages((prev) => {
+                // Prevent duplicate if we already have it (though handleSend doesn't add it)
+                if (prev.find(m => m.id === message.id)) return prev;
+                return [...prev, message];
+            });
         };
 
         channel.bind("new-message", handler);
@@ -69,7 +104,6 @@ export default function ConversationPage() {
         return () => {
             channel.unbind("new-message", handler);
             client.unsubscribe(`conversation-${conversationId}`);
-            client.disconnect();
         };
     }, [conversationId, session?.user?.id]);
 
@@ -92,13 +126,12 @@ export default function ConversationPage() {
             });
             const data = await res.json();
             if (!res.ok) {
-                setError(data.error || "Failed to send message.");
+                setError(data.error || t.errorSend);
             } else {
                 setText("");
-                // Optimistic update is handled via Pusher event; no need to push here.
             }
         } catch (e) {
-            setError("Failed to send message.");
+            setError(t.errorSend);
         } finally {
             setSending(false);
         }
@@ -119,10 +152,10 @@ export default function ConversationPage() {
             <div className="section">
                 <div className="container" style={{ maxWidth: 640 }}>
                     <div className="page-header" style={{ textAlign: "left" }}>
-                        <span className="page-header__eyebrow">💬 Conversation</span>
-                        <h1 className="text-heading-1">Sign in to view this conversation</h1>
+                        <span className="page-header__eyebrow">{t.signInEyebrow}</span>
+                        <h1 className="text-heading-1">{t.signInTitle}</h1>
                         <p className="text-body-lg">
-                            You need to be logged in to read and send messages.
+                            {t.signInLead}
                         </p>
                     </div>
                 </div>
@@ -141,9 +174,9 @@ export default function ConversationPage() {
         <div className="section">
             <div className="container" style={{ maxWidth: 760, display: "flex", flexDirection: "column", height: "70vh" }}>
                 <div className="page-header" style={{ textAlign: "left", paddingTop: "var(--space-8)", paddingBottom: "var(--space-4)" }}>
-                    <span className="page-header__eyebrow">💬 Conversation</span>
+                    <span className="page-header__eyebrow">{t.eyebrow}</span>
                     <h1 className="text-heading-2">
-                        {otherParticipant?.name || "Chat"}
+                        {otherParticipant?.name || t.chat}
                     </h1>
                 </div>
 
@@ -167,14 +200,14 @@ export default function ConversationPage() {
                     ) : messages.length === 0 ? (
                         <div style={{ textAlign: "center", marginTop: "var(--space-4)" }}>
                             <p className="text-sm text-secondary-color">
-                                No messages yet. Say hi to start the conversation.
+                                {t.noMessages}
                             </p>
                         </div>
                     ) : (
                         messages.map((message) => {
                             const isMe = message.senderId === myId;
                             const createdAt = new Date(message.createdAt);
-                            const time = createdAt.toLocaleTimeString(undefined, {
+                            const time = createdAt.toLocaleTimeString(language === "it" ? "it-IT" : "en-US", {
                                 hour: "2-digit",
                                 minute: "2-digit",
                             });
@@ -232,7 +265,7 @@ export default function ConversationPage() {
                 >
                     <input
                         className="form-input"
-                        placeholder="Type your message…"
+                        placeholder={t.placeholder}
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         disabled={sending}
@@ -242,11 +275,10 @@ export default function ConversationPage() {
                         className="btn btn-primary"
                         disabled={sending || !text.trim()}
                     >
-                        {sending ? <span className="spinner" /> : "Send"}
+                        {sending ? <span className="spinner" /> : t.send}
                     </button>
                 </form>
             </div>
         </div>
     );
 }
-

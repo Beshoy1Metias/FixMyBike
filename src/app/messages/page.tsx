@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
 
 interface ConversationUser {
     id: string;
@@ -22,11 +23,46 @@ interface Conversation {
     }[];
 }
 
+const TEXT = {
+    en: {
+        eyebrow: "💬 Inbox",
+        title: "Your Conversations",
+        lead: "Chat with buyers, sellers, and mechanics directly inside FixMyBike.",
+        signInEyebrow: "💬 Messages",
+        signInTitle: "Sign in to view your messages",
+        signInLead: "Create an account or log in to see your conversations with buyers, sellers, and mechanics.",
+        logIn: "Log In",
+        signUp: "Sign Up Free",
+        noConversations: "You don't have any conversations yet.",
+        startByContacting: "Start by contacting a seller or mechanic from a listing page.",
+        error: "Failed to load conversations.",
+        loading: "Loading...",
+        anonymous: "FixMyBike user"
+    },
+    it: {
+        eyebrow: "💬 Messaggi",
+        title: "Le tue conversazioni",
+        lead: "Chatta con acquirenti, venditori e meccanici direttamente su FixMyBike.",
+        signInEyebrow: "💬 Messaggi",
+        signInTitle: "Accedi per vedere i tuoi messaggi",
+        signInLead: "Crea un account o accedi per vedere le tue conversazioni con acquirenti, venditori e meccanici.",
+        logIn: "Accedi",
+        signUp: "Registrati gratis",
+        noConversations: "Non hai ancora nessuna conversazione.",
+        startByContacting: "Inizia contattando un venditore o un meccanico da un annuncio.",
+        error: "Errore nel caricamento delle conversazioni.",
+        loading: "Caricamento...",
+        anonymous: "Utente FixMyBike"
+    },
+} as const;
+
 export default function MessagesPage() {
     const { data: session, status } = useSession();
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { language } = useLanguage();
+    const t = TEXT[language];
 
     useEffect(() => {
         if (!session?.user?.id) return;
@@ -38,19 +74,19 @@ export default function MessagesPage() {
                 const res = await fetch("/api/conversations");
                 const data = await res.json();
                 if (!res.ok) {
-                    setError(data.error || "Failed to load conversations.");
+                    setError(data.error || t.error);
                 } else {
                     setConversations(data);
                 }
             } catch (e) {
-                setError("Failed to load conversations.");
+                setError(t.error);
             } finally {
                 setLoading(false);
             }
         };
 
         void load();
-    }, [session?.user?.id]);
+    }, [session?.user?.id, t.error]);
 
     if (status === "loading") {
         return (
@@ -67,18 +103,18 @@ export default function MessagesPage() {
             <div className="section">
                 <div className="container" style={{ maxWidth: 640 }}>
                     <div className="page-header" style={{ textAlign: "left" }}>
-                        <span className="page-header__eyebrow">💬 Messages</span>
-                        <h1 className="text-heading-1">Sign in to view your messages</h1>
+                        <span className="page-header__eyebrow">{t.signInEyebrow}</span>
+                        <h1 className="text-heading-1">{t.signInTitle}</h1>
                         <p className="text-body-lg">
-                            Create an account or log in to see your conversations with buyers, sellers, and mechanics.
+                            {t.signInLead}
                         </p>
                     </div>
                     <div style={{ display: "flex", gap: "var(--space-4)", marginTop: "var(--space-6)" }}>
                         <Link href="/auth/login" className="btn btn-primary">
-                            Log In
+                            {t.logIn}
                         </Link>
                         <Link href="/auth/register" className="btn btn-secondary">
-                            Sign Up Free
+                            {t.signUp}
                         </Link>
                     </div>
                 </div>
@@ -90,10 +126,10 @@ export default function MessagesPage() {
         <div className="section">
             <div className="container" style={{ maxWidth: 760 }}>
                 <div className="page-header" style={{ textAlign: "left", paddingTop: "var(--space-12)" }}>
-                    <span className="page-header__eyebrow">💬 Inbox</span>
-                    <h1 className="text-heading-1">Your Conversations</h1>
+                    <span className="page-header__eyebrow">{t.eyebrow}</span>
+                    <h1 className="text-heading-1">{t.title}</h1>
                     <p className="text-body-lg">
-                        Chat with buyers, sellers, and mechanics directly inside FixMyBike.
+                        {t.lead}
                     </p>
                 </div>
 
@@ -111,9 +147,9 @@ export default function MessagesPage() {
                     <div className="card">
                         <div className="card-body" style={{ textAlign: "center" }}>
                             <p className="empty-state__icon">💬</p>
-                            <p>You don&apos;t have any conversations yet.</p>
+                            <p>{t.noConversations}</p>
                             <p className="text-sm text-secondary-color">
-                                Start by contacting a seller or mechanic from a listing page.
+                                {t.startByContacting}
                             </p>
                         </div>
                     </div>
@@ -154,7 +190,7 @@ export default function MessagesPage() {
                                         </div>
                                         <div style={{ flex: 1 }}>
                                             <div className="text-body">
-                                                {other.name || "FixMyBike user"}
+                                                {other.name || t.anonymous}
                                             </div>
                                             {lastMessage && (
                                                 <div className="text-sm text-secondary-color" style={{ marginTop: 4 }}>
@@ -174,4 +210,3 @@ export default function MessagesPage() {
         </div>
     );
 }
-

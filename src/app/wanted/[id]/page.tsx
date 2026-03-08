@@ -40,14 +40,31 @@ export default async function WantedDetailPage({ params }: WantedDetailPageProps
         notFound();
     }
 
+    const t = {
+        en: {
+            eyebrow: "🔍 Wanted Bike",
+            buyer: "Buyer",
+            maxBudget: "Max Budget",
+            bikeType: "Bike Type",
+            frameSize: "Frame Size",
+            messageLead: "If you have a matching bike, message the buyer directly in app."
+        },
+        it: {
+            eyebrow: "🔍 Cerco Bici",
+            buyer: "Acquirente",
+            maxBudget: "Budget Massimo",
+            bikeType: "Tipo di Bici",
+            frameSize: "Taglia Telaio",
+            messageLead: "Se pensi di avere la bici giusta, scrivi all'acquirente direttamente in app."
+        }
+    }[lang];
+
     return (
         <div className="section">
             <div className="container" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "var(--space-8)" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
                     <div className="page-header" style={{ textAlign: "left", paddingTop: 0, paddingBottom: 0 }}>
-                        <span className="page-header__eyebrow">
-                            {lang === "it" ? "🔍 Richiesta bici" : "🔍 Wanted Bike"}
-                        </span>
+                        <span className="page-header__eyebrow">{t.eyebrow}</span>
                         <h1 className="text-heading-1">{post.title}</h1>
                         <p className="text-body-lg" style={{ maxWidth: 640 }}>
                             {post.description}
@@ -56,7 +73,7 @@ export default async function WantedDetailPage({ params }: WantedDetailPageProps
 
                     <div>
                         <h2 className="text-heading-3" style={{ marginBottom: "var(--space-3)" }}>
-                            {lang === "it" ? "Acquirente" : "Buyer"}
+                            {t.buyer}
                         </h2>
                         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
                             <div
@@ -84,18 +101,17 @@ export default async function WantedDetailPage({ params }: WantedDetailPageProps
                         <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                             {post.maxBudget && (
                                 <div className="text-sm text-secondary-color">
-                                            {lang === "it" ? "Budget massimo" : "Max Budget"}:{" "}
-                                    <strong>€{post.maxBudget.toLocaleString()}</strong>
+                                    {t.maxBudget}: <strong>€{post.maxBudget.toLocaleString()}</strong>
                                 </div>
                             )}
                             {post.bikeType && (
                                 <div className="text-sm text-secondary-color">
-                                    {lang === "it" ? "Tipo di bici" : "Bike Type"}: <strong>{post.bikeType}</strong>
+                                    {t.bikeType}: <strong>{post.bikeType}</strong>
                                 </div>
                             )}
                             {post.frameSize && (
                                 <div className="text-sm text-secondary-color">
-                                    {lang === "it" ? "Taglia" : "Frame Size"}: <strong>{post.frameSize}</strong>
+                                    {t.frameSize}: <strong>{post.frameSize}</strong>
                                 </div>
                             )}
                         </div>
@@ -104,9 +120,7 @@ export default async function WantedDetailPage({ params }: WantedDetailPageProps
                     <div className="card">
                         <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                             <div className="text-sm text-secondary-color">
-                                {lang === "it"
-                                    ? "Se pensi di avere la bici giusta, scrivi all'acquirente direttamente in app."
-                                    : "If you have a matching bike, message the buyer directly in app."}
+                                {t.messageLead}
                             </div>
                             <MessageInAppButton receiverId={post.user.id} />
                         </div>

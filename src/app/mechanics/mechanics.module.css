@@ -24,6 +24,8 @@
     text-decoration: none;
     color: inherit;
     transition: var(--transition);
+    overflow: hidden; /* Ensure nothing sticks out */
+    position: relative;
 }
 
 .mechCard:hover {
@@ -65,7 +67,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    min-width: 0;
+    min-width: 0; /* Critical for flex child to not overflow parent */
 }
 
 .mechTop {
@@ -73,12 +75,18 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: var(--space-2);
+    flex-wrap: wrap; /* Allow badges to wrap below name if needed */
 }
 
 .mechName {
     font-size: 1rem;
     font-weight: 700;
     color: var(--text-primary);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Keep name on one line or ellipsis */
+    flex: 1;
 }
 
 .mechLocation {
@@ -89,8 +97,9 @@
 
 .mechBadges {
     display: flex;
+    flex-wrap: wrap; /* Allow multiple badges to wrap */
     gap: var(--space-1);
-    flex-shrink: 0;
+    justify-content: flex-end;
 }
 
 .mechBio {
@@ -107,6 +116,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-1);
+    width: 100%;
 }
 
 .mechFooter {
@@ -114,6 +124,8 @@
     justify-content: space-between;
     align-items: center;
     margin-top: var(--space-1);
+    flex-wrap: wrap;
+    gap: var(--space-2);
 }
 
 .mechRating {
@@ -151,6 +163,15 @@
     .mechTop {
         flex-direction: column;
         align-items: center;
+        width: 100%;
+    }
+
+    .mechBadges {
+        justify-content: center;
+    }
+
+    .mechSkills {
+        justify-content: center;
     }
 
     .mechFooter {

@@ -53,14 +53,49 @@ export default async function PartDetailPage({ params }: PartDetailPageProps) {
     }
 
     const primaryPhoto = part.photos[0]?.url ?? null;
-    const isSeller = session?.user?.email === part.user.email;
+    const isSeller = session?.user?.id === part.user.id;
+
+    const t = {
+        en: {
+            eyebrow: "⚙️ Part Listing",
+            seller: "Seller",
+            isSeller: "You are the seller of this item.",
+            loginToMessage: "Please login to message the seller.",
+            condition: "Condition",
+            category: "Category",
+            brand: "Brand",
+            conditionLabels: {
+                NEW: "New",
+                LIKE_NEW: "Like New",
+                GOOD: "Good",
+                FAIR: "Fair",
+                POOR: "Needs repair"
+            }
+        },
+        it: {
+            eyebrow: "⚙️ Annuncio Ricambio",
+            seller: "Venditore",
+            isSeller: "Sei tu il venditore di questo articolo.",
+            loginToMessage: "Accedi per messaggiare il venditore.",
+            condition: "Condizione",
+            category: "Categoria",
+            brand: "Marca",
+            conditionLabels: {
+                NEW: "Nuovo",
+                LIKE_NEW: "Come nuovo",
+                GOOD: "Buono",
+                FAIR: "Discreto",
+                POOR: "Da sistemare"
+            }
+        }
+    }[lang];
 
     return (
         <div className="section">
             <div className="container" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "var(--space-8)" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
                     <div className="page-header" style={{ textAlign: "left", paddingTop: 0, paddingBottom: 0 }}>
-                        <span className="page-header__eyebrow">⚙️ Part Listing</span>
+                        <span className="page-header__eyebrow">{t.eyebrow}</span>
                         <h1 className="text-heading-1">{part.title}</h1>
                         <p className="text-body-lg" style={{ maxWidth: 640 }}>
                             {part.description}
@@ -111,7 +146,7 @@ export default async function PartDetailPage({ params }: PartDetailPageProps) {
 
                     <div>
                         <h2 className="text-heading-3" style={{ marginBottom: "var(--space-3)" }}>
-                            {lang === "it" ? "Venditore" : "Seller"}
+                            {t.seller}
                         </h2>
                         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
                             <div
@@ -144,27 +179,31 @@ export default async function PartDetailPage({ params }: PartDetailPageProps) {
                             )}
                             {isSeller && (
                                 <div className="text-sm text-secondary-color text-center">
-                                    You are the seller of this item.
+                                    {t.isSeller}
                                 </div>
                             )}
 
                             {!session && (
                                 <div className="text-xs text-secondary-color text-center">
-                                    Please <a href="/auth/login" style={{ color: "var(--color-primary)" }}>login</a> to message the seller.
+                                    {lang === "it" ? (
+                                        <>Per favore <a href="/auth/login" style={{ color: "var(--color-primary)" }}>accedi</a> per messaggiare il venditore.</>
+                                    ) : (
+                                        <>Please <a href="/auth/login" style={{ color: "var(--color-primary)" }}>login</a> to message the seller.</>
+                                    )}
                                 </div>
                             )}
 
                             <hr style={{ border: 0, borderTop: "1px solid var(--border)", margin: "var(--space-2) 0" }} />
 
                             <div className="text-sm text-secondary-color">
-                                Condition: <strong>{part.condition}</strong>
+                                {t.condition}: <strong>{t.conditionLabels[part.condition as keyof typeof t.conditionLabels] || part.condition}</strong>
                             </div>
                             <div className="text-sm text-secondary-color">
-                                Category: <strong>{part.category}</strong>
+                                {t.category}: <strong>{part.category}</strong>
                             </div>
                             {part.brand && (
                                 <div className="text-sm text-secondary-color">
-                                    Brand: <strong>{part.brand}</strong>
+                                    {t.brand}: <strong>{part.brand}</strong>
                                 </div>
                             )}
                         </div>

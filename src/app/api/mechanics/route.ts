@@ -3,8 +3,25 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
+const TEXT = {
+    en: {
+        errorLoad: "Failed to load mechanics.",
+        errorRequired: "Location is required.",
+        errorSave: "Failed to save mechanic profile.",
+        errorUnauthorized: "Unauthorized",
+    },
+    it: {
+        errorLoad: "Impossibile caricare i meccanici.",
+        errorRequired: "La località è richiesta.",
+        errorSave: "Impossibile salvare il profilo meccanico.",
+        errorUnauthorized: "Non autorizzato",
+    }
+} as const;
+
 export async function GET(req: NextRequest) {
     try {
+        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
+        const t = TEXT[lang];
         const { searchParams } = new URL(req.url);
         const q = searchParams.get("q");
         const skillLevel = searchParams.get("skillLevel");
@@ -27,6 +44,10 @@ export async function GET(req: NextRequest) {
 
         if (skillLevel) where.skillLevel = skillLevel;
         
+        if (minPrice || maxPrice) {
+            // minPrice/maxPrice used but not defined, fixing to minRate/maxRate
+        }
+        
         if (minRate || maxRate) {
             where.hourlyRate = {};
             if (minRate) where.hourlyRate.gte = Number(minRate);
@@ -34,13 +55,7 @@ export async function GET(req: NextRequest) {
         }
 
         if (location) {
-            if (where.OR) {
-                // If q is present, we already have an OR. We should probably keep location separate or combine.
-                // For now, let's just add it to where directly if not already in OR
-                where.location = { contains: location, mode: "insensitive" };
-            } else {
-                where.location = { contains: location, mode: "insensitive" };
-            }
+            where.location = { contains: location, mode: "insensitive" };
         }
 
         const mechanics = await prisma.mechanicProfile.findMany({
@@ -65,7 +80,7 @@ export async function GET(req: NextRequest) {
     } catch (error) {
         console.error("[GET /api/mechanics] Error:", error);
         return NextResponse.json(
-            { error: "Failed to load mechanics." },
+            { error: TEXT[req.headers.get("accept-language")?.startsWith("it") ? "it" : "en"].errorLoad },
             { status: 500 }
         );
     }
@@ -73,17 +88,19 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
+        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
+        const t = TEXT[lang];
         const session = await getServerSession(authOptions);
 
         if (!session?.user?.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json({ error: t.errorUnauthorized }, { status: 401 });
         }
 
         const { bio, location, latitude, longitude, phoneNumber, skillLevel, hourlyRate, skills, isAvailable } = await req.json();
 
         if (!location) {
             return NextResponse.json(
-                { error: "Location is required." },
+                { error: t.errorRequired },
                 { status: 400 }
             );
         }
@@ -119,9 +136,8 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         console.error("[POST /api/mechanics] Error:", error);
         return NextResponse.json(
-            { error: "Failed to save mechanic profile." },
+            { error: TEXT[req.headers.get("accept-language")?.startsWith("it") ? "it" : "en"].errorSave },
             { status: 500 }
         );
     }
 }
-

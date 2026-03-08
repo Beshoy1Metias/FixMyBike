@@ -3,8 +3,25 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
+const TEXT = {
+    en: {
+        errorLoad: "Failed to load bikes.",
+        errorRequired: "Title, description, price, condition, brand, bike type, frame size, and location are required.",
+        errorCreate: "Failed to create listing.",
+        errorUnauthorized: "Unauthorized",
+    },
+    it: {
+        errorLoad: "Impossibile caricare le bici.",
+        errorRequired: "Titolo, descrizione, prezzo, condizione, marca, tipo di bici, taglia e località sono richiesti.",
+        errorCreate: "Impossibile creare l'annuncio.",
+        errorUnauthorized: "Non autorizzato",
+    }
+} as const;
+
 export async function GET(req: NextRequest) {
     try {
+        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
+        const t = TEXT[lang];
         const { searchParams } = new URL(req.url);
         const q = searchParams.get("q");
         const minPrice = searchParams.get("minPrice");
@@ -73,10 +90,12 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
+        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
+        const t = TEXT[lang];
         const session = await getServerSession(authOptions);
 
         if (!session?.user?.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json({ error: t.errorUnauthorized }, { status: 401 });
         }
 
         const {
@@ -99,7 +118,7 @@ export async function POST(req: NextRequest) {
 
         if (!title || !description || !price || !condition || !brand || !bikeType || !frameSize || !location) {
             return NextResponse.json(
-                { error: "Title, description, price, condition, brand, bike type, frame size, and location are required." },
+                { error: t.errorRequired },
                 { status: 400 }
             );
         }
@@ -144,4 +163,3 @@ export async function POST(req: NextRequest) {
         );
     }
 }
-

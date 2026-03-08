@@ -11,6 +11,7 @@ const TEXT = {
         storyBody: "We believe that a strong cycling community needs a dedicated space. By focusing on local connections in Padova, we reduce shipping costs, support local businesses, and get more bikes back on the road.",
         joinTitle: "Join the Community",
         joinBody: "Sign up today to start listing your parts, offering your skills, or finding your next dream bike.",
+        cta: "Get Started",
     },
     it: {
         title: "Su FixMyBike",
@@ -21,6 +22,7 @@ const TEXT = {
         storyBody: "Crediamo che una forte community ciclistica abbia bisogno di uno spazio dedicato. Focalizzandoci sulle connessioni locali a Padova, riduciamo i costi di spedizione, sosteniamo le attività locali e riportiamo più bici in strada.",
         joinTitle: "Unisciti alla Community",
         joinBody: "Registrati oggi per iniziare a pubblicare i tuoi ricambi, offrire le tue competenze o trovare la tua prossima bici dei sogni.",
+        cta: "Inizia Ora",
     }
 };
 
@@ -51,7 +53,7 @@ export default async function AboutPage() {
                         <div className="card-body" style={{ textAlign: "center", padding: "var(--space-8)" }}>
                             <h2 className="text-heading-2" style={{ marginBottom: "var(--space-2)" }}>{t.joinTitle}</h2>
                             <p className="text-body" style={{ marginBottom: "var(--space-6)" }}>{t.joinBody}</p>
-                            <a href="/auth/register" className="btn btn-primary">Get Started</a>
+                            <a href="/auth/register" className="btn btn-primary">{t.cta}</a>
                         </div>
                     </section>
                 </div>

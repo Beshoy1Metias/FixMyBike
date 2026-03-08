@@ -53,14 +53,55 @@ export default async function BikeDetailPage({ params }: BikeDetailPageProps) {
     }
 
     const primaryPhoto = bike.photos[0]?.url ?? null;
-    const isSeller = session?.user?.email === bike.user.email;
+    const isSeller = session?.user?.id === bike.user.id;
+
+    const t = {
+        en: {
+            eyebrow: "🚲 Bike Listing",
+            seller: "Seller",
+            isSeller: "You are the seller of this item.",
+            loginToMessage: "Please login to message the seller.",
+            condition: "Condition",
+            type: "Type",
+            frameSize: "Frame Size",
+            year: "Year",
+            brand: "Brand",
+            model: "Model",
+            conditionLabels: {
+                NEW: "New",
+                LIKE_NEW: "Like New",
+                GOOD: "Good",
+                FAIR: "Fair",
+                POOR: "Needs repair"
+            }
+        },
+        it: {
+            eyebrow: "🚲 Annuncio Bici",
+            seller: "Venditore",
+            isSeller: "Sei tu il venditore di questo articolo.",
+            loginToMessage: "Accedi per messaggiare il venditore.",
+            condition: "Condizione",
+            type: "Tipo",
+            frameSize: "Taglia Telaio",
+            year: "Anno",
+            brand: "Marca",
+            model: "Modello",
+            conditionLabels: {
+                NEW: "Nuova",
+                LIKE_NEW: "Come nuova",
+                GOOD: "Buona",
+                FAIR: "Discreta",
+                POOR: "Da sistemare"
+            }
+        }
+    }[lang];
 
     return (
         <div className="section">
             <div className="container" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "var(--space-8)" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
                     <div className="page-header" style={{ textAlign: "left", paddingTop: 0, paddingBottom: 0 }}>
-                        <span className="page-header__eyebrow">🚲 Bike Listing</span>
+                        <span className="page-header__eyebrow">{t.eyebrow}</span>
                         <h1 className="text-heading-1">{bike.title}</h1>
                         <p className="text-body-lg" style={{ maxWidth: 640 }}>
                             {bike.description}
@@ -111,7 +152,7 @@ export default async function BikeDetailPage({ params }: BikeDetailPageProps) {
 
                     <div>
                         <h2 className="text-heading-3" style={{ marginBottom: "var(--space-3)" }}>
-                            {lang === "it" ? "Venditore" : "Seller"}
+                            {t.seller}
                         </h2>
                         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
                             <div
@@ -145,40 +186,44 @@ export default async function BikeDetailPage({ params }: BikeDetailPageProps) {
                             
                             {isSeller && (
                                 <div className="text-sm text-secondary-color text-center">
-                                    You are the seller of this item.
+                                    {t.isSeller}
                                 </div>
                             )}
 
                             {!session && (
                                 <div className="text-xs text-secondary-color text-center">
-                                    Please <a href="/auth/login" style={{ color: "var(--color-primary)" }}>login</a> to message the seller.
+                                    {lang === "it" ? (
+                                        <>Per favore <a href="/auth/login" style={{ color: "var(--color-primary)" }}>accedi</a> per messaggiare il venditore.</>
+                                    ) : (
+                                        <>Please <a href="/auth/login" style={{ color: "var(--color-primary)" }}>login</a> to message the seller.</>
+                                    )}
                                 </div>
                             )}
 
                             <hr style={{ border: 0, borderTop: "1px solid var(--border)", margin: "var(--space-2) 0" }} />
 
                             <div className="text-sm text-secondary-color">
-                                Condition: <strong>{bike.condition}</strong>
+                                {t.condition}: <strong>{t.conditionLabels[bike.condition as keyof typeof t.conditionLabels] || bike.condition}</strong>
                             </div>
                             <div className="text-sm text-secondary-color">
-                                Type: <strong>{bike.bikeType}</strong>
+                                {t.type}: <strong>{bike.bikeType}</strong>
                             </div>
                             <div className="text-sm text-secondary-color">
-                                Frame Size: <strong>{bike.frameSize}</strong>
+                                {t.frameSize}: <strong>{bike.frameSize}</strong>
                             </div>
                             {bike.year && (
                                 <div className="text-sm text-secondary-color">
-                                    Year: <strong>{bike.year}</strong>
+                                    {t.year}: <strong>{bike.year}</strong>
                                 </div>
                             )}
                             {bike.brand && (
                                 <div className="text-sm text-secondary-color">
-                                    Brand: <strong>{bike.brand}</strong>
+                                    {t.brand}: <strong>{bike.brand}</strong>
                                 </div>
                             )}
                             {bike.model && (
                                 <div className="text-sm text-secondary-color">
-                                    Model: <strong>{bike.model}</strong>
+                                    {t.model}: <strong>{bike.model}</strong>
                                 </div>
                             )}
                         </div>
