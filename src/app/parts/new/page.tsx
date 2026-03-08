@@ -11,7 +11,26 @@ const LocationPicker = dynamic(() => import("@/components/Map/LocationPicker"), 
 
 const CONDITIONS = [
     { value: "NEW", label: "New" },
-...
+    { value: "LIKE_NEW", label: "Like New" },
+    { value: "GOOD", label: "Good" },
+    { value: "FAIR", label: "Fair" },
+    { value: "POOR", label: "Poor" },
+];
+
+const CATEGORIES = [
+    { value: "BRAKES", label: "Brakes" },
+    { value: "DRIVETRAIN", label: "Drivetrain" },
+    { value: "WHEELS", label: "Wheels" },
+    { value: "HANDLEBARS", label: "Handlebars" },
+    { value: "SADDLE", label: "Saddle" },
+    { value: "FRAME", label: "Frame" },
+    { value: "FORKS", label: "Forks" },
+    { value: "PEDALS", label: "Pedals" },
+    { value: "LIGHTS", label: "Lights" },
+    { value: "ACCESSORIES", label: "Accessories" },
+    { value: "OTHER", label: "Other" },
+];
+
 export default function NewPartListingPage() {
     const router = useRouter();
     const { data: session, status } = useSession();
@@ -31,7 +50,31 @@ export default function NewPartListingPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-...
+    if (status === "loading") {
+        return (
+            <div className="section">
+                <div className="container">
+                    <div className="empty-state">
+                        <span className="spinner" />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!session) {
+        return (
+            <div className="section">
+                <div className="container">
+                    <div className="empty-state">
+                        <p className="empty-state__icon">🔒</p>
+                        <p>You need an account to post a part for sale.</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
@@ -232,4 +275,3 @@ export default function NewPartListingPage() {
         </FadeIn>
     );
 }
-
