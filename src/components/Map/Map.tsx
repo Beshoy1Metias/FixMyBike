@@ -9,7 +9,8 @@ interface ListingLocation {
     title: string;
     latitude: number;
     longitude: number;
-    price?: number;
+    price?: number | string;
+    image?: string | null;
     type?: "bike" | "part" | "mechanic";
     href: string;
 }
@@ -79,10 +80,41 @@ export default function Map({ listings, center = [45.4064, 11.8768], zoom = 13, 
                             icon={defaultIcon}
                         >
                             <Popup>
-                                <div style={{ minWidth: "150px" }}>
-                                    <h3 style={{ margin: "0 0 5px 0", fontSize: "14px", fontWeight: "bold" }}>{listing.title}</h3>
-                                    {listing.price && <p style={{ margin: "0 0 5px 0", color: "#FF5C28", fontWeight: "bold" }}>£{listing.price}</p>}
-                                    <a href={listing.href} style={{ color: "#0070f3", textDecoration: "none", fontSize: "12px" }}>View Details</a>
+                                <div style={{ minWidth: "180px", maxWidth: "220px" }}>
+                                    {listing.image && (
+                                        <div style={{ width: "100%", height: "120px", marginBottom: "8px", borderRadius: "8px", overflow: "hidden" }}>
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img 
+                                                src={listing.image} 
+                                                alt={listing.title} 
+                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                            />
+                                        </div>
+                                    )}
+                                    <h3 style={{ margin: "0 0 4px 0", fontSize: "14px", fontWeight: "bold", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        {listing.title}
+                                    </h3>
+                                    {listing.price && (
+                                        <p style={{ margin: "0 0 8px 0", color: "var(--color-primary)", fontWeight: "bold", fontSize: "16px" }}>
+                                            {typeof listing.price === 'number' ? `€${listing.price.toLocaleString()}` : listing.price}
+                                        </p>
+                                    )}
+                                    <a 
+                                        href={listing.href} 
+                                        style={{ 
+                                            display: "block",
+                                            textAlign: "center",
+                                            background: "var(--color-primary)",
+                                            color: "white",
+                                            padding: "6px 0",
+                                            borderRadius: "6px",
+                                            textDecoration: "none", 
+                                            fontSize: "12px",
+                                            fontWeight: "600"
+                                        }}
+                                    >
+                                        View Details
+                                    </a>
                                 </div>
                             </Popup>
                         </Marker>

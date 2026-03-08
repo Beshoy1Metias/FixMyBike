@@ -100,6 +100,7 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
         latitude: part.latitude,
         longitude: part.longitude,
         price: part.price,
+        image: part.photos[0]?.url || null,
         type: "part" as const,
         href: `/parts/${part.id}`
     })).filter(l => l.latitude && l.longitude);

@@ -96,7 +96,8 @@ export default function WantedClient({ initialPosts, lang }: WantedClientProps) 
         title: post.title,
         latitude: post.latitude,
         longitude: post.longitude,
-        price: post.maxBudget,
+        price: post.maxBudget ? `${t.upTo} €${post.maxBudget.toLocaleString()}` : undefined,
+        image: post.user.image || null,
         type: "bike" as const, // Close enough for map display
         href: `/wanted/${post.id}`
     })).filter(l => l.latitude && l.longitude);

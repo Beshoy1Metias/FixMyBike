@@ -81,7 +81,8 @@ export default function MechanicsClient({ initialMechanics, lang }: MechanicsCli
         title: m.user.name || t.mechanic,
         latitude: m.latitude,
         longitude: m.longitude,
-        price: m.hourlyRate,
+        price: m.hourlyRate ? `${m.hourlyRate}${t.perHour}` : undefined,
+        image: m.user.image || null,
         type: "mechanic" as const,
         href: `/mechanics/${m.id}`
     })).filter(l => l.latitude && l.longitude);

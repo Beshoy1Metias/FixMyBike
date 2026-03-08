@@ -127,6 +127,7 @@ export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
         latitude: bike.latitude,
         longitude: bike.longitude,
         price: bike.price,
+        image: bike.photos[0]?.url || null,
         type: "bike" as const,
         href: `/bikes/${bike.id}`
     })).filter(l => l.latitude && l.longitude);
