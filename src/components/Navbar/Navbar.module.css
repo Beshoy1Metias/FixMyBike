@@ -22,24 +22,20 @@
 .logo {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
     flex-shrink: 0;
     text-decoration: none;
 }
 
-.logoIcon {
-    font-size: 1.4rem;
+.logoContainer {
+    display: flex;
+    align-items: center;
+    height: 32px;
 }
 
-.logoText {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: -0.02em;
-}
-
-.logoBold {
-    color: var(--color-primary);
+.logoImg {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
 }
 
 /* --- Desktop Nav Links --- */
