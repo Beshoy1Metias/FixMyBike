@@ -189,7 +189,7 @@ export default function NewWantedPostPage() {
             <div className="container">
                 <div className="page-header" style={{ textAlign: "left" }}>
                     <span className="page-header__eyebrow">{t.eyebrow}</span>
-                    h1 className="text-heading-1">{t.title}</h1>
+                    <h1 className="text-heading-1">{t.title}</h1>
                     <p className="text-body-lg" style={{ maxWidth: 560 }}>
                         {t.lead}
                     </p>
