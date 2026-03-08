@@ -20,6 +20,53 @@ enum Role {
   ADMIN
 }
 
+// ============================================================
+// COMMUNITY & FEEDBACK
+// ============================================================
+
+model ForumPost {
+  id        String         @id @default(cuid())
+  userId    String
+  title     String
+  content   String         @db.Text
+  category  String?        // e.g. "GENERAL", "APP_FEEDBACK", "BIKE_TALK"
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments ForumComment[]
+
+  @@map("forum_posts")
+}
+
+model ForumComment {
+  id        String    @id @default(cuid())
+  postId    String
+  userId    String
+  content   String    @db.Text
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  post ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("forum_comments")
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String?
+  name      String?
+  email     String?
+  subject   String?
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("feedbacks")
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -49,6 +96,9 @@ model User {
   savedSearches           SavedSearch[]
   ordersAsBuyer           Order[]          @relation("BuyerOrders")
   ordersAsSeller          Order[]          @relation("SellerOrders")
+  forumPosts              ForumPost[]
+  forumComments           ForumComment[]
+  feedbacks               Feedback[]
 
   // Real-time chat relations
   conversationsAsParticipant1 Conversation[]   @relation("Participant1")

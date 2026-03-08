@@ -42,7 +42,13 @@ export async function GET(req: NextRequest) {
             take: 50,
         });
 
-        return NextResponse.json({ posts });
+        const mappedPosts = posts.map(post => ({
+            ...post,
+            latitude: post.latitude,
+            longitude: post.longitude
+        }));
+
+        return NextResponse.json({ posts: mappedPosts });
     } catch (error) {
         console.error("[GET /api/wanted] Error:", error);
         return NextResponse.json(
@@ -60,7 +66,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { title, description, maxBudget, bikeType, frameSize, location } = await req.json();
+        const { title, description, maxBudget, bikeType, frameSize, location, latitude, longitude } = await req.json();
 
         if (!title || !description || !location) {
             return NextResponse.json(
@@ -78,6 +84,8 @@ export async function POST(req: NextRequest) {
                 bikeType: bikeType || null,
                 frameSize: frameSize || null,
                 location,
+                latitude: latitude ? Number(latitude) : null,
+                longitude: longitude ? Number(longitude) : null,
             },
         });
 

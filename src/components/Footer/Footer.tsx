@@ -7,6 +7,7 @@ const footerLinks = {
         { href: "/parts", label: "Parts & Gear" },
         { href: "/bikes", label: "Bikes for Sale" },
         { href: "/wanted", label: "Wanted Bikes" },
+        { href: "/community", label: "Community" },
     ],
     Account: [
         { href: "/auth/login", label: "Log In" },
@@ -16,7 +17,7 @@ const footerLinks = {
     ],
     Company: [
         { href: "/about", label: "About Us" },
-        { href: "/contact", label: "Contact" },
+        { href: "/contact", label: "Contact & Feedback" },
         { href: "/privacy", label: "Privacy Policy" },
         { href: "/terms", label: "Terms of Service" },
     ],

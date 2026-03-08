@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import ListingCard from "@/components/ListingCard/ListingCard";
 import ListingFilters from "@/components/ListingFilters/ListingFilters";
 import styles from "./parts.module.css";
+import FadeIn from "@/components/Animations/FadeIn";
+import StaggerContainer from "@/components/Animations/StaggerContainer";
+
+const Map = dynamic(() => import("@/components/Map/Map"), { ssr: false });
 
 interface PartsClientProps {
     initialParts: any[];
@@ -35,12 +40,13 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
     const [parts, setParts] = useState(initialParts);
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState<any>({});
+    const [viewMode, setViewMode] = useState<"list" | "map">("list");
 
-    const fetchParts = async (currentFilters: any) => {
+    const fetchParts = async (newFilters: any) => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
-            Object.entries(currentFilters).forEach(([key, value]) => {
+            Object.entries(newFilters).forEach(([key, value]) => {
                 if (value) params.append(key, String(value));
             });
 
@@ -48,9 +54,9 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
             const data = await res.json();
             if (data.parts) {
                 let sortedParts = data.parts;
-                if (currentFilters.sort === "price_asc") {
+                if (newFilters.sort === "price_asc") {
                     sortedParts.sort((a: any, b: any) => a.price - b.price);
-                } else if (currentFilters.sort === "price_desc") {
+                } else if (newFilters.sort === "price_desc") {
                     sortedParts.sort((a: any, b: any) => b.price - a.price);
                 }
                 setParts(sortedParts);
@@ -63,8 +69,9 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
     };
 
     const handleFilterChange = (newFilters: any) => {
-        setFilters(newFilters);
-        fetchParts(newFilters);
+        const updatedFilters = { ...filters, ...newFilters };
+        setFilters(updatedFilters);
+        fetchParts(updatedFilters);
     };
 
     const handlePillClick = (cat: string) => {
@@ -73,19 +80,49 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
         fetchParts(newFilters);
     };
 
+    const mapListings = parts.map(part => ({
+        id: part.id,
+        title: part.title,
+        latitude: part.latitude,
+        longitude: part.longitude,
+        price: part.price,
+        type: "part" as const,
+        href: `/parts/${part.id}`
+    })).filter(l => l.latitude && l.longitude);
+
     return (
-        <>
-            {/* Category pills */}
-            <div className={styles.categoryPills}>
-                {CATEGORIES.map((c) => (
+        <FadeIn>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-4)" }}>
+                {/* Category pills */}
+                <div className={styles.categoryPills} style={{ margin: 0 }}>
+                    {CATEGORIES.map((c) => (
+                        <button 
+                            key={c.key} 
+                            className={`${styles.pill} ${(filters.category || "") === c.key ? styles.pillActive : ""}`}
+                            onClick={() => handlePillClick(c.key)}
+                        >
+                            {c.icon} {lang === "it" ? c.labelIt : c.labelEn}
+                        </button>
+                    ))}
+                </div>
+
+                {/* View Toggle */}
+                <div style={{ display: "flex", background: "var(--surface-2)", padding: "4px", borderRadius: "8px", gap: "4px" }}>
                     <button 
-                        key={c.key} 
-                        className={`${styles.pill} ${(filters.category || "") === c.key ? styles.pillActive : ""}`}
-                        onClick={() => handlePillClick(c.key)}
+                        onClick={() => setViewMode("list")}
+                        className={`btn btn-sm ${viewMode === "list" ? "btn-primary" : "btn-ghost"}`}
+                        style={{ padding: "4px 12px", minHeight: "32px" }}
                     >
-                        {c.icon} {lang === "it" ? c.labelIt : c.labelEn}
+                        List
                     </button>
-                ))}
+                    <button 
+                        onClick={() => setViewMode("map")}
+                        className={`btn btn-sm ${viewMode === "map" ? "btn-primary" : "btn-ghost"}`}
+                        style={{ padding: "4px 12px", minHeight: "32px" }}
+                    >
+                        Map
+                    </button>
+                </div>
             </div>
 
             <ListingFilters 
@@ -95,32 +132,38 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
                 initialFilters={filters}
             />
 
-            {/* Grid */}
-            <div className={`grid-4 ${loading ? "opacity-50" : ""}`} style={{ transition: "opacity 0.2s" }}>
-                {parts.length > 0 ? (
-                    parts.map((part) => (
-                        <ListingCard
-                            key={part.id}
-                            href={`/parts/${part.id}`}
-                            image={part.photos[0]?.url ?? null}
-                            title={part.title}
-                            price={part.price}
-                            condition={CONDITION_LABELS[part.condition][lang]}
-                            location={part.location}
-                            badge={CONDITION_LABELS[part.condition][lang]}
-                            badgeVariant={part.condition === "NEW" ? "success" : part.condition === "LIKE_NEW" ? "accent" : "gray"}
-                            tags={[
-                                part.brand ?? "",
-                                part.category.charAt(0) + part.category.slice(1).toLowerCase(),
-                            ].filter(Boolean)}
-                        />
-                    ))
-                ) : (
-                    <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "var(--space-20) 0" }}>
-                        <p className="text-muted">{lang === "it" ? "Nessun ricambio trovato." : "No parts found."}</p>
-                    </div>
-                )}
-            </div>
-        </>
+            {viewMode === "list" ? (
+                <StaggerContainer className={`grid-4 ${loading ? "opacity-50" : ""}`} style={{ transition: "opacity 0.2s" }}>
+                    {parts.length > 0 ? (
+                        parts.map((part) => (
+                            <FadeIn key={part.id}>
+                                <ListingCard
+                                    href={`/parts/${part.id}`}
+                                    image={part.photos[0]?.url ?? null}
+                                    title={part.title}
+                                    price={part.price}
+                                    condition={CONDITION_LABELS[part.condition][lang]}
+                                    location={part.location}
+                                    badge={CONDITION_LABELS[part.condition][lang]}
+                                    badgeVariant={part.condition === "NEW" ? "success" : part.condition === "LIKE_NEW" ? "accent" : "gray"}
+                                    tags={[
+                                        part.brand ?? "",
+                                        part.category.charAt(0) + part.category.slice(1).toLowerCase(),
+                                    ].filter(Boolean)}
+                                />
+                            </FadeIn>
+                        ))
+                    ) : (
+                        <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "var(--space-20) 0" }}>
+                            <p className="text-muted">{lang === "it" ? "Nessun ricambio trovato." : "No parts found."}</p>
+                        </div>
+                    )}
+                </StaggerContainer>
+            ) : (
+                <FadeIn delay={0.2} style={{ height: "600px", marginTop: "var(--space-6)" }}>
+                    <Map listings={mapListings} height="600px" />
+                </FadeIn>
+            )}
+        </FadeIn>
     );
 }

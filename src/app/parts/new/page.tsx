@@ -3,30 +3,15 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
+import FadeIn from "@/components/Animations/FadeIn";
+
+const LocationPicker = dynamic(() => import("@/components/Map/LocationPicker"), { ssr: false });
 
 const CONDITIONS = [
     { value: "NEW", label: "New" },
-    { value: "LIKE_NEW", label: "Like New" },
-    { value: "GOOD", label: "Good" },
-    { value: "FAIR", label: "Fair" },
-    { value: "POOR", label: "Poor" },
-];
-
-const CATEGORIES = [
-    { value: "BRAKES", label: "Brakes" },
-    { value: "DRIVETRAIN", label: "Drivetrain" },
-    { value: "WHEELS", label: "Wheels" },
-    { value: "HANDLEBARS", label: "Handlebars" },
-    { value: "SADDLE", label: "Saddle" },
-    { value: "FRAME", label: "Frame" },
-    { value: "FORKS", label: "Forks" },
-    { value: "PEDALS", label: "Pedals" },
-    { value: "LIGHTS", label: "Lights" },
-    { value: "ACCESSORIES", label: "Accessories" },
-    { value: "OTHER", label: "Other" },
-];
-
+...
 export default function NewPartListingPage() {
     const router = useRouter();
     const { data: session, status } = useSession();
@@ -39,36 +24,14 @@ export default function NewPartListingPage() {
         category: "DRIVETRAIN",
         brand: "",
         location: "",
+        latitude: null as number | null,
+        longitude: null as number | null,
     });
     const [photoUrls, setPhotoUrls] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    if (status === "loading") {
-        return (
-            <div className="section">
-                <div className="container">
-                    <div className="empty-state">
-                        <span className="spinner" />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (!session) {
-        return (
-            <div className="section">
-                <div className="container">
-                    <div className="empty-state">
-                        <p className="empty-state__icon">🔒</p>
-                        <p>You need an account to post a part for sale.</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
+...
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
@@ -101,8 +64,25 @@ export default function NewPartListingPage() {
         }
     };
 
+    const handleLocationSelect = async (lat: number, lng: number) => {
+        setForm(prev => ({ ...prev, latitude: lat, longitude: lng }));
+        
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            const data = await res.json();
+            if (data && data.address) {
+                const city = data.address.city || data.address.town || data.address.village || "";
+                const country = data.address.country || "";
+                const locationStr = city && country ? `${city}, ${country}` : data.display_name;
+                setForm(prev => ({ ...prev, location: locationStr }));
+            }
+        } catch (error) {
+            console.error("Reverse geocoding failed:", error);
+        }
+    };
+
     return (
-        <div className="section">
+        <FadeIn className="section">
             <div className="container">
                 <div className="page-header" style={{ textAlign: "left" }}>
                     <span className="page-header__eyebrow">⚙️ Sell a Part</span>
@@ -198,7 +178,7 @@ export default function NewPartListingPage() {
 
                         <div className="form-group">
                             <label htmlFor="location" className="form-label">
-                                Location
+                                Location text
                             </label>
                             <input
                                 id="location"
@@ -208,6 +188,10 @@ export default function NewPartListingPage() {
                                 onChange={(e) => setForm({ ...form, location: e.target.value })}
                                 required
                             />
+                        </div>
+
+                        <div className="form-group">
+                            <LocationPicker onLocationSelect={handleLocationSelect} />
                         </div>
 
                         <div className="form-group">
@@ -245,7 +229,7 @@ export default function NewPartListingPage() {
                     </form>
                 </div>
             </div>
-        </div>
+        </FadeIn>
     );
 }
 

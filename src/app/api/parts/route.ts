@@ -49,7 +49,13 @@ export async function GET(req: NextRequest) {
             take: 50,
         });
 
-        return NextResponse.json({ parts });
+        const mappedParts = parts.map(part => ({
+            ...part,
+            latitude: part.latitude,
+            longitude: part.longitude
+        }));
+
+        return NextResponse.json({ parts: mappedParts });
     } catch (error) {
         console.error("[GET /api/parts] Error:", error);
         return NextResponse.json(
@@ -75,6 +81,8 @@ export async function POST(req: NextRequest) {
             category,
             brand,
             location,
+            latitude,
+            longitude,
             photoUrls,
         } = await req.json();
 
@@ -95,6 +103,8 @@ export async function POST(req: NextRequest) {
                 category,
                 brand,
                 location,
+                latitude: latitude ? Number(latitude) : null,
+                longitude: longitude ? Number(longitude) : null,
                 photos: photoUrls && Array.isArray(photoUrls)
                     ? {
                           create: photoUrls.map((url: string, index: number) => ({
