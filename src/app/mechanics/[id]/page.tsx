@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import prisma from "@/lib/prisma";
-import ContactSellerForm from "@/components/ContactSellerForm/ContactSellerForm";
 import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
 import { getCurrentLanguage } from "@/lib/language";
 
@@ -139,13 +138,6 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
                     </div>
 
                     <div className="card">
-                        <ContactSellerForm
-                            toUserId={mech.user.id}
-                            listing={{ type: "mechanic", profileId: mech.id }}
-                        />
-                    </div>
-
-                    <div className="card">
                         <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                             <div className="text-sm text-secondary-color">
                                 {lang === "it"
@@ -160,4 +152,3 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
         </div>
     );
 }
-

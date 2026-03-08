@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import prisma from "@/lib/prisma";
-import ContactSellerForm from "@/components/ContactSellerForm/ContactSellerForm";
 import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
 import { getCurrentLanguage } from "@/lib/language";
 
@@ -103,13 +102,6 @@ export default async function WantedDetailPage({ params }: WantedDetailPageProps
                     </div>
 
                     <div className="card">
-                        <ContactSellerForm
-                            toUserId={post.user.id}
-                            listing={{ type: "wanted", wantedPostId: post.id }}
-                        />
-                    </div>
-
-                    <div className="card">
                         <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                             <div className="text-sm text-secondary-color">
                                 {lang === "it"
@@ -124,4 +116,3 @@ export default async function WantedDetailPage({ params }: WantedDetailPageProps
         </div>
     );
 }
-

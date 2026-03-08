@@ -3,9 +3,7 @@ import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import ContactSellerForm from "@/components/ContactSellerForm/ContactSellerForm";
 import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
-import BuyNowButton from "@/components/BuyNowButton/BuyNowButton";
 import { getCurrentLanguage } from "@/lib/language";
 
 interface BikeDetailPageProps {
@@ -64,9 +62,6 @@ export default async function BikeDetailPage({ params }: BikeDetailPageProps) {
                     <div className="page-header" style={{ textAlign: "left", paddingTop: 0, paddingBottom: 0 }}>
                         <span className="page-header__eyebrow">🚲 Bike Listing</span>
                         <h1 className="text-heading-1">{bike.title}</h1>
-                        {bike.isSold && (
-                            <span className="badge badge-secondary" style={{ marginBottom: "var(--space-2)" }}>SOLD</span>
-                        )}
                         <p className="text-body-lg" style={{ maxWidth: 640 }}>
                             {bike.description}
                         </p>
@@ -142,26 +137,21 @@ export default async function BikeDetailPage({ params }: BikeDetailPageProps) {
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                     <div className="card">
                         <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-                            <div className="price">€{bike.price.toLocaleString()}</div>
+                            <div className="price" style={{ marginBottom: "var(--space-2)" }}>€{bike.price.toLocaleString()}</div>
                             
                             {!isSeller && (
-                                <BuyNowButton 
-                                    listingId={bike.id} 
-                                    listingType="bike" 
-                                    price={bike.price} 
-                                    isSold={bike.isSold} 
-                                    disabled={!session}
-                                />
+                                <MessageInAppButton receiverId={bike.user.id} />
                             )}
+                            
                             {isSeller && (
                                 <div className="text-sm text-secondary-color text-center">
                                     You are the seller of this item.
                                 </div>
                             )}
 
-                            {!session && !bike.isSold && (
+                            {!session && (
                                 <div className="text-xs text-secondary-color text-center">
-                                    Please <a href="/auth/login" style={{ color: "var(--color-primary)" }}>login</a> to buy.
+                                    Please <a href="/auth/login" style={{ color: "var(--color-primary)" }}>login</a> to message the seller.
                                 </div>
                             )}
 
@@ -193,28 +183,6 @@ export default async function BikeDetailPage({ params }: BikeDetailPageProps) {
                             )}
                         </div>
                     </div>
-
-                    {!isSeller && (
-                    <div className="card">
-                        <ContactSellerForm
-                            toUserId={bike.user.id}
-                            listing={{ type: "bike", listingId: bike.id }}
-                        />
-                    </div>
-                    )}
-
-                    {!isSeller && (
-                    <div className="card">
-                        <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-                            <div className="text-sm text-secondary-color">
-                                {lang === "it"
-                                    ? "Preferisci scrivere direttamente su FixMyBike?"
-                                    : "Prefer to chat directly on FixMyBike?"}
-                            </div>
-                            <MessageInAppButton receiverId={bike.user.id} />
-                        </div>
-                    </div>
-                    )}
                 </div>
             </div>
         </div>

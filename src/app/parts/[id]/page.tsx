@@ -3,9 +3,7 @@ import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import ContactSellerForm from "@/components/ContactSellerForm/ContactSellerForm";
 import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
-import BuyNowButton from "@/components/BuyNowButton/BuyNowButton";
 import { getCurrentLanguage } from "@/lib/language";
 
 interface PartDetailPageProps {
@@ -64,9 +62,6 @@ export default async function PartDetailPage({ params }: PartDetailPageProps) {
                     <div className="page-header" style={{ textAlign: "left", paddingTop: 0, paddingBottom: 0 }}>
                         <span className="page-header__eyebrow">⚙️ Part Listing</span>
                         <h1 className="text-heading-1">{part.title}</h1>
-                        {part.isSold && (
-                            <span className="badge badge-secondary" style={{ marginBottom: "var(--space-2)" }}>SOLD</span>
-                        )}
                         <p className="text-body-lg" style={{ maxWidth: 640 }}>
                             {part.description}
                         </p>
@@ -142,16 +137,10 @@ export default async function PartDetailPage({ params }: PartDetailPageProps) {
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                     <div className="card">
                         <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-                            <div className="price">€{part.price.toLocaleString()}</div>
+                            <div className="price" style={{ marginBottom: "var(--space-2)" }}>€{part.price.toLocaleString()}</div>
                             
                             {!isSeller && (
-                                <BuyNowButton 
-                                    listingId={part.id} 
-                                    listingType="part" 
-                                    price={part.price} 
-                                    isSold={part.isSold} 
-                                    disabled={!session}
-                                />
+                                <MessageInAppButton receiverId={part.user.id} />
                             )}
                             {isSeller && (
                                 <div className="text-sm text-secondary-color text-center">
@@ -159,9 +148,9 @@ export default async function PartDetailPage({ params }: PartDetailPageProps) {
                                 </div>
                             )}
 
-                            {!session && !part.isSold && (
+                            {!session && (
                                 <div className="text-xs text-secondary-color text-center">
-                                    Please <a href="/auth/login" style={{ color: "var(--color-primary)" }}>login</a> to buy.
+                                    Please <a href="/auth/login" style={{ color: "var(--color-primary)" }}>login</a> to message the seller.
                                 </div>
                             )}
 
@@ -180,28 +169,6 @@ export default async function PartDetailPage({ params }: PartDetailPageProps) {
                             )}
                         </div>
                     </div>
-
-                    {!isSeller && (
-                    <div className="card">
-                        <ContactSellerForm
-                            toUserId={part.user.id}
-                            listing={{ type: "part", listingId: part.id }}
-                        />
-                    </div>
-                    )}
-
-                    {!isSeller && (
-                    <div className="card">
-                        <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-                            <div className="text-sm text-secondary-color">
-                                {lang === "it"
-                                    ? "Vuoi continuare la trattativa direttamente in app?"
-                                    : "Want to continue the conversation directly in app?"}
-                            </div>
-                            <MessageInAppButton receiverId={part.user.id} />
-                        </div>
-                    </div>
-                    )}
                 </div>
             </div>
         </div>
