@@ -52,8 +52,8 @@ export default function LocationPicker({ initialLat, initialLng, onLocationSelec
         });
     }, [initialLat, initialLng]);
 
-    // Default center (London) if no initial position
-    const center: [number, number] = initialLat && initialLng ? [initialLat, initialLng] : [51.505, -0.09];
+    // Default center (Padova) if no initial position
+    const center: [number, number] = initialLat && initialLng ? [initialLat, initialLng] : [45.4064, 11.8768];
 
     const handleUseCurrentLocation = () => {
         if (!L) return;

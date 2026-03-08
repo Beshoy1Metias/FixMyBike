@@ -32,7 +32,7 @@ function ChangeView({ center, zoom }: { center: [number, number], zoom: number }
     return null;
 }
 
-export default function Map({ listings, center = [51.505, -0.09], zoom = 13, className, height = "400px" }: MapProps) {
+export default function Map({ listings, center = [45.4064, 11.8768], zoom = 13, className, height = "400px" }: MapProps) {
     const [mounted, setMounted] = useState(false);
     const [defaultIcon, setDefaultIcon] = useState<any>(null);
 

@@ -1,9 +1,12 @@
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import PostClient from "./PostClient";
+import { getCurrentLanguage } from "@/lib/language";
 
 export default async function ForumPostPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
+    const lang = await getCurrentLanguage();
+    
     const post = await prisma.forumPost.findUnique({
         where: { id },
         include: {
@@ -25,5 +28,5 @@ export default async function ForumPostPage({ params }: { params: Promise<{ id: 
         notFound();
     }
 
-    return <PostClient post={post} />;
+    return <PostClient post={post} lang={lang} />;
 }
