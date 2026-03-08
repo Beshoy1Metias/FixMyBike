@@ -122,6 +122,31 @@
     box-shadow: 0 0 0 2px var(--color-primary);
 }
 
+.msgIconWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--color-primary);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 800;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid #0d0d0f; /* Match navbar bg precisely */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
 .dropdown {
     position: absolute;
     top: 100%;

@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import FadeIn from "@/components/Animations/FadeIn";
 import StaggerContainer from "@/components/Animations/StaggerContainer";
 import styles from "../community.module.css";
+import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
 
 interface PostClientProps {
     post: any;
@@ -34,9 +36,11 @@ const UI_TEXT = {
 
 export default function PostClient({ post, lang }: PostClientProps) {
     const { data: session } = useSession();
+    const router = useRouter();
     const [comments, setComments] = useState(post.comments);
     const [newComment, setNewComment] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const [messageLoading, setMessageLoading] = useState<string | null>(null);
     const t = UI_TEXT[lang];
 
     const handleSubmitComment = async (e: React.FormEvent) => {
@@ -63,6 +67,31 @@ export default function PostClient({ post, lang }: PostClientProps) {
         }
     };
 
+    const handleDirectMessage = async (userId: string) => {
+        if (!session?.user?.id) {
+            router.push("/auth/login");
+            return;
+        }
+
+        setMessageLoading(userId);
+        try {
+            const res = await fetch("/api/conversations/start", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ otherUserId: userId }),
+            });
+
+            const data = await res.json();
+            if (res.ok && data.conversationId) {
+                router.push(`/messages/${data.conversationId}`);
+            }
+        } catch (err) {
+            console.error("Failed to start DM", err);
+        } finally {
+            setMessageLoading(null);
+        }
+    };
+
     return (
         <div className="section">
             <div className="container" style={{ maxWidth: "900px" }}>
@@ -74,8 +103,11 @@ export default function PostClient({ post, lang }: PostClientProps) {
                                 <span className={styles.postDate}>{new Date(post.createdAt).toLocaleDateString(lang === "it" ? "it-IT" : "en-US")}</span>
                             </div>
                             <h1 className="text-heading-1" style={{ margin: "var(--space-2) 0" }}>{post.title}</h1>
-                            <div className={styles.postFooter} style={{ borderBottom: "1px solid var(--border)", paddingBottom: "var(--space-4)", marginBottom: "var(--space-4)" }}>
+                            <div className={styles.postFooter} style={{ borderBottom: "1px solid var(--border)", paddingBottom: "var(--space-4)", marginBottom: "var(--space-4)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <span>{t.postedBy} <strong>{post.user.name || "User"}</strong></span>
+                                {session?.user?.id !== post.user.id && (
+                                    <MessageInAppButton receiverId={post.user.id} />
+                                )}
                             </div>
                             <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
                                 {post.content}
@@ -116,15 +148,27 @@ export default function PostClient({ post, lang }: PostClientProps) {
                             comments.map((comment: any) => (
                                 <FadeIn key={comment.id} className={styles.commentCard} style={{ 
                                     padding: "var(--space-4)", 
-                                    borderLeft: "3px solid var(--color-primary)",
                                     background: "var(--surface)",
-                                    borderRadius: "0 var(--radius) var(--radius) 0",
+                                    borderRadius: "var(--radius)",
                                     marginBottom: "var(--space-3)",
                                     border: "1px solid var(--border)",
-                                    borderLeftWidth: "4px"
+                                    borderLeft: "4px solid var(--color-primary)"
                                 }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "var(--space-1)" }}>
-                                        <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>{comment.user.name || "User"}</span>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+                                            <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>{comment.user.name || "User"}</span>
+                                            {session?.user?.id !== comment.user.id && (
+                                                <button 
+                                                    className="btn btn-ghost btn-xs" 
+                                                    onClick={() => handleDirectMessage(comment.user.id)}
+                                                    disabled={messageLoading === comment.user.id}
+                                                    title="Send Direct Message"
+                                                    style={{ padding: "2px 6px", fontSize: "0.7rem", minHeight: "24px" }}
+                                                >
+                                                    {messageLoading === comment.user.id ? "..." : "💬"}
+                                                </button>
+                                            )}
+                                        </div>
                                         <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
                                             {new Date(comment.createdAt).toLocaleDateString(lang === "it" ? "it-IT" : "en-US")}
                                         </span>

@@ -30,6 +30,16 @@ export async function GET(req: NextRequest) {
             include: { sender: { select: { id: true, name: true, image: true } } }
         });
 
+        // Mark messages from other user as read
+        await prisma.message.updateMany({
+            where: {
+                conversationId,
+                senderId: { not: session.user.id },
+                isRead: false
+            },
+            data: { isRead: true }
+        });
+
         return NextResponse.json(messages);
     } catch (error) {
         console.error("[GET /api/messages]", error);
@@ -90,8 +100,23 @@ export async function POST(req: NextRequest) {
             data: { updatedAt: new Date() }
         });
 
-        // Trigger pusher event
+        // Trigger pusher event for specific conversation
         await pusherServer.trigger(`conversation-${convId}`, "new-message", newMessage);
+
+        // Global notification for the receiver
+        const conversation = await prisma.conversation.findUnique({
+            where: { id: convId }
+        });
+        const otherUserId = conversation?.participant1Id === session.user.id ? conversation?.participant2Id : conversation?.participant1Id;
+        
+        if (otherUserId) {
+            await pusherServer.trigger(`user-${otherUserId}`, "new-notification", {
+                type: "MESSAGE",
+                text: newMessage.text,
+                senderName: newMessage.sender.name || "User",
+                conversationId: convId
+            });
+        }
 
         return NextResponse.json(newMessage);
     } catch (error) {

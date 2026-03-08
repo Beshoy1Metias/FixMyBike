@@ -26,45 +26,44 @@ export async function POST(req: NextRequest) {
             },
         });
 
-        // Send email to admin(s)
-        const adminUsers = await prisma.user.findMany({
+        // Try to find an admin to send an in-app message to
+        const adminUser = await prisma.user.findFirst({
             where: { role: "ADMIN" },
-            select: { email: true }
+            select: { id: true }
         });
 
-        const adminEmails = adminUsers.map(u => u.email).filter(Boolean);
-        
-        // If no admins in DB, check env
-        if (adminEmails.length === 0 && process.env.ADMIN_EMAIL) {
-            adminEmails.push(process.env.ADMIN_EMAIL);
-        }
+        if (adminUser && session?.user?.id) {
+            // If sender is logged in, create/find conversation with admin
+            const senderId = session.user.id;
+            const receiverId = adminUser.id;
 
-        if (adminEmails.length > 0) {
-            const senderName = session?.user?.name ?? name ?? "Anonymous";
-            const senderEmail = session?.user?.email ?? email ?? "No email provided";
-            
-            const emailText = [
-                `You received new feedback on FixMyBike.`,
-                ``,
-                `From: ${senderName} <${senderEmail}>`,
-                `Subject: ${subject || "General Feedback"}`,
-                ``,
-                message,
-                ``,
-                `---`,
-                `This message was sent via the Contact the Owner form.`
-            ].join("\n");
+            if (senderId !== receiverId) {
+                let conversation = await prisma.conversation.findFirst({
+                    where: {
+                        OR: [
+                            { participant1Id: senderId, participant2Id: receiverId },
+                            { participant1Id: receiverId, participant2Id: senderId }
+                        ]
+                    }
+                });
 
-            // Send to each admin (or use one send with multiple BCC/To if lib supports it)
-            for (const toEmail of adminEmails) {
-                void sendEmail({
-                    to: toEmail,
-                    subject: `[FixMyBike Feedback] ${subject || "New Message"}`,
-                    text: emailText
+                if (!conversation) {
+                    conversation = await prisma.conversation.create({
+                        data: {
+                            participant1Id: senderId,
+                            participant2Id: receiverId
+                        }
+                    });
+                }
+
+                await prisma.message.create({
+                    data: {
+                        conversationId: conversation.id,
+                        senderId: senderId,
+                        text: `[FEEDBACK: ${subject || "General"}]\n\n${message}`
+                    }
                 });
             }
-        } else {
-            console.warn("[POST /api/feedback] No admin email found to send feedback to.");
         }
 
         return NextResponse.json({ feedback }, { status: 201 });
