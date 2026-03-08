@@ -52,7 +52,7 @@ export default function ConversationPage() {
     const conversationId = params?.id;
     const { data: session, status } = useSession();
     const { language } = useLanguage();
-    const t = TEXT[language];
+    const t = TEXT[language as keyof typeof TEXT] || TEXT.en;
     
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(true);
@@ -93,7 +93,6 @@ export default function ConversationPage() {
 
         const handler = (message: Message) => {
             setMessages((prev) => {
-                // Prevent duplicate if we already have it (though handleSend doesn't add it)
                 if (prev.find(m => m.id === message.id)) return prev;
                 return [...prev, message];
             });
@@ -172,7 +171,7 @@ export default function ConversationPage() {
 
     return (
         <div className="section">
-            <div className="container" style={{ maxWidth: 760, display: "flex", flexDirection: "column", height: "70vh" }}>
+            <div className="container" style={{ maxWidth: 760, display: "flex", flexDirection: "column", height: "75vh" }}>
                 <div className="page-header" style={{ textAlign: "left", paddingTop: "var(--space-8)", paddingBottom: "var(--space-4)" }}>
                     <span className="page-header__eyebrow">{t.eyebrow}</span>
                     <h1 className="text-heading-2">
@@ -185,12 +184,14 @@ export default function ConversationPage() {
                         flex: 1,
                         borderRadius: "var(--radius-lg)",
                         border: "1px solid var(--border)",
-                        padding: "var(--space-4)",
+                        padding: "var(--space-6)",
                         display: "flex",
                         flexDirection: "column",
-                        gap: "var(--space-3)",
+                        gap: "var(--space-2)",
                         overflowY: "auto",
-                        backgroundColor: "var(--surface-subtle)",
+                        backgroundColor: "var(--bg)", // Deeper background for contrast
+                        backgroundImage: "radial-gradient(circle at 2px 2px, var(--surface-2) 1px, transparent 0)",
+                        backgroundSize: "24px 24px"
                     }}
                 >
                     {loading ? (
@@ -204,39 +205,51 @@ export default function ConversationPage() {
                             </p>
                         </div>
                     ) : (
-                        messages.map((message) => {
+                        messages.map((message, index) => {
                             const isMe = message.senderId === myId;
+                            const prevMessage = messages[index - 1];
+                            const isSameSender = prevMessage?.senderId === message.senderId;
+                            
                             const createdAt = new Date(message.createdAt);
                             const time = createdAt.toLocaleTimeString(language === "it" ? "it-IT" : "en-US", {
                                 hour: "2-digit",
                                 minute: "2-digit",
                             });
+
                             return (
                                 <div
                                     key={message.id}
                                     style={{
                                         display: "flex",
                                         justifyContent: isMe ? "flex-end" : "flex-start",
+                                        marginTop: isSameSender ? "2px" : "12px",
                                     }}
                                 >
                                     <div
                                         style={{
-                                            maxWidth: "70%",
-                                            padding: "var(--space-2) var(--space-3)",
-                                            borderRadius: "999px",
+                                            maxWidth: "85%",
+                                            padding: "8px 14px",
+                                            borderRadius: isMe 
+                                                ? "18px 18px 4px 18px" 
+                                                : "18px 18px 18px 4px",
                                             backgroundColor: isMe
                                                 ? "var(--color-primary)"
-                                                : "var(--surface-elevated)",
-                                            color: isMe ? "white" : "inherit",
+                                                : "var(--surface-2)",
+                                            color: isMe ? "white" : "var(--text-primary)",
+                                            boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+                                            position: "relative"
                                         }}
                                     >
-                                        <div style={{ fontSize: "0.9rem" }}>{message.text}</div>
+                                        <div style={{ fontSize: "0.92rem", lineHeight: "1.4", wordBreak: "break-word" }}>
+                                            {message.text}
+                                        </div>
                                         <div
                                             style={{
-                                                fontSize: "0.7rem",
-                                                opacity: 0.75,
+                                                fontSize: "0.65rem",
+                                                opacity: 0.7,
                                                 marginTop: 4,
                                                 textAlign: "right",
+                                                fontWeight: 500
                                             }}
                                         >
                                             {time}
@@ -260,7 +273,11 @@ export default function ConversationPage() {
                     style={{
                         display: "flex",
                         gap: "var(--space-3)",
-                        marginTop: "var(--space-3)",
+                        marginTop: "var(--space-4)",
+                        background: "var(--surface)",
+                        padding: "var(--space-3)",
+                        borderRadius: "var(--radius-lg)",
+                        border: "1px solid var(--border)"
                     }}
                 >
                     <input
@@ -269,11 +286,13 @@ export default function ConversationPage() {
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         disabled={sending}
+                        style={{ border: "none", background: "transparent", minHeight: "unset", boxShadow: "none" }}
                     />
                     <button
                         type="submit"
                         className="btn btn-primary"
                         disabled={sending || !text.trim()}
+                        style={{ minHeight: "44px", borderRadius: "12px" }}
                     >
                         {sending ? <span className="spinner" /> : t.send}
                     </button>
