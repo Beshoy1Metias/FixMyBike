@@ -78,8 +78,15 @@ export default function Map({ listings, center = [45.4064, 11.8768], zoom = 13, 
                             key={listing.id} 
                             position={[listing.latitude, listing.longitude]}
                             icon={defaultIcon}
+                            eventHandlers={{
+                                mouseover: (e) => {
+                                    e.target.openPopup();
+                                },
+                                // We don't close on mouseout immediately so the user can click the "View Details" button
+                                // Leaflet popups close when another one opens or when clicking elsewhere
+                            }}
                         >
-                            <Popup>
+                            <Popup closeButton={false} autoPan={false}>
                                 <div style={{ minWidth: "180px", maxWidth: "220px" }}>
                                     {listing.image && (
                                         <div style={{ width: "100%", height: "120px", marginBottom: "8px", borderRadius: "8px", overflow: "hidden" }}>
