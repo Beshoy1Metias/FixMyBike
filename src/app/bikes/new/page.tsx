@@ -91,6 +91,7 @@ const TEXT = {
         loading: "Posting...",
         errorAuth: "You need an account to sell a bike.",
         errorGeneric: "Failed to create listing.",
+        errorLocation: "Please select a location on the map.",
     },
     it: {
         eyebrow: "🚲 Vendi una bici",
@@ -118,6 +119,7 @@ const TEXT = {
         loading: "Pubblicazione...",
         errorAuth: "Devi aver effettuato l'accesso per vendere una bici.",
         errorGeneric: "Errore nella creazione dell'annuncio.",
+        errorLocation: "Per favore seleziona una posizione sulla mappa.",
     }
 } as const;
 
@@ -125,7 +127,7 @@ export default function NewBikeListingPage() {
     const router = useRouter();
     const { data: session, status } = useSession();
     const { language } = useLanguage();
-    const t = TEXT[language];
+    const t = TEXT[language as keyof typeof TEXT] || TEXT.en;
 
     const [form, setForm] = useState({
         title: "",
@@ -146,6 +148,7 @@ export default function NewBikeListingPage() {
     const [photoUrls, setPhotoUrls] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [locationError, setLocationError] = useState(false);
 
     if (status === "loading") {
         return (
@@ -175,6 +178,14 @@ export default function NewBikeListingPage() {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
+        setLocationError(false);
+
+        if (!form.latitude || !form.longitude) {
+            setLocationError(true);
+            setError(t.errorLocation);
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -205,20 +216,28 @@ export default function NewBikeListingPage() {
         }
     };
 
-    const handleLocationSelect = async (lat: number, lng: number) => {
-        setForm(prev => ({ ...prev, latitude: lat, longitude: lng }));
+    const handleLocationSelect = async (lat: number, lng: number, address?: string) => {
+        setForm(prev => ({ 
+            ...prev, 
+            latitude: lat, 
+            longitude: lng,
+            location: address || prev.location 
+        }));
+        setLocationError(false);
         
-        try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${lat}&lon=${lng}`);
-            const data = await res.json();
-            if (data && data.address) {
-                const city = data.address.city || data.address.town || data.address.village || "";
-                const country = data.address.country || "";
-                const locationStr = city && country ? `${city}, ${country}` : data.display_name;
-                setForm(prev => ({ ...prev, location: locationStr }));
+        if (!address) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${lat}&lon=${lng}`);
+                const data = await res.json();
+                if (data && data.address) {
+                    const city = data.address.city || data.address.town || data.address.village || "";
+                    const country = data.address.country || "";
+                    const locationStr = city && country ? `${city}, ${country}` : data.display_name;
+                    setForm(prev => ({ ...prev, location: locationStr }));
+                }
+            } catch (error) {
+                console.error("Reverse geocoding failed:", error);
             }
-        } catch (error) {
-            console.error("Reverse geocoding failed:", error);
         }
     };
 
@@ -307,7 +326,7 @@ export default function NewBikeListingPage() {
                                     onChange={(e) => setForm({ ...form, bikeType: e.target.value })}
                                     required
                                 >
-                                    {BIKE_TYPES[language].map((type) => (
+                                    {BIKE_TYPES[language as keyof typeof BIKE_TYPES]?.map((type) => (
                                         <option key={type.value} value={type.value}>{type.label}</option>
                                     ))}
                                 </select>
@@ -335,7 +354,7 @@ export default function NewBikeListingPage() {
                                     onChange={(e) => setForm({ ...form, condition: e.target.value })}
                                     required
                                 >
-                                    {CONDITIONS[language].map((c) => (
+                                    {CONDITIONS[language as keyof typeof CONDITIONS]?.map((c) => (
                                         <option key={c.value} value={c.value}>{c.label}</option>
                                     ))}
                                 </select>
@@ -376,7 +395,11 @@ export default function NewBikeListingPage() {
                         </div>
                         
                         <div className="form-group">
-                            <LocationPicker onLocationSelect={handleLocationSelect} />
+                            <LocationPicker 
+                                onLocationSelect={handleLocationSelect} 
+                                required 
+                                error={locationError}
+                            />
                         </div>
 
                         <div className="form-group">

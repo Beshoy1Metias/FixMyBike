@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
 
         const { title, description, maxBudget, bikeType, frameSize, location, latitude, longitude } = await req.json();
 
-        if (!title || !description || !location) {
+        if (!title || !description || !location || !latitude || !longitude) {
             return NextResponse.json(
                 { error: t.errorRequired },
                 { status: 400 }

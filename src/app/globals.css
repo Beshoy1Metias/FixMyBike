@@ -380,6 +380,10 @@ ul {
   margin-top: var(--space-1);
 }
 
+.border-error {
+  border-color: var(--color-error) !important;
+}
+
 /* ---- Badge / Tag ---- */
 .badge {
   display: inline-flex;

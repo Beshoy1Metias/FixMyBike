@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
 
         const { bio, location, latitude, longitude, phoneNumber, skillLevel, hourlyRate, skills, isAvailable } = await req.json();
 
-        if (!location) {
+        if (!location || !latitude || !longitude) {
             return NextResponse.json(
                 { error: t.errorRequired },
                 { status: 400 }

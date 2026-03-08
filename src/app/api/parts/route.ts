@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
             photoUrls,
         } = await req.json();
 
-        if (!title || !description || !price || !condition || !category || !location) {
+        if (!title || !description || !price || !condition || !category || !location || !latitude || !longitude) {
             return NextResponse.json(
                 { error: t.errorRequired },
                 { status: 400 }

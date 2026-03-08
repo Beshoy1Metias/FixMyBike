@@ -77,6 +77,7 @@ const TEXT = {
         loading: "Posting...",
         errorAuth: "You need an account to post a part for sale.",
         errorGeneric: "Failed to create listing.",
+        errorLocation: "Please select a location on the map.",
     },
     it: {
         eyebrow: "⚙️ Vendi un ricambio",
@@ -98,6 +99,7 @@ const TEXT = {
         loading: "Pubblicazione...",
         errorAuth: "Devi aver effettuato l'accesso per vendere un ricambio.",
         errorGeneric: "Errore nella creazione dell'annuncio.",
+        errorLocation: "Per favore seleziona una posizione sulla mappa.",
     }
 } as const;
 
@@ -105,7 +107,7 @@ export default function NewPartListingPage() {
     const router = useRouter();
     const { data: session, status } = useSession();
     const { language } = useLanguage();
-    const t = TEXT[language];
+    const t = TEXT[language as keyof typeof TEXT] || TEXT.en;
 
     const [form, setForm] = useState({
         title: "",
@@ -121,14 +123,13 @@ export default function NewPartListingPage() {
     const [photoUrls, setPhotoUrls] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [locationError, setLocationError] = useState(false);
 
     if (status === "loading") {
         return (
             <div className="section">
                 <div className="container">
-                    <div className="empty-state">
-                        <span className="spinner" />
-                    </div>
+                    <div className="spinner" />
                 </div>
             </div>
         );
@@ -150,6 +151,14 @@ export default function NewPartListingPage() {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
+        setLocationError(false);
+
+        if (!form.latitude || !form.longitude) {
+            setLocationError(true);
+            setError(t.errorLocation);
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -179,20 +188,28 @@ export default function NewPartListingPage() {
         }
     };
 
-    const handleLocationSelect = async (lat: number, lng: number) => {
-        setForm(prev => ({ ...prev, latitude: lat, longitude: lng }));
+    const handleLocationSelect = async (lat: number, lng: number, address?: string) => {
+        setForm(prev => ({ 
+            ...prev, 
+            latitude: lat, 
+            longitude: lng,
+            location: address || prev.location 
+        }));
+        setLocationError(false);
         
-        try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${lat}&lon=${lng}`);
-            const data = await res.json();
-            if (data && data.address) {
-                const city = data.address.city || data.address.town || data.address.village || "";
-                const country = data.address.country || "";
-                const locationStr = city && country ? `${city}, ${country}` : data.display_name;
-                setForm(prev => ({ ...prev, location: locationStr }));
+        if (!address) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${lat}&lon=${lng}`);
+                const data = await res.json();
+                if (data && data.address) {
+                    const city = data.address.city || data.address.town || data.address.village || "";
+                    const country = data.address.country || "";
+                    const locationStr = city && country ? `${city}, ${country}` : data.display_name;
+                    setForm(prev => ({ ...prev, location: locationStr }));
+                }
+            } catch (error) {
+                console.error("Reverse geocoding failed:", error);
             }
-        } catch (error) {
-            console.error("Reverse geocoding failed:", error);
         }
     };
 
@@ -256,7 +273,7 @@ export default function NewPartListingPage() {
                                     onChange={(e) => setForm({ ...form, condition: e.target.value })}
                                     required
                                 >
-                                    {CONDITIONS[language].map((c) => (
+                                    {CONDITIONS[language as keyof typeof CONDITIONS]?.map((c) => (
                                         <option key={c.value} value={c.value}>{c.label}</option>
                                     ))}
                                 </select>
@@ -270,7 +287,7 @@ export default function NewPartListingPage() {
                                     onChange={(e) => setForm({ ...form, category: e.target.value })}
                                     required
                                 >
-                                    {CATEGORIES[language].map((c) => (
+                                    {CATEGORIES[language as keyof typeof CATEGORIES]?.map((c) => (
                                         <option key={c.value} value={c.value}>{c.label}</option>
                                     ))}
                                 </select>
@@ -290,7 +307,11 @@ export default function NewPartListingPage() {
                         </div>
 
                         <div className="form-group">
-                            <LocationPicker onLocationSelect={handleLocationSelect} />
+                            <LocationPicker 
+                                onLocationSelect={handleLocationSelect} 
+                                required 
+                                error={locationError}
+                            />
                         </div>
 
                         <div className="form-group">
