@@ -18,15 +18,15 @@
 .logo {
     display: flex;
     align-items: center;
-    height: 36px;
+    gap: var(--space-2);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
     margin-bottom: var(--space-4);
-    text-decoration: none;
 }
 
-.logoImg {
-    height: 100%;
-    width: auto;
-    object-fit: contain;
+.logo strong {
+    color: var(--color-primary);
 }
 
 .tagline {

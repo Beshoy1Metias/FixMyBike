@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import styles from "./Footer.module.css";
 import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
 
@@ -95,15 +94,10 @@ export default function Footer() {
         <footer className={styles.footer}>
             <div className={`container ${styles.inner}`}>
                 <div className={styles.brand}>
-                    <Link href="/" className={styles.logo}>
-                        <Image 
-                            src="/logo.svg" 
-                            alt="FixMyBike Padova" 
-                            width={140} 
-                            height={40} 
-                            className={styles.logoImg}
-                        />
-                    </Link>
+                    <div className={styles.logo}>
+                        <span>🔧</span>
+                        <span>Fix<strong>My</strong>Bike</span>
+                    </div>
                     <p className={styles.tagline}>
                         {t.tagline}
                     </p>
