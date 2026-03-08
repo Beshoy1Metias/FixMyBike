@@ -19,9 +19,9 @@ const TEXT = {
 } as const;
 
 export async function GET(req: NextRequest) {
+    const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
+    const t = TEXT[lang];
     try {
-        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
-        const t = TEXT[lang];
         const { searchParams } = new URL(req.url);
         const q = searchParams.get("q");
         const minPrice = searchParams.get("minPrice");
@@ -82,16 +82,16 @@ export async function GET(req: NextRequest) {
     } catch (error) {
         console.error("[GET /api/bikes] Error:", error);
         return NextResponse.json(
-            { error: "Failed to load bikes." },
+            { error: t.errorLoad },
             { status: 500 }
         );
     }
 }
 
 export async function POST(req: NextRequest) {
+    const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
+    const t = TEXT[lang];
     try {
-        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
-        const t = TEXT[lang];
         const session = await getServerSession(authOptions);
 
         if (!session?.user?.id) {
@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         console.error("[POST /api/bikes] Error:", error);
         return NextResponse.json(
-            { error: "Failed to create listing." },
+            { error: t.errorCreate },
             { status: 500 }
         );
     }

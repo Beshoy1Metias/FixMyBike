@@ -19,9 +19,9 @@ const TEXT = {
 } as const;
 
 export async function GET(req: NextRequest) {
+    const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
+    const t = TEXT[lang];
     try {
-        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
-        const t = TEXT[lang];
         const { searchParams } = new URL(req.url);
         const q = searchParams.get("q");
         const maxBudget = searchParams.get("maxBudget");
@@ -68,18 +68,17 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ posts: mappedPosts });
     } catch (error) {
         console.error("[GET /api/wanted] Error:", error);
-        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
         return NextResponse.json(
-            { error: TEXT[lang].errorLoad },
+            { error: t.errorLoad },
             { status: 500 }
         );
     }
 }
 
 export async function POST(req: NextRequest) {
+    const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
+    const t = TEXT[lang];
     try {
-        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
-        const t = TEXT[lang];
         const session = await getServerSession(authOptions);
 
         if (!session?.user?.id) {
@@ -112,9 +111,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ post }, { status: 201 });
     } catch (error) {
         console.error("[POST /api/wanted] Error:", error);
-        const lang = (req.headers.get("accept-language")?.startsWith("it") ? "it" : "en") as "en" | "it";
         return NextResponse.json(
-            { error: TEXT[lang].errorCreate },
+            { error: t.errorCreate },
             { status: 500 }
         );
     }
