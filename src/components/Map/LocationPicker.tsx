@@ -8,7 +8,8 @@ import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
 interface LocationPickerProps {
     initialLat?: number;
     initialLng?: number;
-    onLocationSelect: (lat: number, lng: number, address?: string) => void;
+    initialAddress?: string;
+    onLocationSelect: (lat: number, lng: number, address: string) => void;
     height?: string;
     required?: boolean;
     error?: boolean;
@@ -16,33 +17,44 @@ interface LocationPickerProps {
 
 const TEXT = {
     en: {
-        label: "Location (Search or click on map)",
+        label: "Location",
         useMyLocation: "📍 Use My Location",
         searchPlaceholder: "Search for a street, city...",
         searching: "Searching...",
         noResults: "No results found",
         requiredError: "Please select a location on the map",
         coords: "Selected coordinates",
-        none: "None"
+        none: "None",
+        selectedAddress: "Selected Address"
     },
     it: {
-        label: "Posizione (Cerca o clicca sulla mappa)",
+        label: "Posizione",
         useMyLocation: "📍 Usa la mia posizione",
         searchPlaceholder: "Cerca una via, città...",
         searching: "Ricerca in corso...",
         noResults: "Nessun risultato trovato",
         requiredError: "Per favore seleziona una posizione sulla mappa",
         coords: "Coordinate selezionate",
-        none: "Nessuna"
+        none: "Nessuna",
+        selectedAddress: "Indirizzo selezionato"
     }
 };
 
-function LocationMarker({ position, setPosition, onLocationSelect, icon }: any) {
+function LocationMarker({ position, setPosition, onLocationSelect, icon, language }: any) {
     const map = useMapEvents({
-        click(e) {
+        async click(e) {
             setPosition(e.latlng);
-            onLocationSelect(e.latlng.lat, e.latlng.lng);
             map.flyTo(e.latlng, map.getZoom());
+            
+            // Get address for the clicked point
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
+                const data = await res.json();
+                const address = data.display_name || `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
+                onLocationSelect(e.latlng.lat, e.latlng.lng, address);
+            } catch (err) {
+                onLocationSelect(e.latlng.lat, e.latlng.lng, `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`);
+            }
         },
     });
 
@@ -62,6 +74,7 @@ function MapController({ center }: { center: [number, number] }) {
 export default function LocationPicker({ 
     initialLat, 
     initialLng, 
+    initialAddress = "",
     onLocationSelect, 
     height = "350px",
     required = false,
@@ -75,7 +88,7 @@ export default function LocationPicker({
     const [defaultIcon, setDefaultIcon] = useState<any>(null);
     const [L, setL] = useState<any>(null);
     
-    const [searchQuery, setSearchTerm] = useState("");
+    const [searchQuery, setSearchTerm] = useState(initialAddress);
     const [suggestions, setSuggestions] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [mapCenter, setMapCenter] = useState<[number, number]>([45.4064, 11.8768]);
@@ -144,12 +157,24 @@ export default function LocationPicker({
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (pos) => {
+                async (pos) => {
                     const { latitude, longitude } = pos.coords;
                     const newPos = new L.LatLng(latitude, longitude);
                     setPosition(newPos);
                     setMapCenter([latitude, longitude]);
-                    onLocationSelect(latitude, longitude);
+                    
+                    // Get address
+                    try {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${latitude}&lon=${longitude}`);
+                        const data = await res.json();
+                        const address = data.display_name || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                        setSearchTerm(address);
+                        onLocationSelect(latitude, longitude, address);
+                    } catch (err) {
+                        const fallback = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                        setSearchTerm(fallback);
+                        onLocationSelect(latitude, longitude, fallback);
+                    }
                 },
                 (err) => {
                     console.error("Error getting location:", err);
@@ -194,13 +219,13 @@ export default function LocationPicker({
                             top: "100%", 
                             left: 0, 
                             right: 0, 
-                            background: "var(--surface-dark)", 
+                            background: "#1e1e21", /* solid background */
                             border: "1px solid var(--border)", 
                             borderRadius: "var(--radius)",
                             marginTop: "4px",
                             zIndex: 1000,
-                            boxShadow: "var(--shadow-lg)",
-                            maxHeight: "200px",
+                            boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
+                            maxHeight: "250px",
                             overflowY: "auto"
                         }}>
                             {suggestions.map((s, i) => (
@@ -211,10 +236,12 @@ export default function LocationPicker({
                                     style={{ 
                                         width: "100%", 
                                         textAlign: "left", 
-                                        padding: "10px 14px", 
+                                        padding: "12px 16px", 
                                         borderBottom: i === suggestions.length - 1 ? "none" : "1px solid var(--border)",
-                                        fontSize: "0.85rem",
-                                        color: "var(--text-secondary)"
+                                        fontSize: "0.9rem",
+                                        color: "var(--text-primary)",
+                                        backgroundColor: "transparent",
+                                        display: "block"
                                     }}
                                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--surface-2)"}
                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
@@ -255,12 +282,18 @@ export default function LocationPicker({
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                     <MapController center={mapCenter} />
-                    <LocationMarker position={position} setPosition={setPosition} onLocationSelect={onLocationSelect} icon={defaultIcon} />
+                    <LocationMarker 
+                        position={position} 
+                        setPosition={setPosition} 
+                        onLocationSelect={onLocationSelect} 
+                        icon={defaultIcon}
+                        language={language}
+                    />
                 </MapContainer>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <p className="text-xs text-muted">
-                    {t.coords}: {position ? `${position.lat.toFixed(4)}, ${position.lng.toFixed(4)}` : t.none}
+                <p className="text-xs text-muted" style={{ maxWidth: "80%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {position ? `${t.selectedAddress}: ${searchQuery}` : `${t.coords}: ${t.none}`}
                 </p>
                 {error && !position && (
                     <p style={{ color: "var(--color-error)", fontSize: "0.75rem", fontWeight: "600" }}>{t.requiredError}</p>

@@ -82,8 +82,6 @@ const TEXT = {
         labelWheel: "Wheel Size (optional)",
         placeholderWheel: 'e.g. "700c", "29"',
         labelColor: "Color (optional)",
-        labelLocation: "Location text",
-        placeholderLocation: "City, Country",
         labelDescription: "Description",
         placeholderDescription: "Describe the bike, recent service history, and anything buyers should know.",
         cancel: "Cancel",
@@ -110,8 +108,6 @@ const TEXT = {
         labelWheel: "Dimensione ruote (opzionale)",
         placeholderWheel: 'es. "700c", "29"',
         labelColor: "Colore (opzionale)",
-        labelLocation: "Località (testo)",
-        placeholderLocation: "Città, Paese",
         labelDescription: "Descrizione",
         placeholderDescription: "Descrivi la bici, la manutenzione recente e tutto ciò che un acquirente dovrebbe sapere.",
         cancel: "Annulla",
@@ -216,29 +212,14 @@ export default function NewBikeListingPage() {
         }
     };
 
-    const handleLocationSelect = async (lat: number, lng: number, address?: string) => {
+    const handleLocationSelect = (lat: number, lng: number, address: string) => {
         setForm(prev => ({ 
             ...prev, 
             latitude: lat, 
             longitude: lng,
-            location: address || prev.location 
+            location: address 
         }));
         setLocationError(false);
-        
-        if (!address) {
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${lat}&lon=${lng}`);
-                const data = await res.json();
-                if (data && data.address) {
-                    const city = data.address.city || data.address.town || data.address.village || "";
-                    const country = data.address.country || "";
-                    const locationStr = city && country ? `${city}, ${country}` : data.display_name;
-                    setForm(prev => ({ ...prev, location: locationStr }));
-                }
-            } catch (error) {
-                console.error("Reverse geocoding failed:", error);
-            }
-        }
     };
 
     return (
@@ -361,7 +342,7 @@ export default function NewBikeListingPage() {
                             </div>
                         </div>
 
-                        <div className="grid-3">
+                        <div className="grid-2">
                             <div className="form-group">
                                 <label htmlFor="wheelSize" className="form-label">{t.labelWheel}</label>
                                 <input
@@ -379,17 +360,6 @@ export default function NewBikeListingPage() {
                                     className="form-input"
                                     value={form.color}
                                     onChange={(e) => setForm({ ...form, color: e.target.value })}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="location" className="form-label">{t.labelLocation}</label>
-                                <input
-                                    id="location"
-                                    className="form-input"
-                                    placeholder={t.placeholderLocation}
-                                    value={form.location}
-                                    onChange={(e) => setForm({ ...form, location: e.target.value })}
-                                    required
                                 />
                             </div>
                         </div>

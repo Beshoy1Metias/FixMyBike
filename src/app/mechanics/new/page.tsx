@@ -29,8 +29,6 @@ const TEXT = {
         eyebrow: "🔧 Service Marketplace",
         title: "Offer Your Mechanic Skills",
         lead: "Create a mechanic profile so riders can find you, see your skills, and request work.",
-        labelLocation: "Location text",
-        placeholderLocation: "City, Country",
         labelPhone: "Phone Number (optional)",
         labelSkill: "Skill Level",
         labelRate: "Hourly Rate (€)",
@@ -52,8 +50,6 @@ const TEXT = {
         eyebrow: "🔧 Marketplace dei servizi",
         title: "Offri le tue competenze da meccanico",
         lead: "Crea un profilo meccanico così i ciclisti possono trovarti, vedere le tue abilità e richiedere lavori.",
-        labelLocation: "Località (testo)",
-        placeholderLocation: "Città, Paese",
         labelPhone: "Numero di telefono (opzionale)",
         labelSkill: "Livello di abilità",
         labelRate: "Tariffa oraria (€)",
@@ -156,29 +152,14 @@ export default function NewMechanicProfilePage() {
         }
     };
 
-    const handleLocationSelect = async (lat: number, lng: number, address?: string) => {
+    const handleLocationSelect = (lat: number, lng: number, address: string) => {
         setForm(prev => ({ 
             ...prev, 
             latitude: lat, 
             longitude: lng,
-            location: address || prev.location 
+            location: address 
         }));
         setLocationError(false);
-        
-        if (!address) {
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${lat}&lon=${lng}`);
-                const data = await res.json();
-                if (data && data.address) {
-                    const city = data.address.city || data.address.town || data.address.village || "";
-                    const country = data.address.country || "";
-                    const locationStr = city && country ? `${city}, ${country}` : data.display_name;
-                    setForm(prev => ({ ...prev, location: locationStr }));
-                }
-            } catch (error) {
-                console.error("Reverse geocoding failed:", error);
-            }
-        }
     };
 
     return (
@@ -194,27 +175,14 @@ export default function NewMechanicProfilePage() {
 
                 <div className="card">
                     <form onSubmit={handleSubmit} className="card-body" style={{ display: "grid", gap: "var(--space-6)" }}>
-                        <div className="grid-2">
-                            <div className="form-group">
-                                <label htmlFor="location" className="form-label">{t.labelLocation}</label>
-                                <input
-                                    id="location"
-                                    className="form-input"
-                                    placeholder={t.placeholderLocation}
-                                    value={form.location}
-                                    onChange={(e) => setForm({ ...form, location: e.target.value })}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="phoneNumber" className="form-label">{t.labelPhone}</label>
-                                <input
-                                    id="phoneNumber"
-                                    className="form-input"
-                                    value={form.phoneNumber}
-                                    onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
-                                />
-                            </div>
+                        <div className="form-group">
+                            <label htmlFor="phoneNumber" className="form-label">{t.labelPhone}</label>
+                            <input
+                                id="phoneNumber"
+                                className="form-input"
+                                value={form.phoneNumber}
+                                onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
+                            />
                         </div>
 
                         <div className="form-group">

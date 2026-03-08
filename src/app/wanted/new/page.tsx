@@ -63,8 +63,6 @@ const TEXT = {
         labelBudget: "Max Budget (€)",
         labelType: "Bike Type",
         labelSize: "Frame Size",
-        labelLocation: "Location text",
-        placeholderLocation: "City, Country",
         labelDescription: "Description",
         placeholderDescription: "Describe the type of bike, components, and condition you are after.",
         cancel: "Cancel",
@@ -83,8 +81,6 @@ const TEXT = {
         labelBudget: "Budget Massimo (€)",
         labelType: "Tipo di bici",
         labelSize: "Taglia telaio",
-        labelLocation: "Località (testo)",
-        placeholderLocation: "Città, Paese",
         labelDescription: "Descrizione",
         placeholderDescription: "Descrivi il tipo di bici, i componenti e le condizioni che cerchi.",
         cancel: "Annulla",
@@ -178,29 +174,14 @@ export default function NewWantedPostPage() {
         }
     };
 
-    const handleLocationSelect = async (lat: number, lng: number, address?: string) => {
+    const handleLocationSelect = (lat: number, lng: number, address: string) => {
         setForm(prev => ({ 
             ...prev, 
             latitude: lat, 
             longitude: lng,
-            location: address || prev.location 
+            location: address 
         }));
         setLocationError(false);
-        
-        if (!address) {
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${lat}&lon=${lng}`);
-                const data = await res.json();
-                if (data && data.address) {
-                    const city = data.address.city || data.address.town || data.address.village || "";
-                    const country = data.address.country || "";
-                    const locationStr = city && country ? `${city}, ${country}` : data.display_name;
-                    setForm(prev => ({ ...prev, location: locationStr }));
-                }
-            } catch (error) {
-                console.error("Reverse geocoding failed:", error);
-            }
-        }
     };
 
     return (
@@ -208,7 +189,7 @@ export default function NewWantedPostPage() {
             <div className="container">
                 <div className="page-header" style={{ textAlign: "left" }}>
                     <span className="page-header__eyebrow">{t.eyebrow}</span>
-                    <h1 className="text-heading-1">{t.title}</h1>
+                    h1 className="text-heading-1">{t.title}</h1>
                     <p className="text-body-lg" style={{ maxWidth: 560 }}>
                         {t.lead}
                     </p>
@@ -267,18 +248,6 @@ export default function NewWantedPostPage() {
                                     ))}
                                 </select>
                             </div>
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="location" className="form-label">{t.labelLocation}</label>
-                            <input
-                                id="location"
-                                className="form-input"
-                                placeholder={t.placeholderLocation}
-                                value={form.location}
-                                onChange={(e) => setForm({ ...form, location: e.target.value })}
-                                required
-                            />
                         </div>
 
                         <div className="form-group">

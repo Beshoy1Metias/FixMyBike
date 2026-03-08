@@ -68,8 +68,6 @@ const TEXT = {
         labelPrice: "Price (€)",
         labelCondition: "Condition",
         labelCategory: "Category",
-        labelLocation: "Location text",
-        placeholderLocation: "City, Country",
         labelDescription: "Description",
         placeholderDescription: "Describe the condition, usage, and any important details buyers should know.",
         cancel: "Cancel",
@@ -90,8 +88,6 @@ const TEXT = {
         labelPrice: "Prezzo (€)",
         labelCondition: "Condizione",
         labelCategory: "Categoria",
-        labelLocation: "Località (testo)",
-        placeholderLocation: "Città, Paese",
         labelDescription: "Descrizione",
         placeholderDescription: "Descrivi la condizione, l'usura e ogni dettaglio importante per l'acquirente.",
         cancel: "Annulla",
@@ -188,29 +184,14 @@ export default function NewPartListingPage() {
         }
     };
 
-    const handleLocationSelect = async (lat: number, lng: number, address?: string) => {
+    const handleLocationSelect = (lat: number, lng: number, address: string) => {
         setForm(prev => ({ 
             ...prev, 
             latitude: lat, 
             longitude: lng,
-            location: address || prev.location 
+            location: address 
         }));
         setLocationError(false);
-        
-        if (!address) {
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${lat}&lon=${lng}`);
-                const data = await res.json();
-                if (data && data.address) {
-                    const city = data.address.city || data.address.town || data.address.village || "";
-                    const country = data.address.country || "";
-                    const locationStr = city && country ? `${city}, ${country}` : data.display_name;
-                    setForm(prev => ({ ...prev, location: locationStr }));
-                }
-            } catch (error) {
-                console.error("Reverse geocoding failed:", error);
-            }
-        }
     };
 
     return (
@@ -292,18 +273,6 @@ export default function NewPartListingPage() {
                                     ))}
                                 </select>
                             </div>
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="location" className="form-label">{t.labelLocation}</label>
-                            <input
-                                id="location"
-                                className="form-input"
-                                placeholder={t.placeholderLocation}
-                                value={form.location}
-                                onChange={(e) => setForm({ ...form, location: e.target.value })}
-                                required
-                            />
                         </div>
 
                         <div className="form-group">
