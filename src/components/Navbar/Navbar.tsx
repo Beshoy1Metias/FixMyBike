@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
@@ -177,7 +178,13 @@ export default function Navbar() {
                 <div className={`container ${styles.inner}`}>
                     {/* Logo */}
                     <Link href="/" className={styles.logo}>
-                        <span className={styles.logoIcon}>🔧</span>
+                        <Image 
+                            src="/logo.png" 
+                            alt="FixMyBike Logo" 
+                            width={32} 
+                            height={32} 
+                            className={styles.logoImage}
+                        />
                         <span className={styles.logoText}>
                             Fix<span className={styles.logoBold}>My</span>Bike
                         </span>

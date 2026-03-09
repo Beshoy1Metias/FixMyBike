@@ -27,8 +27,8 @@
     text-decoration: none;
 }
 
-.logoIcon {
-    font-size: 1.4rem;
+.logoImage {
+    object-fit: contain;
 }
 
 .logoText {

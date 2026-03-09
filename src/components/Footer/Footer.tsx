@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./Footer.module.css";
 import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
 
@@ -95,7 +96,13 @@ export default function Footer() {
             <div className={`container ${styles.inner}`}>
                 <div className={styles.brand}>
                     <div className={styles.logo}>
-                        <span>🔧</span>
+                        <Image 
+                            src="/logo.png" 
+                            alt="FixMyBike Logo" 
+                            width={24} 
+                            height={24} 
+                            style={{ objectFit: "contain" }}
+                        />
                         <span>Fix<strong>My</strong>Bike</span>
                     </div>
                     <p className={styles.tagline}>

@@ -12,7 +12,7 @@ const TEXT = {
     heroTitleLine2: "Your Bike in Padova.",
     heroBody:
       "Connect with skilled local mechanics, buy and sell parts, or find the bike you've always wanted — all based right here in Padova.",
-    heroPrimaryCta: "🔧 Find a Mechanic",
+    heroPrimaryCta: "Find a Mechanic",
     heroSecondaryCta: "Post a Listing",
     categoriesTitle: "What are you looking for?",
     categoriesBody: "Everything bikes, in one marketplace.",
@@ -58,7 +58,7 @@ const TEXT = {
     heroTitleLine2: "la tua bici a Padova.",
     heroBody:
       "Metti in contatto ciclisti e meccanici locali, compra e vendi ricambi oppure trova la bici che hai sempre voluto — tutto qui, a Padova.",
-    heroPrimaryCta: "🔧 Trova un meccanico",
+    heroPrimaryCta: "Trova un meccanico",
     heroSecondaryCta: "Pubblica un annuncio",
     categoriesTitle: "Cosa stai cercando?",
     categoriesBody: "Tutto il mondo bici, in un unico marketplace.",
@@ -170,7 +170,7 @@ export default async function Home() {
           <StaggerContainer className={styles.categoryGrid} stagger={0.1}>
             <FadeIn>
               <Link href="/mechanics" className={styles.categoryCard}>
-                <div className={styles.categoryIcon}>🔧</div>
+                <div className={styles.categoryIcon}>🛠️</div>
                 <h3 className="text-heading-3">{t.catMechanicTitle}</h3>
                 <p className="text-sm text-secondary-color">
                   {t.catMechanicBody}

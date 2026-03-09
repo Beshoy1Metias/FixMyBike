@@ -38,6 +38,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "it_IT",
     siteName: "FixMyBike",
+    images: [
+      {
+        url: "/logo.png",
+        width: 800,
+        height: 800,
+        alt: "FixMyBike Logo",
+      },
+    ],
   },
 };
 
