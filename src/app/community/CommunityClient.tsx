@@ -6,8 +6,22 @@ import FadeIn from "@/components/Animations/FadeIn";
 import StaggerContainer from "@/components/Animations/StaggerContainer";
 import styles from "./community.module.css";
 
+interface ForumPost {
+    id: string;
+    title: string;
+    category: string | null;
+    createdAt: Date;
+    user: {
+        id: string;
+        name: string | null;
+    };
+    _count: {
+        comments: number;
+    };
+}
+
 interface CommunityClientProps {
-    initialPosts: any[];
+    initialPosts: ForumPost[];
     lang: "en" | "it";
 }
 
@@ -56,7 +70,7 @@ function formatTime(date: Date, lang: "en" | "it") {
 }
 
 export default function CommunityClient({ initialPosts, lang }: CommunityClientProps) {
-    const [posts, setPosts] = useState(initialPosts);
+    const [posts, setPosts] = useState<ForumPost[]>(initialPosts);
     const [category, setCategory] = useState("");
     const [loading, setLoading] = useState(false);
     const t = UI_TEXT[lang];
@@ -81,7 +95,8 @@ export default function CommunityClient({ initialPosts, lang }: CommunityClientP
         fetchPosts(cat);
     };
 
-    const getCategoryLabel = (key: string) => {
+    const getCategoryLabel = (key: string | null) => {
+        if (!key) return "";
         const found = CATEGORIES[lang].find(c => c.key === key);
         return found ? found.label : key;
     };

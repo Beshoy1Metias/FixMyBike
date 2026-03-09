@@ -1,10 +1,9 @@
-import Stripe from 'stripe';
+import Stripe from "stripe";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
-}
-
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2025-01-27' as any, // Using latest or specific version
-  typescript: true,
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2026-02-25.clover",
 });
+
+export const getStripeSession = async (sessionId: string): Promise<Stripe.Checkout.Session> => {
+    return await stripe.checkout.sessions.retrieve(sessionId);
+};

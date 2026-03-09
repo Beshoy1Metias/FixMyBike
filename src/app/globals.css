@@ -616,6 +616,7 @@ ul {
   border-radius: 50%;
   object-fit: cover;
   background: var(--surface-2);
+  flex-shrink: 0;
 }
 
 .avatar-sm {

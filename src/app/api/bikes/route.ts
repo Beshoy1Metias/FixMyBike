@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { Prisma, Condition, BikeType, FrameSize } from "@prisma/client";
 
 const TEXT = {
     en: {
@@ -32,7 +33,7 @@ export async function GET(req: NextRequest) {
         const wheelSize = searchParams.get("wheelSize");
         const location = searchParams.get("location");
 
-        const where: any = {
+        const where: Prisma.BikeListingWhereInput = {
             isSold: false,
         };
 
@@ -51,9 +52,9 @@ export async function GET(req: NextRequest) {
             if (maxPrice) where.price.lte = Number(maxPrice);
         }
 
-        if (condition) where.condition = condition;
-        if (bikeType) where.bikeType = bikeType;
-        if (frameSize) where.frameSize = frameSize;
+        if (condition) where.condition = condition as Condition;
+        if (bikeType) where.bikeType = bikeType as BikeType;
+        if (frameSize) where.frameSize = frameSize as FrameSize;
         if (wheelSize) where.wheelSize = { contains: wheelSize, mode: "insensitive" };
         if (location) where.location = { contains: location, mode: "insensitive" };
 
@@ -71,14 +72,7 @@ export async function GET(req: NextRequest) {
             take: 50,
         });
 
-        // Add proper typing for response
-        const mappedBikes = bikes.map(bike => ({
-            ...bike,
-            latitude: bike.latitude,
-            longitude: bike.longitude
-        }));
-
-        return NextResponse.json({ bikes: mappedBikes });
+        return NextResponse.json({ bikes });
     } catch (error) {
         console.error("[GET /api/bikes] Error:", error);
         return NextResponse.json(
@@ -98,22 +92,9 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: t.errorUnauthorized }, { status: 401 });
         }
 
-        const {
-            title,
-            description,
-            price,
-            condition,
-            brand,
-            model,
-            year,
-            bikeType,
-            frameSize,
-            wheelSize,
-            color,
-            location,
-            latitude,
-            longitude,
-            photoUrls,
+        const { 
+            title, description, price, condition, brand, model, 
+            bikeType, frameSize, wheelSize, location, latitude, longitude, photos 
         } = await req.json();
 
         if (!title || !description || !price || !condition || !brand || !bikeType || !frameSize || !location || !latitude || !longitude) {
@@ -129,28 +110,21 @@ export async function POST(req: NextRequest) {
                 title,
                 description,
                 price: Number(price),
-                condition,
+                condition: condition as Condition,
                 brand,
-                model,
-                year: year ? Number(year) : null,
-                bikeType,
-                frameSize,
-                wheelSize,
-                color,
+                model: model || null,
+                bikeType: bikeType as BikeType,
+                frameSize: frameSize as FrameSize,
+                wheelSize: wheelSize || null,
                 location,
-                latitude: latitude ? Number(latitude) : null,
-                longitude: longitude ? Number(longitude) : null,
-                photos: photoUrls && Array.isArray(photoUrls)
-                    ? {
-                          create: photoUrls.map((url: string, index: number) => ({
-                              url,
-                              isPrimary: index === 0,
-                          })),
-                      }
-                    : undefined,
-            },
-            include: {
-                photos: true,
+                latitude: Number(latitude),
+                longitude: Number(longitude),
+                photos: {
+                    create: photos.map((url: string, index: number) => ({
+                        url,
+                        isPrimary: index === 0,
+                    })),
+                },
             },
         });
 

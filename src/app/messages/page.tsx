@@ -78,7 +78,7 @@ export default function MessagesPage() {
                 } else {
                     setConversations(data);
                 }
-            } catch (e) {
+            } catch {
                 setError(t.error);
             } finally {
                 setLoading(false);
@@ -182,11 +182,21 @@ export default function MessagesPage() {
                                                 alignItems: "center",
                                                 justifyContent: "center",
                                                 fontWeight: 700,
-                                                background:
-                                                    "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                                background: other.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                                overflow: "hidden",
+                                                color: "white"
                                             }}
                                         >
-                                            {other.name?.charAt(0).toUpperCase() ?? "U"}
+                                            {other.image ? (
+                                                /* eslint-disable-next-line @next/next/no-img-element */
+                                                <img 
+                                                    src={other.image} 
+                                                    alt={other.name || "User"} 
+                                                    style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                                                />
+                                            ) : (
+                                                other.name?.charAt(0).toUpperCase() ?? "U"
+                                            )}
                                         </div>
                                         <div style={{ flex: 1 }}>
                                             <div className="text-body">

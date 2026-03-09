@@ -10,8 +10,23 @@ import StaggerContainer from "@/components/Animations/StaggerContainer";
 
 const Map = dynamic(() => import("@/components/Map/Map"), { ssr: false });
 
+interface Bike {
+    id: string;
+    title: string;
+    price: number;
+    condition: string;
+    location: string;
+    bikeType: string;
+    brand: string;
+    year: number | null;
+    frameSize: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    photos: { url: string }[];
+}
+
 interface BikesClientProps {
-    initialBikes: any[];
+    initialBikes: Bike[];
     lang: "en" | "it";
 }
 
@@ -76,13 +91,13 @@ const UI_TEXT = {
 };
 
 export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
-    const [bikes, setBikes] = useState(initialBikes);
+    const [bikes, setBikes] = useState<Bike[]>(initialBikes);
     const [loading, setLoading] = useState(false);
-    const [filters, setFilters] = useState<any>({});
+    const [filters, setFilters] = useState<Record<string, string | number | boolean | null>>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
     const t = UI_TEXT[lang];
 
-    const fetchBikes = async (newFilters: any) => {
+    const fetchBikes = async (newFilters: Record<string, string | number | boolean | null>) => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
@@ -94,11 +109,11 @@ export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
             const data = await res.json();
             if (data.bikes) {
                 // Client-side sorting if needed (though API should handle it)
-                let sortedBikes = data.bikes;
+                const sortedBikes = [...data.bikes];
                 if (newFilters.sort === "price_asc") {
-                    sortedBikes.sort((a: any, b: any) => a.price - b.price);
+                    sortedBikes.sort((a: Bike, b: Bike) => a.price - b.price);
                 } else if (newFilters.sort === "price_desc") {
-                    sortedBikes.sort((a: any, b: any) => b.price - a.price);
+                    sortedBikes.sort((a: Bike, b: Bike) => b.price - a.price);
                 }
                 setBikes(sortedBikes);
             }
@@ -109,7 +124,7 @@ export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
         }
     };
 
-    const handleFilterChange = (newFilters: any) => {
+    const handleFilterChange = (newFilters: Record<string, string | number | boolean | null>) => {
         const updatedFilters = { ...filters, ...newFilters };
         setFilters(updatedFilters);
         fetchBikes(updatedFilters);
@@ -121,16 +136,19 @@ export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
         fetchBikes(newFilters);
     };
 
-    const mapListings = bikes.map(bike => ({
-        id: bike.id,
-        title: bike.title,
-        latitude: bike.latitude,
-        longitude: bike.longitude,
-        price: bike.price,
-        image: bike.photos[0]?.url || null,
-        type: "bike" as const,
-        href: `/bikes/${bike.id}`
-    })).filter(l => l.latitude && l.longitude);
+    const mapListings = bikes.map(bike => {
+        if (bike.latitude === null || bike.longitude === null) return null;
+        return {
+            id: bike.id,
+            title: bike.title,
+            latitude: bike.latitude,
+            longitude: bike.longitude,
+            price: bike.price,
+            image: bike.photos[0]?.url || null,
+            type: "bike" as const,
+            href: `/bikes/${bike.id}`
+        };
+    }).filter((l): l is NonNullable<typeof l> => l !== null);
 
     return (
         <FadeIn>

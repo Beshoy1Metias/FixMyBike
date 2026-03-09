@@ -75,7 +75,7 @@ export default function ConversationPage() {
                 } else {
                     setMessages(data);
                 }
-            } catch (e) {
+            } catch {
                 setError(t.errorLoad);
             } finally {
                 setLoading(false);
@@ -129,7 +129,7 @@ export default function ConversationPage() {
             } else {
                 setText("");
             }
-        } catch (e) {
+        } catch {
             setError(t.errorSend);
         } finally {
             setSending(false);

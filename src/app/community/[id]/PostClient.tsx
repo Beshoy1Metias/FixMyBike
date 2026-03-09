@@ -8,8 +8,32 @@ import StaggerContainer from "@/components/Animations/StaggerContainer";
 import styles from "../community.module.css";
 import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
 
+interface Comment {
+    id: string;
+    content: string;
+    createdAt: Date;
+    user: {
+        id: string;
+        name: string | null;
+        image: string | null;
+    };
+}
+
+interface Post {
+    id: string;
+    title: string;
+    content: string;
+    category: string | null;
+    createdAt: Date;
+    user: {
+        id: string;
+        name: string | null;
+    };
+    comments: Comment[];
+}
+
 interface PostClientProps {
-    post: any;
+    post: Post;
     lang: "en" | "it";
 }
 
@@ -107,7 +131,8 @@ export default function PostClient({ post, lang }: PostClientProps) {
         }
     };
 
-    const getCategoryLabel = (key: string) => {
+    const getCategoryLabel = (key: string | null) => {
+        if (!key) return "";
         const catMap = CATEGORIES[lang] as Record<string, string>;
         return catMap[key] || key;
     };
@@ -165,35 +190,63 @@ export default function PostClient({ post, lang }: PostClientProps) {
 
                     <StaggerContainer className={styles.commentList}>
                         {comments.length > 0 ? (
-                            comments.map((comment: any) => (
+                            comments.map((comment: Comment) => (
                                 <FadeIn key={comment.id} className={styles.commentCard} style={{ 
                                     padding: "var(--space-4)", 
                                     background: "var(--surface)",
                                     borderRadius: "var(--radius)",
                                     marginBottom: "var(--space-3)",
                                     border: "1px solid var(--border)",
-                                    borderLeft: "4px solid var(--color-primary)"
+                                    borderLeft: "4px solid var(--color-primary)",
+                                    display: "flex",
+                                    gap: "var(--space-4)"
                                 }}>
-                                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "var(--space-1)" }}>
-                                        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-                                            <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>{comment.user.name || t.anonymous}</span>
-                                            {session?.user?.id !== comment.user.id && (
-                                                <button 
-                                                    className="btn btn-ghost btn-xs" 
-                                                    onClick={() => handleDirectMessage(comment.user.id)}
-                                                    disabled={messageLoading === comment.user.id}
-                                                    title="Send Direct Message"
-                                                    style={{ padding: "2px 6px", fontSize: "0.7rem", minHeight: "24px" }}
-                                                >
-                                                    {messageLoading === comment.user.id ? "..." : "💬"}
-                                                </button>
-                                            )}
-                                        </div>
-                                        <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
-                                            {new Date(comment.createdAt).toLocaleDateString(lang === "it" ? "it-IT" : "en-US")}
-                                        </span>
+                                    <div
+                                        className="avatar avatar-sm"
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontWeight: 700,
+                                            background: comment.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                            overflow: "hidden",
+                                            color: "white",
+                                            fontSize: "0.8rem"
+                                        }}
+                                    >
+                                        {comment.user.image ? (
+                                            /* eslint-disable-next-line @next/next/no-img-element */
+                                            <img 
+                                                src={comment.user.image} 
+                                                alt={comment.user.name || "User"} 
+                                                style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                                            />
+                                        ) : (
+                                            comment.user.name?.charAt(0).toUpperCase() ?? "U"
+                                        )}
                                     </div>
-                                    <p style={{ fontSize: "0.95rem" }}>{comment.content}</p>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "var(--space-1)" }}>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+                                                <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>{comment.user.name || t.anonymous}</span>
+                                                {session?.user?.id !== comment.user.id && (
+                                                    <button 
+                                                        className="btn btn-ghost btn-xs" 
+                                                        onClick={() => handleDirectMessage(comment.user.id)}
+                                                        disabled={messageLoading === comment.user.id}
+                                                        title="Send Direct Message"
+                                                        style={{ padding: "2px 6px", fontSize: "0.7rem", minHeight: "24px" }}
+                                                    >
+                                                        {messageLoading === comment.user.id ? "..." : "💬"}
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+                                                {new Date(comment.createdAt).toLocaleDateString(lang === "it" ? "it-IT" : "en-US")}
+                                            </span>
+                                        </div>
+                                        <p style={{ fontSize: "0.95rem" }}>{comment.content}</p>
+                                    </div>
                                 </FadeIn>
                             ))
                         ) : (

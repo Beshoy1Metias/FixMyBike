@@ -41,7 +41,7 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
         where: { id },
         include: {
             user: {
-                select: { id: true, name: true },
+                select: { id: true, name: true, image: true },
             },
         },
     });
@@ -94,10 +94,21 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
                                 justifyContent: "center",
                                 fontWeight: 700,
                                 fontSize: "1.8rem",
-                                background: "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                background: mech.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                overflow: "hidden",
+                                color: "white"
                             }}
                         >
-                            {mech.user.name?.charAt(0).toUpperCase() ?? "M"}
+                            {mech.user.image ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img 
+                                    src={mech.user.image} 
+                                    alt={mech.user.name || "User"} 
+                                    style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                                />
+                            ) : (
+                                mech.user.name?.charAt(0).toUpperCase() ?? "M"
+                            )}
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
                             <div className="text-body">{mech.user.name || "FixMyBike mechanic"}</div>

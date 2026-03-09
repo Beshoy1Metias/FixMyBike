@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { Prisma, BikeType, FrameSize } from "@prisma/client";
 
 const TEXT = {
     en: {
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
         const frameSize = searchParams.get("frameSize");
         const location = searchParams.get("location");
 
-        const where: any = {
+        const where: Prisma.WantedPostWhereInput = {
             isFulfilled: false,
         };
 
@@ -44,8 +45,8 @@ export async function GET(req: NextRequest) {
             where.maxBudget = { lte: Number(maxBudget) };
         }
 
-        if (bikeType) where.bikeType = bikeType;
-        if (frameSize) where.frameSize = frameSize;
+        if (bikeType) where.bikeType = bikeType as BikeType;
+        if (frameSize) where.frameSize = frameSize as FrameSize;
         if (location) where.location = { contains: location, mode: "insensitive" };
 
         const posts = await prisma.wantedPost.findMany({
@@ -100,8 +101,8 @@ export async function POST(req: NextRequest) {
                 title,
                 description,
                 maxBudget: maxBudget ? Number(maxBudget) : null,
-                bikeType: bikeType || null,
-                frameSize: frameSize || null,
+                bikeType: bikeType as BikeType || null,
+                frameSize: frameSize as FrameSize || null,
                 location,
                 latitude: latitude ? Number(latitude) : null,
                 longitude: longitude ? Number(longitude) : null,

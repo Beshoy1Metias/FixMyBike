@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { Prisma, SkillLevel } from "@prisma/client";
 
 const TEXT = {
     en: {
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
         const maxRate = searchParams.get("maxRate");
         const location = searchParams.get("location");
 
-        const where: any = {
+        const where: Prisma.MechanicProfileWhereInput = {
             isAvailable: true,
         };
 
@@ -42,7 +43,7 @@ export async function GET(req: NextRequest) {
             ];
         }
 
-        if (skillLevel) where.skillLevel = skillLevel;
+        if (skillLevel) where.skillLevel = skillLevel as SkillLevel;
         
         if (minRate || maxRate) {
             where.hourlyRate = {};
@@ -64,15 +65,8 @@ export async function GET(req: NextRequest) {
             },
             take: 50,
         });
-        
-        // Add proper typing for response
-        const mappedMechanics = mechanics.map(mech => ({
-            ...mech,
-            latitude: mech.latitude,
-            longitude: mech.longitude
-        }));
 
-        return NextResponse.json({ mechanics: mappedMechanics });
+        return NextResponse.json({ mechanics });
     } catch (error) {
         console.error("[GET /api/mechanics] Error:", error);
         return NextResponse.json(
@@ -92,39 +86,32 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: t.errorUnauthorized }, { status: 401 });
         }
 
-        const { bio, location, latitude, longitude, phoneNumber, skillLevel, hourlyRate, skills, isAvailable } = await req.json();
+        const { bio, skills, hourlyRate, skillLevel, location, latitude, longitude } = await req.json();
 
-        if (!location || !latitude || !longitude) {
-            return NextResponse.json(
-                { error: t.errorRequired },
-                { status: 400 }
-            );
+        if (!location) {
+            return NextResponse.json({ error: t.errorRequired }, { status: 400 });
         }
 
         const profile = await prisma.mechanicProfile.upsert({
             where: { userId: session.user.id },
             update: {
                 bio,
+                skills,
+                hourlyRate: hourlyRate ? Number(hourlyRate) : null,
+                skillLevel: skillLevel || "BEGINNER",
                 location,
                 latitude: latitude ? Number(latitude) : null,
                 longitude: longitude ? Number(longitude) : null,
-                phoneNumber,
-                skillLevel: skillLevel || undefined,
-                hourlyRate: hourlyRate ? Number(hourlyRate) : null,
-                skills,
-                isAvailable: typeof isAvailable === "boolean" ? isAvailable : undefined,
             },
             create: {
                 userId: session.user.id,
                 bio,
+                skills,
+                hourlyRate: hourlyRate ? Number(hourlyRate) : null,
+                skillLevel: skillLevel || "BEGINNER",
                 location,
                 latitude: latitude ? Number(latitude) : null,
                 longitude: longitude ? Number(longitude) : null,
-                phoneNumber,
-                skillLevel: skillLevel || undefined,
-                hourlyRate: hourlyRate ? Number(hourlyRate) : null,
-                skills,
-                isAvailable: typeof isAvailable === "boolean" ? isAvailable : true,
             },
         });
 

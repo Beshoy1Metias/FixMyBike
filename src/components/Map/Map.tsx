@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { Icon } from "leaflet";
 
 interface ListingLocation {
     id: string;
@@ -35,7 +36,7 @@ function ChangeView({ center, zoom }: { center: [number, number], zoom: number }
 
 export default function Map({ listings, center = [45.4064, 11.8768], zoom = 13, className, height = "400px" }: MapProps) {
     const [mounted, setMounted] = useState(false);
-    const [defaultIcon, setDefaultIcon] = useState<any>(null);
+    const [defaultIcon, setDefaultIcon] = useState<Icon | null>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -94,7 +95,7 @@ export default function Map({ listings, center = [45.4064, 11.8768], zoom = 13, 
                                             <img 
                                                 src={listing.image} 
                                                 alt={listing.title} 
-                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                style={{ width: "100%", height: "100%", objectFit: "cover" }} 
                                             />
                                         </div>
                                     )}

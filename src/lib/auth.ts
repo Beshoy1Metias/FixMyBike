@@ -71,7 +71,7 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
-                // @ts-ignore
+                // @ts-expect-error - User object from authorize can have role but not in default type
                 token.role = user.role;
             }
             return token;
@@ -79,7 +79,6 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }) {
             if (token && session.user) {
                 session.user.id = token.id as string;
-                // @ts-ignore
                 session.user.role = token.role as string;
             }
             return session;

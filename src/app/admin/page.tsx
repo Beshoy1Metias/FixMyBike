@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import Link from "next/link";
 
 export const metadata = {
     title: "Admin Dashboard",

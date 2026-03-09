@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence } from "framer-motion";
 import styles from "./Navbar.module.css";
@@ -53,19 +53,34 @@ export default function Navbar() {
     const { language } = useLanguage();
     const t = NAV_TEXT[language];
 
+    const fetchUnreadCount = useCallback(async () => {
+        try {
+            const res = await fetch("/api/messages/unread-count");
+            const data = await res.json();
+            setUnreadCount(data.count || 0);
+        } catch (error) {
+            console.error("Failed to fetch unread count", error);
+        }
+    }, []);
+
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
     }, []);
 
     useEffect(() => {
         if (session?.user?.id) {
-            fetchUnreadCount();
+            // Use a separate async function to avoid lint warning about sync state updates in effect
+            const init = async () => {
+                await fetchUnreadCount();
+            };
+            init();
             
             // Subscribe to personal pusher channel for notifications
             const pusher = getPusherClient();
             const channel = pusher.subscribe(`user-${session.user.id}`);
             
-            channel.bind("new-notification", (data: any) => {
+            channel.bind("new-notification", (data: { type: string; text: string; senderName: string; conversationId: string }) => {
                 if (data.type === "MESSAGE") {
                     setNotification({
                         text: data.text,
@@ -80,17 +95,7 @@ export default function Navbar() {
                 pusher.unsubscribe(`user-${session.user.id}`);
             };
         }
-    }, [session?.user?.id]);
-
-    const fetchUnreadCount = async () => {
-        try {
-            const res = await fetch("/api/messages/unread-count");
-            const data = await res.json();
-            setUnreadCount(data.count || 0);
-        } catch (error) {
-            console.error("Failed to fetch unread count", error);
-        }
-    };
+    }, [session?.user?.id, fetchUnreadCount]);
 
     // Lock body scroll when menu is open
     useEffect(() => {
@@ -226,8 +231,28 @@ export default function Navbar() {
                                     </div>
                                 </Link>
                                 <div className={styles.userMenu}>
-                                    <div className={styles.userBtn}>
-                                        <span>{session.user.name?.charAt(0).toUpperCase() ?? "U"}</span>
+                                    <div 
+                                        className={styles.userBtn}
+                                        style={{ 
+                                            background: session.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                            overflow: "hidden",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            color: "white",
+                                            fontWeight: 700
+                                        }}
+                                    >
+                                        {session.user.image ? (
+                                            /* eslint-disable-next-line @next/next/no-img-element */
+                                            <img 
+                                                src={session.user.image} 
+                                                alt={session.user.name || "User"} 
+                                                style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                                            />
+                                        ) : (
+                                            <span>{session.user.name?.charAt(0).toUpperCase() ?? "U"}</span>
+                                        )}
                                     </div>
                                     <div className={styles.dropdown}>
                                         <Link href="/dashboard" className={styles.dropdownItem}>{t.dashboard}</Link>

@@ -31,7 +31,7 @@ export default async function WantedDetailPage({ params }: WantedDetailPageProps
         where: { id },
         include: {
             user: {
-                select: { id: true, name: true },
+                select: { id: true, name: true, image: true },
             },
         },
     });
@@ -83,10 +83,21 @@ export default async function WantedDetailPage({ params }: WantedDetailPageProps
                                     alignItems: "center",
                                     justifyContent: "center",
                                     fontWeight: 700,
-                                    background: "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                    background: post.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                    overflow: "hidden",
+                                    color: "white"
                                 }}
                             >
-                                {post.user.name?.charAt(0).toUpperCase() ?? "B"}
+                                {post.user.image ? (
+                                    /* eslint-disable-next-line @next/next/no-img-element */
+                                    <img 
+                                        src={post.user.image} 
+                                        alt={post.user.name || "User"} 
+                                        style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                                    />
+                                ) : (
+                                    post.user.name?.charAt(0).toUpperCase() ?? "U"
+                                )}
                             </div>
                             <div>
                                 <div className="text-body">{post.user.name || "FixMyBike buyer"}</div>

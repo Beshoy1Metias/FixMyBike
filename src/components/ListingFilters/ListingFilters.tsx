@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import styles from "./ListingFilters.module.css";
 
 interface ListingFiltersProps {
     type: "bikes" | "parts" | "mechanics" | "wanted";
     lang: "en" | "it";
-    onFilterChange: (filters: any) => void;
-    initialFilters?: any;
+    onFilterChange: (filters: Record<string, string | number | boolean | null>) => void;
+    initialFilters?: Record<string, string | number | boolean | null>;
 }
 
 const TEXT = {
@@ -105,23 +105,27 @@ const TEXT = {
 
 export default function ListingFilters({ type, lang, onFilterChange, initialFilters = {} }: ListingFiltersProps) {
     const t = TEXT[lang];
-    const [filters, setFilters] = useState(initialFilters);
+    const [filters, setFilters] = useState<Record<string, string | number | boolean | null>>(initialFilters);
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState(initialFilters.q || "");
+    const [searchTerm, setSearchTerm] = useState<string>(String(initialFilters.q || ""));
+
+    const memoizedOnFilterChange = useCallback((newFilters: Record<string, string | number | boolean | null>) => {
+        onFilterChange(newFilters);
+    }, [onFilterChange]);
 
     // Debounce search term
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (searchTerm !== filters.q) {
+            if (searchTerm !== (filters.q || "")) {
                 const newFilters = { ...filters, q: searchTerm };
                 setFilters(newFilters);
-                onFilterChange(newFilters);
+                memoizedOnFilterChange(newFilters);
             }
         }, 500);
         return () => clearTimeout(timer);
-    }, [searchTerm, filters, onFilterChange]);
+    }, [searchTerm, filters, memoizedOnFilterChange]);
 
-    const handleFilterChange = (name: string, value: any) => {
+    const handleFilterChange = (name: string, value: string | number | boolean | null) => {
         const newFilters = { ...filters, [name]: value };
         setFilters(newFilters);
         onFilterChange(newFilters);
@@ -137,7 +141,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
         <>
             <select 
                 className="form-select" 
-                value={filters.bikeType || ""} 
+                value={String(filters.bikeType || "")} 
                 onChange={(e) => handleFilterChange("bikeType", e.target.value)}
             >
                 <option value="">{t.bikeType}</option>
@@ -152,7 +156,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
             </select>
             <select 
                 className="form-select" 
-                value={filters.frameSize || ""} 
+                value={String(filters.frameSize || "")} 
                 onChange={(e) => handleFilterChange("frameSize", e.target.value)}
             >
                 <option value="">{t.frameSize}</option>
@@ -165,7 +169,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
             </select>
             <select 
                 className="form-select" 
-                value={filters.maxPrice || ""} 
+                value={String(filters.maxPrice || "")} 
                 onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
             >
                 <option value="">{t.maxBudget}</option>
@@ -181,7 +185,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
         <>
             <select 
                 className="form-select" 
-                value={filters.category || ""} 
+                value={String(filters.category || "")} 
                 onChange={(e) => handleFilterChange("category", e.target.value)}
             >
                 <option value="">{t.category}</option>
@@ -191,7 +195,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
             </select>
             <select 
                 className="form-select" 
-                value={filters.condition || ""} 
+                value={String(filters.condition || "")} 
                 onChange={(e) => handleFilterChange("condition", e.target.value)}
             >
                 <option value="">{t.condition}</option>
@@ -201,7 +205,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
             </select>
             <select 
                 className="form-select" 
-                value={filters.maxPrice || ""} 
+                value={String(filters.maxPrice || "")} 
                 onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
             >
                 <option value="">{t.maxBudget}</option>
@@ -217,7 +221,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
         <>
             <select 
                 className="form-select" 
-                value={filters.skillLevel || ""} 
+                value={String(filters.skillLevel || "")} 
                 onChange={(e) => handleFilterChange("skillLevel", e.target.value)}
             >
                 <option value="">{t.skillLevel}</option>
@@ -227,7 +231,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
             </select>
             <select 
                 className="form-select" 
-                value={filters.maxRate || ""} 
+                value={String(filters.maxRate || "")} 
                 onChange={(e) => handleFilterChange("maxRate", e.target.value)}
             >
                 <option value="">{t.maxRate}</option>
@@ -239,7 +243,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
                 className="form-input"
                 style={{ width: 140 }}
                 placeholder={t.location}
-                value={filters.location || ""}
+                value={String(filters.location || "")}
                 onChange={(e) => handleFilterChange("location", e.target.value)}
             />
         </>
@@ -249,7 +253,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
         <>
             <select 
                 className="form-select" 
-                value={filters.bikeType || ""} 
+                value={String(filters.bikeType || "")} 
                 onChange={(e) => handleFilterChange("bikeType", e.target.value)}
             >
                 <option value="">{t.bikeType}</option>
@@ -260,7 +264,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
             </select>
             <select 
                 className="form-select" 
-                value={filters.maxBudget || ""} 
+                value={String(filters.maxBudget || "")} 
                 onChange={(e) => handleFilterChange("maxBudget", e.target.value)}
             >
                 <option value="">{t.maxBudget}</option>
@@ -297,7 +301,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
                 <div className={styles.sortGroup}>
                     <select 
                         className="form-select" 
-                        value={filters.sort || ""} 
+                        value={String(filters.sort || "")} 
                         onChange={(e) => handleFilterChange("sort", e.target.value)}
                     >
                         <option value="">{t.newest}</option>
@@ -334,7 +338,7 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
                                 <label className="form-label">{t.sortBy}</label>
                                 <select 
                                     className="form-select" 
-                                    value={filters.sort || ""} 
+                                    value={String(filters.sort || "")} 
                                     onChange={(e) => handleFilterChange("sort", e.target.value)}
                                 >
                                     <option value="">{t.newest}</option>

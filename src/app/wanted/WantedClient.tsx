@@ -10,8 +10,25 @@ import StaggerContainer from "@/components/Animations/StaggerContainer";
 
 const Map = dynamic(() => import("@/components/Map/Map"), { ssr: false });
 
+interface WantedPost {
+    id: string;
+    title: string;
+    description: string;
+    location: string;
+    maxBudget: number | null;
+    bikeType: string | null;
+    frameSize: string | null;
+    createdAt: Date;
+    latitude: number | null;
+    longitude: number | null;
+    user: {
+        name: string | null;
+        image: string | null;
+    };
+}
+
 interface WantedClientProps {
-    initialPosts: any[];
+    initialPosts: WantedPost[];
     lang: "en" | "it";
 }
 
@@ -59,13 +76,13 @@ const UI_TEXT = {
 };
 
 export default function WantedClient({ initialPosts, lang }: WantedClientProps) {
-    const [posts, setPosts] = useState(initialPosts);
+    const [posts, setPosts] = useState<WantedPost[]>(initialPosts);
     const [loading, setLoading] = useState(false);
-    const [filters, setFilters] = useState<any>({});
+    const [filters, setFilters] = useState<Record<string, string | number | boolean | null>>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
     const t = UI_TEXT[lang];
 
-    const fetchPosts = async (newFilters: any) => {
+    const fetchPosts = async (newFilters: Record<string, string | number | boolean | null>) => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
@@ -85,22 +102,25 @@ export default function WantedClient({ initialPosts, lang }: WantedClientProps) 
         }
     };
 
-    const handleFilterChange = (newFilters: any) => {
+    const handleFilterChange = (newFilters: Record<string, string | number | boolean | null>) => {
         const updatedFilters = { ...filters, ...newFilters };
         setFilters(updatedFilters);
         fetchPosts(updatedFilters);
     };
 
-    const mapListings = posts.map(post => ({
-        id: post.id,
-        title: post.title,
-        latitude: post.latitude,
-        longitude: post.longitude,
-        price: post.maxBudget ? `${t.upTo} €${post.maxBudget.toLocaleString()}` : undefined,
-        image: post.user.image || null,
-        type: "bike" as const, // Close enough for map display
-        href: `/wanted/${post.id}`
-    })).filter(l => l.latitude && l.longitude);
+    const mapListings = posts.map(post => {
+        if (post.latitude === null || post.longitude === null) return null;
+        return {
+            id: post.id,
+            title: post.title,
+            latitude: post.latitude,
+            longitude: post.longitude,
+            price: post.maxBudget ? `${t.upTo} €${post.maxBudget.toLocaleString()}` : undefined,
+            image: post.user.image || null,
+            type: "bike" as const, // Close enough for map display
+            href: `/wanted/${post.id}`
+        };
+    }).filter((l): l is NonNullable<typeof l> => l !== null);
 
     return (
         <FadeIn>

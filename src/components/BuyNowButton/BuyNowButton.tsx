@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 interface BuyNowButtonProps {
   listingId: string;
@@ -19,7 +18,6 @@ export default function BuyNowButton({
   disabled = false 
 }: BuyNowButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const handleBuyNow = async () => {
     try {

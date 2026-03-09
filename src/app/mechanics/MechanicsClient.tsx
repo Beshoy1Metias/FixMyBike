@@ -10,8 +10,24 @@ import StaggerContainer from "@/components/Animations/StaggerContainer";
 
 const Map = dynamic(() => import("@/components/Map/Map"), { ssr: false });
 
+interface Mechanic {
+    id: string;
+    location: string;
+    hourlyRate: number | null;
+    skillLevel: string;
+    isAvailable: boolean;
+    bio: string | null;
+    skills: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    user: {
+        name: string | null;
+        image: string | null;
+    };
+}
+
 interface MechanicsClientProps {
-    initialMechanics: any[];
+    initialMechanics: Mechanic[];
     lang: "en" | "it";
 }
 
@@ -44,13 +60,13 @@ const UI_TEXT = {
 };
 
 export default function MechanicsClient({ initialMechanics, lang }: MechanicsClientProps) {
-    const [mechanics, setMechanics] = useState(initialMechanics);
+    const [mechanics, setMechanics] = useState<Mechanic[]>(initialMechanics);
     const [loading, setLoading] = useState(false);
-    const [filters, setFilters] = useState<any>({});
+    const [filters, setFilters] = useState<Record<string, string | number | boolean | null>>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
     const t = UI_TEXT[lang];
 
-    const fetchMechanics = async (newFilters: any) => {
+    const fetchMechanics = async (newFilters: Record<string, string | number | boolean | null>) => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
@@ -70,22 +86,25 @@ export default function MechanicsClient({ initialMechanics, lang }: MechanicsCli
         }
     };
 
-    const handleFilterChange = (newFilters: any) => {
+    const handleFilterChange = (newFilters: Record<string, string | number | boolean | null>) => {
         const updatedFilters = { ...filters, ...newFilters };
         setFilters(updatedFilters);
         fetchMechanics(updatedFilters);
     };
 
-    const mapListings = mechanics.map(m => ({
-        id: m.id,
-        title: m.user.name || t.mechanic,
-        latitude: m.latitude,
-        longitude: m.longitude,
-        price: m.hourlyRate ? `${m.hourlyRate}${t.perHour}` : undefined,
-        image: m.user.image || null,
-        type: "mechanic" as const,
-        href: `/mechanics/${m.id}`
-    })).filter(l => l.latitude && l.longitude);
+    const mapListings = mechanics.map(m => {
+        if (m.latitude === null || m.longitude === null) return null;
+        return {
+            id: m.id,
+            title: m.user.name || t.mechanic,
+            latitude: m.latitude,
+            longitude: m.longitude,
+            price: m.hourlyRate ? `${m.hourlyRate}${t.perHour}` : undefined,
+            image: m.user.image || null,
+            type: "mechanic" as const,
+            href: `/mechanics/${m.id}`
+        };
+    }).filter((l): l is NonNullable<typeof l> => l !== null);
 
     return (
         <FadeIn>

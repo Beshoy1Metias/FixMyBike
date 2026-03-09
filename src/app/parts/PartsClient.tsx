@@ -10,8 +10,21 @@ import StaggerContainer from "@/components/Animations/StaggerContainer";
 
 const Map = dynamic(() => import("@/components/Map/Map"), { ssr: false });
 
+interface Part {
+    id: string;
+    title: string;
+    price: number;
+    condition: string;
+    location: string;
+    category: string;
+    brand: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    photos: { url: string }[];
+}
+
 interface PartsClientProps {
-    initialParts: any[];
+    initialParts: Part[];
     lang: "en" | "it";
 }
 
@@ -50,13 +63,13 @@ const UI_TEXT = {
 };
 
 export default function PartsClient({ initialParts, lang }: PartsClientProps) {
-    const [parts, setParts] = useState(initialParts);
+    const [parts, setParts] = useState<Part[]>(initialParts);
     const [loading, setLoading] = useState(false);
-    const [filters, setFilters] = useState<any>({});
+    const [filters, setFilters] = useState<Record<string, string | number | boolean | null>>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
     const t = UI_TEXT[lang];
 
-    const fetchParts = async (newFilters: any) => {
+    const fetchParts = async (newFilters: Record<string, string | number | boolean | null>) => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
@@ -67,11 +80,11 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
             const res = await fetch(`/api/parts?${params.toString()}`);
             const data = await res.json();
             if (data.parts) {
-                let sortedParts = data.parts;
+                const sortedParts = [...data.parts];
                 if (newFilters.sort === "price_asc") {
-                    sortedParts.sort((a: any, b: any) => a.price - b.price);
+                    sortedParts.sort((a: Part, b: Part) => a.price - b.price);
                 } else if (newFilters.sort === "price_desc") {
-                    sortedParts.sort((a: any, b: any) => b.price - a.price);
+                    sortedParts.sort((a: Part, b: Part) => b.price - a.price);
                 }
                 setParts(sortedParts);
             }
@@ -82,7 +95,7 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
         }
     };
 
-    const handleFilterChange = (newFilters: any) => {
+    const handleFilterChange = (newFilters: Record<string, string | number | boolean | null>) => {
         const updatedFilters = { ...filters, ...newFilters };
         setFilters(updatedFilters);
         fetchParts(updatedFilters);
@@ -94,16 +107,19 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
         fetchParts(newFilters);
     };
 
-    const mapListings = parts.map(part => ({
-        id: part.id,
-        title: part.title,
-        latitude: part.latitude,
-        longitude: part.longitude,
-        price: part.price,
-        image: part.photos[0]?.url || null,
-        type: "part" as const,
-        href: `/parts/${part.id}`
-    })).filter(l => l.latitude && l.longitude);
+    const mapListings = parts.map(part => {
+        if (part.latitude === null || part.longitude === null) return null;
+        return {
+            id: part.id,
+            title: part.title,
+            latitude: part.latitude,
+            longitude: part.longitude,
+            price: part.price,
+            image: part.photos[0]?.url || null,
+            type: "part" as const,
+            href: `/parts/${part.id}`
+        };
+    }).filter((l): l is NonNullable<typeof l> => l !== null);
 
     return (
         <FadeIn>

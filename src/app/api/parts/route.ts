@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { Prisma, Condition, PartCategory } from "@prisma/client";
 
 const TEXT = {
     en: {
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
         const category = searchParams.get("category");
         const location = searchParams.get("location");
 
-        const where: any = {
+        const where: Prisma.PartListingWhereInput = {
             isSold: false,
         };
 
@@ -48,8 +49,8 @@ export async function GET(req: NextRequest) {
             if (maxPrice) where.price.lte = Number(maxPrice);
         }
 
-        if (condition) where.condition = condition;
-        if (category) where.category = category;
+        if (condition) where.condition = condition as Condition;
+        if (category) where.category = category as PartCategory;
         if (location) where.location = { contains: location, mode: "insensitive" };
 
         const parts = await prisma.partListing.findMany({
@@ -66,13 +67,7 @@ export async function GET(req: NextRequest) {
             take: 50,
         });
 
-        const mappedParts = parts.map(part => ({
-            ...part,
-            latitude: part.latitude,
-            longitude: part.longitude
-        }));
-
-        return NextResponse.json({ parts: mappedParts });
+        return NextResponse.json({ parts });
     } catch (error) {
         console.error("[GET /api/parts] Error:", error);
         return NextResponse.json(
@@ -92,18 +87,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: t.errorUnauthorized }, { status: 401 });
         }
 
-        const {
-            title,
-            description,
-            price,
-            condition,
-            category,
-            brand,
-            location,
-            latitude,
-            longitude,
-            photoUrls,
-        } = await req.json();
+        const { title, description, price, condition, brand, category, location, latitude, longitude, photos } = await req.json();
 
         if (!title || !description || !price || !condition || !category || !location || !latitude || !longitude) {
             return NextResponse.json(
@@ -118,23 +102,18 @@ export async function POST(req: NextRequest) {
                 title,
                 description,
                 price: Number(price),
-                condition,
-                category,
-                brand,
+                condition: condition as Condition,
+                brand: brand || null,
+                category: category as PartCategory,
                 location,
-                latitude: latitude ? Number(latitude) : null,
-                longitude: longitude ? Number(longitude) : null,
-                photos: photoUrls && Array.isArray(photoUrls)
-                    ? {
-                          create: photoUrls.map((url: string, index: number) => ({
-                              url,
-                              isPrimary: index === 0,
-                          })),
-                      }
-                    : undefined,
-            },
-            include: {
-                photos: true,
+                latitude: Number(latitude),
+                longitude: Number(longitude),
+                photos: {
+                    create: photos.map((url: string, index: number) => ({
+                        url,
+                        isPrimary: index === 0,
+                    })),
+                },
             },
         });
 

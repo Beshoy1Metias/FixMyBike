@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
+import { Icon, LatLng } from "leaflet";
 
 interface LocationPickerProps {
     initialLat?: number;
@@ -40,7 +41,13 @@ const TEXT = {
     }
 };
 
-function LocationMarker({ position, setPosition, onLocationSelect, icon, language }: any) {
+function LocationMarker({ position, setPosition, onLocationSelect, icon, language }: {
+    position: LatLng | null;
+    setPosition: (pos: LatLng) => void;
+    onLocationSelect: (lat: number, lng: number, address: string) => void;
+    icon: Icon;
+    language: string;
+}) {
     const map = useMapEvents({
         async click(e) {
             setPosition(e.latlng);
@@ -52,7 +59,7 @@ function LocationMarker({ position, setPosition, onLocationSelect, icon, languag
                 const data = await res.json();
                 const address = data.display_name || `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
                 onLocationSelect(e.latlng.lat, e.latlng.lng, address);
-            } catch (err) {
+            } catch {
                 onLocationSelect(e.latlng.lat, e.latlng.lng, `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`);
             }
         },
@@ -84,12 +91,12 @@ export default function LocationPicker({
     const t = TEXT[language as keyof typeof TEXT] || TEXT.en;
     
     const [mounted, setMounted] = useState(false);
-    const [position, setPosition] = useState<any>(null);
-    const [defaultIcon, setDefaultIcon] = useState<any>(null);
-    const [L, setL] = useState<any>(null);
-    
+    const [position, setPosition] = useState<LatLng | null>(null);
+    const [defaultIcon, setDefaultIcon] = useState<Icon | null>(null);
+    const [L, setL] = useState<typeof import("leaflet") | null>(null);
+
     const [searchQuery, setSearchTerm] = useState(initialAddress);
-    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [suggestions, setSuggestions] = useState<{ lat: string; lon: string; display_name: string }[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [mapCenter, setMapCenter] = useState<[number, number]>([45.4064, 11.8768]);
     const searchTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -140,7 +147,8 @@ export default function LocationPicker({
         }, 500);
     };
 
-    const selectSuggestion = (s: any) => {
+    const selectSuggestion = (s: { lat: string; lon: string; display_name: string }) => {
+        if (!L) return;
         const lat = parseFloat(s.lat);
         const lon = parseFloat(s.lon);
         const newPos = new L.LatLng(lat, lon);
@@ -170,7 +178,7 @@ export default function LocationPicker({
                         const address = data.display_name || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
                         setSearchTerm(address);
                         onLocationSelect(latitude, longitude, address);
-                    } catch (err) {
+                    } catch {
                         const fallback = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
                         setSearchTerm(fallback);
                         onLocationSelect(latitude, longitude, fallback);

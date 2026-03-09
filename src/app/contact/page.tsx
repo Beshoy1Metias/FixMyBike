@@ -74,7 +74,7 @@ export default function ContactOwnerPage() {
                 const data = await res.json();
                 setError(data.error || t.errorGeneric);
             }
-        } catch (err) {
+        } catch {
             setError(t.errorGeneric);
         } finally {
             setLoading(false);
