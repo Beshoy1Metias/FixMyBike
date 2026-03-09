@@ -181,9 +181,11 @@ export default function Navbar() {
                         <Image 
                             src="/logo.png" 
                             alt="FixMyBike Logo" 
-                            width={32} 
-                            height={32} 
+                            width={40} 
+                            height={40} 
                             className={styles.logoImage}
+                            priority
+                            unoptimized
                         />
                         <span className={styles.logoText}>
                             Fix<span className={styles.logoBold}>My</span>Bike
