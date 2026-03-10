@@ -5,9 +5,9 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import styles from "./dashboard.module.css";
 import { getCurrentLanguage } from "@/lib/language";
-import ListingCard from "@/components/ListingCard/ListingCard";
 import FadeIn from "@/components/Animations/FadeIn";
-import StaggerContainer from "@/components/Animations/StaggerContainer";
+import DashboardClient from "./DashboardClient";
+import MechanicStatusBtn from "./MechanicStatusBtn";
 
 export const metadata: Metadata = {
     title: "Dashboard",
@@ -28,22 +28,13 @@ const TEXT = {
         sellBikeBody: "Post a complete bike for sale.",
         postWanted: "Post a Wanted Ad",
         postWantedBody: "Tell sellers what bike you're looking for and your budget.",
-        activeListings: "My Active Listings",
-        noListings: "You have no active listings yet.",
-        postFirst: "Post Your First Listing",
         mechanicProfile: "Mechanic Profile",
         viewProfile: "View Profile",
         editProfile: "Edit Profile",
-        bikes: "Bikes",
-        parts: "Parts",
-        wanted: "Wanted Ads",
-        conditionLabels: {
-            NEW: "New",
-            LIKE_NEW: "Like New",
-            GOOD: "Good",
-            FAIR: "Fair",
-            POOR: "Needs repair"
-        }
+        available: "Available",
+        unavailable: "Unavailable",
+        markAvailable: "Mark as Available",
+        markUnavailable: "Mark as Busy",
     },
     it: {
         eyebrow: "Il mio account",
@@ -58,22 +49,13 @@ const TEXT = {
         sellBikeBody: "Pubblica un annuncio per una bici completa.",
         postWanted: "Pubblica una richiesta",
         postWantedBody: "Spiega che bici stai cercando e qual è il tuo budget.",
-        activeListings: "I miei annunci attivi",
-        noListings: "Non hai ancora annunci attivi.",
-        postFirst: "Pubblica il tuo primo annuncio",
         mechanicProfile: "Profilo Meccanico",
         viewProfile: "Vedi Profilo",
         editProfile: "Modifica Profilo",
-        bikes: "Bici",
-        parts: "Ricambi",
-        wanted: "Richieste",
-        conditionLabels: {
-            NEW: "Nuova",
-            LIKE_NEW: "Come nuova",
-            GOOD: "Buona",
-            FAIR: "Discreta",
-            POOR: "Da sistemare"
-        }
+        available: "Disponibile",
+        unavailable: "Non disponibile",
+        markAvailable: "Segna come Disponibile",
+        markUnavailable: "Segna come Occupato",
     },
 } as const;
 
@@ -99,29 +81,27 @@ export default async function DashboardPage() {
 
     const userId = session.user.id;
 
-    // Fetch user data
+    // Fetch user data (all listings, not just active ones)
     const [user, bikes, parts, wanted] = await Promise.all([
         prisma.user.findUnique({
             where: { id: userId },
             include: { mechanicProfile: true }
         }),
         prisma.bikeListing.findMany({
-            where: { userId, isSold: false },
+            where: { userId },
             include: { photos: { orderBy: { isPrimary: "desc" } } },
             orderBy: { createdAt: "desc" }
         }),
         prisma.partListing.findMany({
-            where: { userId, isSold: false },
+            where: { userId },
             include: { photos: { orderBy: { isPrimary: "desc" } } },
             orderBy: { createdAt: "desc" }
         }),
         prisma.wantedPost.findMany({
-            where: { userId, isFulfilled: false },
+            where: { userId },
             orderBy: { createdAt: "desc" }
         })
     ]);
-
-    const hasAnyListings = bikes.length > 0 || parts.length > 0 || wanted.length > 0;
 
     return (
         <div className="section">
@@ -140,14 +120,22 @@ export default async function DashboardPage() {
                 {/* Mechanic Profile Status */}
                 {user?.mechanicProfile && (
                     <FadeIn className="card" style={{ marginBottom: "var(--space-8)", borderLeft: "4px solid var(--color-primary)" }}>
-                        <div className="card-body" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div className="card-body" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-4)" }}>
                             <div>
                                 <h2 className="text-heading-3" style={{ marginBottom: "var(--space-1)" }}>{t.mechanicProfile}</h2>
                                 <p className="text-sm text-secondary-color">
-                                    📍 {user.mechanicProfile.location} · {user.mechanicProfile.isAvailable ? (lang === "it" ? "Disponibile" : "Available") : (lang === "it" ? "Non disponibile" : "Unavailable")}
+                                    📍 {user.mechanicProfile.location} · <span style={{ color: user.mechanicProfile.isAvailable ? "var(--color-success)" : "var(--color-error)", fontWeight: 600 }}>
+                                        {user.mechanicProfile.isAvailable ? t.available : t.unavailable}
+                                    </span>
                                 </p>
                             </div>
-                            <div style={{ display: "flex", gap: "var(--space-2)" }}>
+                            <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
+                                <MechanicStatusBtn 
+                                    id={user.mechanicProfile.id}
+                                    isAvailable={user.mechanicProfile.isAvailable}
+                                    labelAvailable={t.markAvailable}
+                                    labelBusy={t.markUnavailable}
+                                />
                                 <Link href={`/mechanics/${user.mechanicProfile.id}`} className="btn btn-secondary btn-sm">
                                     {t.viewProfile}
                                 </Link>
@@ -185,70 +173,12 @@ export default async function DashboardPage() {
                     </Link>
                 </div>
 
-                {/* My Listings */}
-                <div className={styles.section}>
-                    <div className={styles.sectionHead}>
-                        <h2 className="text-heading-3">{t.activeListings}</h2>
-                    </div>
-
-                    {!hasAnyListings ? (
-                        <div className={styles.emptyState}>
-                            <p className="empty-state__icon">📝</p>
-                            <p>{t.noListings}</p>
-                            <Link href="/listings/new" className="btn btn-primary" style={{ marginTop: "var(--space-4)" }}>
-                                {t.postFirst}
-                            </Link>
-                        </div>
-                    ) : (
-                        <StaggerContainer className="grid-4">
-                            {/* Bikes */}
-                            {bikes.map((bike) => (
-                                <FadeIn key={bike.id}>
-                                    <ListingCard
-                                        href={`/bikes/${bike.id}`}
-                                        image={bike.photos[0]?.url}
-                                        title={bike.title}
-                                        price={bike.price}
-                                        location={bike.location}
-                                        badge={t.bikes}
-                                        badgeVariant="primary"
-                                        condition={t.conditionLabels[bike.condition as keyof typeof t.conditionLabels]}
-                                    />
-                                </FadeIn>
-                            ))}
-
-                            {/* Parts */}
-                            {parts.map((part) => (
-                                <FadeIn key={part.id}>
-                                    <ListingCard
-                                        href={`/parts/${part.id}`}
-                                        image={part.photos[0]?.url}
-                                        title={part.title}
-                                        price={part.price}
-                                        location={part.location}
-                                        badge={t.parts}
-                                        badgeVariant="accent"
-                                        condition={t.conditionLabels[part.condition as keyof typeof t.conditionLabels]}
-                                    />
-                                </FadeIn>
-                            ))}
-
-                            {/* Wanted Ads */}
-                            {wanted.map((post) => (
-                                <FadeIn key={post.id}>
-                                    <ListingCard
-                                        href={`/wanted/${post.id}`}
-                                        title={post.title}
-                                        price={post.maxBudget ? `${lang === "it" ? "Fino a" : "Up to"} €${post.maxBudget}` : null}
-                                        location={post.location}
-                                        badge={t.wanted}
-                                        badgeVariant="gray"
-                                    />
-                                </FadeIn>
-                            ))}
-                        </StaggerContainer>
-                    )}
-                </div>
+                <DashboardClient 
+                    bikes={bikes}
+                    parts={parts}
+                    wanted={wanted}
+                    lang={lang}
+                />
             </div>
         </div>
     );

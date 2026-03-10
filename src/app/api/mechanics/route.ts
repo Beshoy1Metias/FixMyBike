@@ -29,9 +29,10 @@ export async function GET(req: NextRequest) {
         const minRate = searchParams.get("minRate");
         const maxRate = searchParams.get("maxRate");
         const location = searchParams.get("location");
+        const status = searchParams.get("status");
 
         const where: Prisma.MechanicProfileWhereInput = {
-            isAvailable: true,
+            isAvailable: status !== "completed",
         };
 
         if (q) {

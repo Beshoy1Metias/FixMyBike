@@ -30,9 +30,10 @@ export async function GET(req: NextRequest) {
         const condition = searchParams.get("condition");
         const category = searchParams.get("category");
         const location = searchParams.get("location");
+        const status = searchParams.get("status");
 
         const where: Prisma.PartListingWhereInput = {
-            isSold: false,
+            isSold: status === "completed",
         };
 
         if (q) {

@@ -7,6 +7,38 @@
     flex-wrap: wrap;
 }
 
+.tabs {
+    display: flex;
+    gap: var(--space-2);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-8);
+}
+
+.tab {
+    padding: var(--space-3) var(--space-6);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-family: inherit;
+}
+
+.tab:hover {
+    color: var(--text-primary);
+}
+
+.activeTab {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+.dashboardContent {
+    margin-top: var(--space-10);
+}
+
 .quickActions {
     display: grid;
     grid-template-columns: repeat(4, 1fr);

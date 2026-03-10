@@ -32,9 +32,10 @@ export async function GET(req: NextRequest) {
         const frameSize = searchParams.get("frameSize");
         const wheelSize = searchParams.get("wheelSize");
         const location = searchParams.get("location");
+        const status = searchParams.get("status");
 
         const where: Prisma.BikeListingWhereInput = {
-            isSold: false,
+            isSold: status === "completed",
         };
 
         if (q) {

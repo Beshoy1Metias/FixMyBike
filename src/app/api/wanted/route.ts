@@ -29,9 +29,10 @@ export async function GET(req: NextRequest) {
         const bikeType = searchParams.get("bikeType");
         const frameSize = searchParams.get("frameSize");
         const location = searchParams.get("location");
+        const status = searchParams.get("status");
 
         const where: Prisma.WantedPostWhereInput = {
-            isFulfilled: false,
+            isFulfilled: status === "completed",
         };
 
         if (q) {

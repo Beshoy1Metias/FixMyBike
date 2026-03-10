@@ -17,6 +17,9 @@ const TEXT = {
         apply: "Apply Filters",
         clear: "Clear All",
         sortBy: "Sort By",
+        status: "Status",
+        available: "Available",
+        completed: "Sold / Completed",
         newest: "Newest",
         priceLow: "Price: Low to High",
         priceHigh: "Price: High to Low",
@@ -62,6 +65,9 @@ const TEXT = {
         apply: "Applica filtri",
         clear: "Cancella tutto",
         sortBy: "Ordina per",
+        status: "Stato",
+        available: "Disponibile",
+        completed: "Venduto / Completato",
         newest: "Più recenti",
         priceLow: "Prezzo: dal più basso",
         priceHigh: "Prezzo: dal più alto",
@@ -288,6 +294,15 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
                 </div>
                 
                 <div className={styles.filtersGroup}>
+                    <select 
+                        className="form-select" 
+                        value={String(filters.status || "")} 
+                        onChange={(e) => handleFilterChange("status", e.target.value)}
+                    >
+                        <option value="">{t.available}</option>
+                        <option value="completed">{t.completed}</option>
+                    </select>
+
                     {type === "bikes" && renderBikesFilters()}
                     {type === "parts" && renderPartsFilters()}
                     {type === "mechanics" && renderMechanicsFilters()}
@@ -320,6 +335,18 @@ export default function ListingFilters({ type, lang, onFilterChange, initialFilt
                             <button className={styles.closeBtn} onClick={() => setIsMobileFiltersOpen(false)}>✕</button>
                         </div>
                         <div className={styles.drawerBody}>
+                            <div className="form-group">
+                                <label className="form-label">{t.status}</label>
+                                <select 
+                                    className="form-select" 
+                                    value={String(filters.status || "")} 
+                                    onChange={(e) => handleFilterChange("status", e.target.value)}
+                                >
+                                    <option value="">{t.available}</option>
+                                    <option value="completed">{t.completed}</option>
+                                </select>
+                            </div>
+
                             <div className="form-group">
                                 <label className="form-label">{t.searchPlaceholder}</label>
                                 <input
