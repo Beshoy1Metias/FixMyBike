@@ -47,6 +47,9 @@ export default function ListingCard({
                     {badge && (
                         <span className={`badge badge-${badgeVariant} ${styles.badge}`}>{badge}</span>
                     )}
+                    {condition && (
+                        <span className={`badge badge-gray ${styles.condition}`}>{condition}</span>
+                    )}
                     {isCompleted && (
                         <div className={styles.completedOverlay}>
                             <span>SOLD</span>
@@ -73,9 +76,6 @@ export default function ListingCard({
                             📍 {location}
                         </span>
                     </div>
-                    {condition && (
-                        <span className={`badge badge-gray ${styles.condition}`}>{condition}</span>
-                    )}
                 </div>
             </Link>
             {statusAction && (
