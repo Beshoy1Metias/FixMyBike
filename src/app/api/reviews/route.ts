@@ -46,7 +46,9 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const { targetId, mechanicId, rating, comment } = await req.json();
+        const body = await req.json();
+        const { targetId, rating, comment } = body;
+        const mechanicId = body.mechanicId || null;
 
         if (!targetId || !rating) {
             return NextResponse.json({ error: "targetId and rating are required" }, { status: 400 });
