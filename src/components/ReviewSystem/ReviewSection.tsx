@@ -142,7 +142,7 @@ export default function ReviewSection({ targetId, mechanicId, lang }: ReviewSect
                 <div className={styles.breakdownContainer}>
                     <div className={styles.breakdownSummary}>
                         <span className={styles.bigRating}>{averageRating}</span>
-                        <StarRating rating={Math.round(Number(averageRating))} readonly size="md" />
+                        <StarRating rating={Number(averageRating)} readonly size="md" />
                         <span className={styles.totalCountSub}>{reviews.length} {t.title.toLowerCase()}</span>
                     </div>
                     <div className={styles.breakdownBars}>
