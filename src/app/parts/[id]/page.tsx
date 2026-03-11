@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
 import { getCurrentLanguage } from "@/lib/language";
-import BuyNowButton from "@/components/BuyNowButton/BuyNowButton";
+import ReviewSection from "@/components/ReviewSystem/ReviewSection";
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -63,8 +63,7 @@ export default async function PartDetailsPage({ params }: Props) {
             contact: "Contact Seller",
             messageLead: "Message this seller directly inside FixMyBike.",
             details: "Details",
-            sold: "SOLD",
-            buyNow: "Buy Now"
+            sold: "SOLD"
         },
         it: {
             condition: "Condizione",
@@ -75,8 +74,7 @@ export default async function PartDetailsPage({ params }: Props) {
             contact: "Contatta il venditore",
             messageLead: "Scrivi al venditore direttamente su FixMyBike.",
             details: "Dettagli",
-            sold: "VENDUTA",
-            buyNow: "Acquista ora"
+            sold: "VENDUTA"
         }
     }[lang];
 
@@ -164,14 +162,8 @@ export default async function PartDetailsPage({ params }: Props) {
 
                                 {!isOwner && !part.isSold && (
                                     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", marginTop: "var(--space-2)" }}>
-                                        <BuyNowButton 
-                                            listingId={part.id} 
-                                            listingType="part" 
-                                            price={part.price} 
-                                            isSold={part.isSold} 
-                                        />
-                                        <p className="text-xs text-center text-muted">{t.messageLead}</p>
                                         <MessageInAppButton receiverId={part.user.id} />
+                                        <p className="text-xs text-center text-muted">{t.messageLead}</p>
                                     </div>
                                 )}
                             </div>
@@ -194,6 +186,10 @@ export default async function PartDetailsPage({ params }: Props) {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div style={{ marginTop: "var(--space-12)", maxWidth: "900px" }}>
+                    <ReviewSection targetId={part.user.id} lang={lang as "en" | "it"} />
                 </div>
             </div>
         </div>

@@ -121,9 +121,46 @@ export default function ReviewSection({ targetId, mechanicId, lang }: ReviewSect
 
     const isOwnProfile = session?.user?.id === targetId;
 
+    const averageRating = reviews.length > 0 
+        ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
+        : null;
+
+    const ratingBreakdown = [5, 4, 3, 2, 1].map(star => {
+        const count = reviews.filter(r => r.rating === star).length;
+        const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+        return { star, count, percentage };
+    });
+
     return (
         <div className={styles.section}>
-            <h2 className="text-heading-3">{t.title}</h2>
+            <div className={styles.headerRow}>
+                <h2 className="text-heading-3">{t.title}</h2>
+            </div>
+
+            {/* Google Maps style breakdown */}
+            {reviews.length > 0 && (
+                <div className={styles.breakdownContainer}>
+                    <div className={styles.breakdownSummary}>
+                        <span className={styles.bigRating}>{averageRating}</span>
+                        <StarRating rating={Math.round(Number(averageRating))} readonly size="md" />
+                        <span className={styles.totalCountSub}>{reviews.length} {t.title.toLowerCase()}</span>
+                    </div>
+                    <div className={styles.breakdownBars}>
+                        {ratingBreakdown.map(({ star, count, percentage }) => (
+                            <div key={star} className={styles.breakdownRow}>
+                                <span className={styles.starLabel}>{star}</span>
+                                <div className={styles.barBg}>
+                                    <div 
+                                        className={styles.barFill} 
+                                        style={{ width: `${percentage}%` }}
+                                    />
+                                </div>
+                                <span className={styles.starCount}>{count}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Review Form */}
             {!isOwnProfile && session ? (
