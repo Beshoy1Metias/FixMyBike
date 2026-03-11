@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import Link from "next/link";
 import prisma from "@/lib/prisma";
 import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
 import { getCurrentLanguage } from "@/lib/language";
@@ -76,31 +77,35 @@ export default async function WantedDetailPage({ params }: WantedDetailPageProps
                             {t.buyer}
                         </h2>
                         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
-                            <div
-                                className="avatar avatar-md"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    fontWeight: 700,
-                                    background: post.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
-                                    overflow: "hidden",
-                                    color: "white"
-                                }}
-                            >
-                                {post.user.image ? (
-                                    /* eslint-disable-next-line @next/next/no-img-element */
-                                    <img 
-                                        src={post.user.image} 
-                                        alt={post.user.name || "User"} 
-                                        style={{ width: "100%", height: "100%", objectFit: "cover" }} 
-                                    />
-                                ) : (
-                                    post.user.name?.charAt(0).toUpperCase() ?? "U"
-                                )}
-                            </div>
+                            <Link href={`/users/${post.user.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                                <div
+                                    className="avatar avatar-md"
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontWeight: 700,
+                                        background: post.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                        overflow: "hidden",
+                                        color: "white"
+                                    }}
+                                >
+                                    {post.user.image ? (
+                                        /* eslint-disable-next-line @next/next/no-img-element */
+                                        <img 
+                                            src={post.user.image} 
+                                            alt={post.user.name || "User"} 
+                                            style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                                        />
+                                    ) : (
+                                        post.user.name?.charAt(0).toUpperCase() ?? "U"
+                                    )}
+                                </div>
+                            </Link>
                             <div>
-                                <div className="text-body">{post.user.name || "FixMyBike buyer"}</div>
+                                <Link href={`/users/${post.user.id}`} className="text-body hover-underline" style={{ fontWeight: 600 }}>
+                                    {post.user.name || "FixMyBike buyer"}
+                                </Link>
                                 <div className="text-sm text-secondary-color">📍 {post.location}</div>
                             </div>
                         </div>

@@ -99,10 +99,9 @@ export default function Footer() {
                         <Image 
                             src="/logo.png" 
                             alt="FixMyBike Logo" 
-                            width={32} 
-                            height={32} 
+                            width={24} 
+                            height={24} 
                             style={{ objectFit: "contain" }}
-                            unoptimized
                         />
                         <span>Fix<strong>My</strong>Bike</span>
                     </div>

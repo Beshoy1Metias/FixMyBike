@@ -1,0 +1,82 @@
+.section {
+    margin-top: var(--space-12);
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--border);
+}
+
+.form {
+    background: var(--surface-2);
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.formHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.formHeader label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.reviewList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.reviewCard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+}
+
+.reviewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-3);
+}
+
+.author {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.authorInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.authorName {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.date {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.comment {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.emptyText, .infoText {
+    text-align: center;
+    color: var(--text-tertiary);
+    padding: var(--space-8) 0;
+    font-style: italic;
+}

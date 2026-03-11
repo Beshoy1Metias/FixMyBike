@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import FadeIn from "@/components/Animations/FadeIn";
@@ -201,34 +202,38 @@ export default function PostClient({ post, lang }: PostClientProps) {
                                     display: "flex",
                                     gap: "var(--space-4)"
                                 }}>
-                                    <div
-                                        className="avatar avatar-sm"
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontWeight: 700,
-                                            background: comment.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
-                                            overflow: "hidden",
-                                            color: "white",
-                                            fontSize: "0.8rem"
-                                        }}
-                                    >
-                                        {comment.user.image ? (
-                                            /* eslint-disable-next-line @next/next/no-img-element */
-                                            <img 
-                                                src={comment.user.image} 
-                                                alt={comment.user.name || "User"} 
-                                                style={{ width: "100%", height: "100%", objectFit: "cover" }} 
-                                            />
-                                        ) : (
-                                            comment.user.name?.charAt(0).toUpperCase() ?? "U"
-                                        )}
-                                    </div>
+                                    <Link href={`/users/${comment.user.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                                        <div
+                                            className="avatar avatar-sm"
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                fontWeight: 700,
+                                                background: comment.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                                overflow: "hidden",
+                                                color: "white",
+                                                fontSize: "0.8rem"
+                                            }}
+                                        >
+                                            {comment.user.image ? (
+                                                /* eslint-disable-next-line @next/next/no-img-element */
+                                                <img 
+                                                    src={comment.user.image} 
+                                                    alt={comment.user.name || "User"} 
+                                                    style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                                                />
+                                            ) : (
+                                                comment.user.name?.charAt(0).toUpperCase() ?? "U"
+                                            )}
+                                        </div>
+                                    </Link>
                                     <div style={{ flex: 1 }}>
                                         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "var(--space-1)" }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-                                                <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>{comment.user.name || t.anonymous}</span>
+                                                <Link href={`/users/${comment.user.id}`} style={{ fontWeight: 600, fontSize: "0.9rem", textDecoration: "none", color: "inherit" }} className="hover-underline">
+                                                    {comment.user.name || t.anonymous}
+                                                </Link>
                                                 {session?.user?.id !== comment.user.id && (
                                                     <button 
                                                         className="btn btn-ghost btn-xs" 

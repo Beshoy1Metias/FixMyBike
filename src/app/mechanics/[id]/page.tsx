@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
 import { getCurrentLanguage } from "@/lib/language";
+import ReviewSection from "@/components/ReviewSystem/ReviewSection";
 
 interface MechanicDetailPageProps {
     params: Promise<{ id: string }>;
@@ -138,6 +139,12 @@ export default async function MechanicDetailPage({ params }: MechanicDetailPageP
                             </div>
                         </div>
                     )}
+
+                    <ReviewSection 
+                        targetId={mech.user.id} 
+                        mechanicId={mech.id} 
+                        lang={lang as "en" | "it"} 
+                    />
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>

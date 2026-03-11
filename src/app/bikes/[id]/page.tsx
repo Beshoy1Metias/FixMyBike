@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -134,31 +135,35 @@ export default async function BikeDetailsPage({ params }: Props) {
                         <div className="card">
                             <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
-                                    <div
-                                        className="avatar avatar-md"
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontWeight: 700,
-                                            background: bike.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
-                                            overflow: "hidden",
-                                            color: "white"
-                                        }}
-                                    >
-                                        {bike.user.image ? (
-                                            /* eslint-disable-next-line @next/next/no-img-element */
-                                            <img 
-                                                src={bike.user.image} 
-                                                alt={bike.user.name || "User"} 
-                                                style={{ width: "100%", height: "100%", objectFit: "cover" }} 
-                                            />
-                                        ) : (
-                                            bike.user.name?.charAt(0).toUpperCase() ?? "U"
-                                        )}
-                                    </div>
+                                    <Link href={`/users/${bike.user.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                                        <div
+                                            className="avatar avatar-md"
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                fontWeight: 700,
+                                                background: bike.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                                overflow: "hidden",
+                                                color: "white"
+                                            }}
+                                        >
+                                            {bike.user.image ? (
+                                                /* eslint-disable-next-line @next/next/no-img-element */
+                                                <img 
+                                                    src={bike.user.image} 
+                                                    alt={bike.user.name || "User"} 
+                                                    style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                                                />
+                                            ) : (
+                                                bike.user.name?.charAt(0).toUpperCase() ?? "U"
+                                            )}
+                                        </div>
+                                    </Link>
                                     <div>
-                                        <div className="text-body">{bike.user.name || "FixMyBike user"}</div>
+                                        <Link href={`/users/${bike.user.id}`} className="text-body hover-underline" style={{ fontWeight: 600 }}>
+                                            {bike.user.name || "FixMyBike user"}
+                                        </Link>
                                         <div className="text-sm text-secondary-color">📍 {bike.location}</div>
                                     </div>
                                 </div>
