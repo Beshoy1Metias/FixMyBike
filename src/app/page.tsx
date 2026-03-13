@@ -222,7 +222,7 @@ export default async function Home() {
             <div className={styles.founderContent}>
               <h2 className="text-heading-1">{t.founderTitle}</h2>
               <p className="text-body" style={{ lineHeight: 1.8, fontSize: "1.1rem" }}>
-                "{t.founderBody}"
+                &quot;{t.founderBody}&quot;
               </p>
               <div style={{ marginTop: "var(--space-6)" }}>
                 <p className="text-heading-3" style={{ marginBottom: "2px" }}>{t.founderName}</p>

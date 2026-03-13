@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
 import FadeIn from "@/components/Animations/FadeIn";
 import StaggerContainer from "@/components/Animations/StaggerContainer";
@@ -77,21 +77,19 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 }
 
 function isShopOpen() {
-    const now = new Date();
-    const day = now.getDay();
-    const hour = now.getHours();
-    const mins = now.getMinutes();
-    const time = hour + mins / 60;
-    
-    if (day === 0) return false;
-    
-    // Typical Italian shop hours: 09:00-13:00, 15:30-19:30
-    const morningOpen = 9;
-    const morningClose = 13;
-    const afternoonOpen = 15.5;
-    const afternoonClose = 19.5;
-    
-    return (time >= morningOpen && time < morningClose) || (time >= afternoonOpen && time < afternoonClose);
+    try {
+        const padovaTime = new Date().toLocaleString("en-US", { timeZone: "Europe/Rome" });
+        const now = new Date(padovaTime);
+        const day = now.getDay();
+        const hour = now.getHours();
+        const mins = now.getMinutes();
+        const time = hour + mins / 60;
+        if (day === 0) return false;
+        return time >= 9 && time < 19.5;
+    } catch {
+        const hour = new Date().getHours();
+        return hour >= 9 && hour < 19;
+    }
 }
 
 function getDirectionsUrl(lat: number, lng: number, address: string) {
@@ -108,7 +106,12 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [sortByDistance, setSortByDistance] = useState(false);
     const [loadingLocation, setLoadingLocation] = useState(false);
+    const [openNow, setOpenNow] = useState(false);
     const t = UI_TEXT[lang];
+
+    useEffect(() => {
+        setOpenNow(isShopOpen());
+    }, []);
 
     const handleNearMe = () => {
         // Trigger immediately as the first line to guarantee Safari recognizes the user gesture
@@ -177,8 +180,6 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
             price: `⭐ ${shop.rating}`
         }));
     }, [filteredShops]);
-
-    const openNow = isShopOpen();
 
     return (
         <div className="section">
