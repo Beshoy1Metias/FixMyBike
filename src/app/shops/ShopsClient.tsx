@@ -111,61 +111,36 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
     const t = UI_TEXT[lang];
 
     const handleNearMe = () => {
-        if (!navigator.geolocation) {
-            alert("Geolocation is not supported by your browser");
-            return;
-        }
+        // Trigger immediately as the first line to guarantee Safari recognizes the user gesture
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setUserLocation({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                });
+                setSortByDistance(true);
+                setLoadingLocation(false);
+            },
+            (error) => {
+                setLoadingLocation(false);
+                console.error("Geolocation error:", error);
+                
+                // Minimal, clear error message
+                if (error.code === 1) {
+                    alert("Location access was denied. Please check your browser or phone settings.");
+                } else {
+                    alert("Could not determine your location. Please try again.");
+                }
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
 
-        // Geolocation requires HTTPS on most mobile browsers
-        if (typeof window !== "undefined" && window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
-            alert("⚠️ Secure Connection Required\n\nLocation services only work over HTTPS. Please ensure you are using a secure 'https://' link.");
-            return;
-        }
-
+        // Update UI state after triggering the native prompt
         setLoadingLocation(true);
-
-        const options = {
-            enableHighAccuracy: true,
-            timeout: 8000,
-            maximumAge: 0
-        };
-
-        const successCallback = (position: GeolocationPosition) => {
-            setUserLocation({
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            });
-            setSortByDistance(true);
-            setLoadingLocation(false);
-        };
-
-        const errorCallback = (error: GeolocationPositionError) => {
-            // Fallback: If high accuracy fails/times out, try again with low accuracy
-            if (options.enableHighAccuracy && (error.code === 3 || error.code === 2)) {
-                console.warn("High accuracy failed, retrying with low accuracy...");
-                navigator.geolocation.getCurrentPosition(successCallback, (err) => {
-                    setLoadingLocation(false);
-                    alert("Location unavailable even with low accuracy.");
-                }, { enableHighAccuracy: false, timeout: 5000 });
-                return;
-            }
-
-            setLoadingLocation(false);
-            if (error.code === 1) {
-                alert(
-                    "📍 Location Prompt Not Showing?\n\n" +
-                    "If Safari isn't asking for permission, it might be blocked in your settings:\n\n" +
-                    "1. Tap the 'AA' (or the 🧩 icon) in the Safari address bar.\n" +
-                    "2. Tap 'Website Settings'.\n" +
-                    "3. Set 'Location' to 'Ask' or 'Allow'.\n" +
-                    "4. Refresh the page and try again."
-                );
-            } else {
-                alert("Could not get your location. Please check your signal and try again.");
-            }
-        };
-
-        navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options);
     };
 
     const filteredShops = useMemo(() => {
