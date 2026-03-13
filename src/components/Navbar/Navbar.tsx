@@ -194,7 +194,7 @@ export default function Navbar() {
                                     <div className={styles.userRow}>
                                         <Link href="/messages" className={styles.userBtn} aria-label="Messages" style={{ background: "none", color: "var(--text-secondary)" }}>
                                             <div className={styles.msgIconWrapper}>
-                                                <span style={{ fontSize: "1.2rem" }}>✉️</span>
+                                                <div className={styles.messageIcon} />
                                                 {unreadCount > 0 && <span className={styles.badge}>{unreadCount}</span>}
                                             </div>
                                         </Link>
