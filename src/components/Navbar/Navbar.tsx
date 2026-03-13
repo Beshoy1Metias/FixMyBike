@@ -14,12 +14,12 @@ import NotificationToast from "@/components/NotificationToast/NotificationToast"
 
 const NAV_TEXT = {
     en: {
-        mechanics: "Find a Mechanic",
-        parts: "Parts & Gear",
-        bikes: "Bikes for Sale",
-        wanted: "Wanted Bikes",
+        mechanics: "Mechanics",
+        parts: "Parts",
+        bikes: "Bikes",
+        wanted: "Wanted",
         community: "Community",
-        shops: "Bike Shops",
+        shops: "Shops",
         dashboard: "Dashboard",
         postListing: "Post a Listing",
         messages: "Messages",
@@ -27,17 +27,17 @@ const NAV_TEXT = {
         signOut: "Sign Out",
         logIn: "Log In",
         signUp: "Sign Up",
-        signUpFree: "Sign Up Free",
+        signUpFree: "Sign up free",
     },
     it: {
-        mechanics: "Trova un meccanico",
-        parts: "Ricambi & accessori",
-        bikes: "Bici in vendita",
-        wanted: "Cerco bici",
+        mechanics: "Meccanici",
+        parts: "Ricambi",
+        bikes: "Bici",
+        wanted: "Cerco",
         community: "Community",
-        shops: "Negozi Bici",
+        shops: "Negozi",
         dashboard: "Dashboard",
-        postListing: "Pubblica un annuncio",
+        postListing: "Pubblica annuncio",
         messages: "Messaggi",
         profile: "Profilo",
         signOut: "Esci",
@@ -73,13 +73,11 @@ export default function Navbar() {
 
     useEffect(() => {
         if (session?.user?.id) {
-            // Use a separate async function to avoid lint warning about sync state updates in effect
             const init = async () => {
                 await fetchUnreadCount();
             };
             init();
             
-            // Subscribe to personal pusher channel for notifications
             const pusher = getPusherClient();
             const channel = pusher.subscribe(`user-${session.user.id}`);
             
@@ -100,7 +98,6 @@ export default function Navbar() {
         }
     }, [session?.user?.id, fetchUnreadCount]);
 
-    // Lock body scroll when menu is open
     useEffect(() => {
         if (menuOpen) {
             document.body.style.overflow = "hidden";
@@ -121,55 +118,35 @@ export default function Navbar() {
                     <button className={styles.closeBtn} onClick={() => setMenuOpen(false)}>✕</button>
                 </div>
                 <div className={styles.mobileMenuBody}>
-                    <Link href="/mechanics" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                        🔧 {t.mechanics}
-                    </Link>
-                    <Link href="/parts" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                        ⚙️ {t.parts}
-                    </Link>
-                    <Link href="/bikes" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                        🚲 {t.bikes}
-                    </Link>
-                    <Link href="/wanted" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                        🔍 {t.wanted}
-                    </Link>
-                    <Link href="/community" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                        💬 {t.community}
-                    </Link>
-                    <Link href="/shops" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                        📍 {t.shops}
-                    </Link>
+                    <Link href="/mechanics" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.mechanics}</Link>
+                    <Link href="/parts" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.parts}</Link>
+                    <Link href="/bikes" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.bikes}</Link>
+                    <Link href="/wanted" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.wanted}</Link>
+                    <Link href="/shops" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.shops}</Link>
+                    <Link href="/community" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.community}</Link>
                     
                     <div className={styles.mobileDivider} />
                     
                     {session ? (
                         <>
-                            <Link href="/listings/new" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                                ➕ {t.postListing}
-                            </Link>
-                            <Link href="/dashboard" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                                👤 {t.dashboard}
-                            </Link>
+                            <Link href="/listings/new" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.postListing}</Link>
+                            <Link href="/dashboard" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.dashboard}</Link>
                             <Link href="/messages" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                                <div className={styles.msgIconWrapper}>
-                                    💬 {t.messages}
-                                    {unreadCount > 0 && <span className={styles.badge}>{unreadCount}</span>}
-                                </div>
+                                {t.messages}
+                                {unreadCount > 0 && <span className={styles.badge} style={{ position: "static", marginLeft: "8px", transform: "none" }}>{unreadCount}</span>}
                             </Link>
-                            <Link href="/profile" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                                ⚙️ {t.profile}
-                            </Link>
+                            <Link href="/profile" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.profile}</Link>
                             <button
                                 className={`${styles.mobileLink} ${styles.signOutBtnMobile}`}
                                 onClick={() => { signOut({ callbackUrl: "/" }); setMenuOpen(false); }}
                             >
-                                🚪 {t.signOut}
+                                {t.signOut}
                             </button>
                         </>
                     ) : (
                         <>
-                            <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>🔑 {t.logIn}</Link>
-                            <Link href="/auth/register" className={`${styles.mobileLink} ${styles.mobileLinkPrimary}`} onClick={() => setMenuOpen(false)}>✨ {t.signUpFree}</Link>
+                            <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.logIn}</Link>
+                            <Link href="/auth/register" className={`${styles.mobileLink} ${styles.mobileLinkPrimary}`} onClick={() => setMenuOpen(false)}>{t.signUpFree}</Link>
                         </>
                     )}
                 </div>
@@ -181,13 +158,12 @@ export default function Navbar() {
         <>
             <nav className={styles.navbar}>
                 <div className={`container ${styles.inner}`}>
-                    {/* Logo */}
                     <Link href="/" className={styles.logo}>
                         <Image 
                             src="/logo.png" 
-                            alt="FixMyBike Logo" 
-                            width={40} 
-                            height={40} 
+                            alt="FixMyBike" 
+                            width={32} 
+                            height={32} 
                             className={styles.logoImage}
                             priority
                             unoptimized
@@ -197,117 +173,70 @@ export default function Navbar() {
                         </span>
                     </Link>
 
-                    {/* Desktop Nav Links */}
-                    <ul className={styles.links}>
-                        <li>
-                            <Link href="/mechanics" className={styles.link}>
-                                <span className={styles.linkIcon}>🔧</span>
-                                {t.mechanics}
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/parts" className={styles.link}>
-                                <span className={styles.linkIcon}>⚙️</span>
-                                {t.parts}
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/bikes" className={styles.link}>
-                                <span className={styles.linkIcon}>🚲</span>
-                                {t.bikes}
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/wanted" className={styles.link}>
-                                <span className={styles.linkIcon}>🔍</span>
-                                {t.wanted}
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/community" className={styles.link}>
-                                <span className={styles.linkIcon}>💬</span>
-                                {t.community}
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/shops" className={styles.link}>
-                                <span className={styles.linkIcon}>📍</span>
-                                {t.shops}
-                            </Link>
-                        </li>
-                    </ul>
+                    <div className={styles.navSection}>
+                        <ul className={styles.links}>
+                            <li><Link href="/mechanics" className={styles.link}>{t.mechanics}</Link></li>
+                            <li><Link href="/bikes" className={styles.link}>{t.bikes}</Link></li>
+                            <li><Link href="/parts" className={styles.link}>{t.parts}</Link></li>
+                            <li><Link href="/wanted" className={styles.link}>{t.wanted}</Link></li>
+                            <li><Link href="/shops" className={styles.link}>{t.shops}</Link></li>
+                        </ul>
 
-                    {/* Auth Area */}
-                    <div className={styles.authArea}>
-                        <LanguageSwitcher />
-                        {status === "loading" ? (
-                            <div className="spinner" />
-                        ) : session ? (
-                            <div className={styles.userRow}>
-                                <Link href="/messages" className={styles.userBtn} aria-label="Messages">
-                                    <div className={styles.msgIconWrapper}>
-                                        💬
-                                        {unreadCount > 0 && <span className={styles.badge}>{unreadCount}</span>}
+                        <div className={styles.userActions}>
+                            <Link href="/community" className={styles.link}>{t.community}</Link>
+                            <div style={{ height: "20px", width: "1px", background: "var(--border)" }} />
+                            
+                            <div className={styles.authArea} style={{ gap: "var(--space-4)" }}>
+                                <LanguageSwitcher />
+                                {status === "loading" ? (
+                                    <div className="spinner" />
+                                ) : session ? (
+                                    <div className={styles.userRow}>
+                                        <Link href="/messages" className={styles.userBtn} aria-label="Messages" style={{ background: "none", color: "var(--text-secondary)" }}>
+                                            <div className={styles.msgIconWrapper}>
+                                                <span style={{ fontSize: "1.2rem" }}>✉️</span>
+                                                {unreadCount > 0 && <span className={styles.badge}>{unreadCount}</span>}
+                                            </div>
+                                        </Link>
+                                        <div className={styles.userMenu}>
+                                            <div 
+                                                className={styles.userBtn}
+                                                style={{ 
+                                                    background: session.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
+                                                    overflow: "hidden",
+                                                    width: "36px",
+                                                    height: "36px"
+                                                }}
+                                            >
+                                                {session.user.image ? (
+                                                    /* eslint-disable-next-line @next/next/no-img-element */
+                                                    <img src={session.user.image} alt={session.user.name || "User"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                                ) : (
+                                                    <span style={{ fontSize: "0.9rem" }}>{session.user.name?.charAt(0).toUpperCase() ?? "U"}</span>
+                                                )}
+                                            </div>
+                                            <div className={styles.dropdown}>
+                                                <Link href="/dashboard" className={styles.dropdownItem}>{t.dashboard}</Link>
+                                                <Link href="/listings/new" className={styles.dropdownItem}>{t.postListing}</Link>
+                                                <Link href="/messages" className={styles.dropdownItem}>{t.messages}</Link>
+                                                <Link href="/profile" className={styles.dropdownItem}>{t.profile}</Link>
+                                                <button className={`${styles.dropdownItem} ${styles.signOutBtn}`} onClick={() => signOut({ callbackUrl: "/" })}>{t.signOut}</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </Link>
-                                <div className={styles.userMenu}>
-                                    <div 
-                                        className={styles.userBtn}
-                                        style={{ 
-                                            background: session.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
-                                            overflow: "hidden",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            color: "white",
-                                            fontWeight: 700
-                                        }}
-                                    >
-                                        {session.user.image ? (
-                                            /* eslint-disable-next-line @next/next/no-img-element */
-                                            <img 
-                                                src={session.user.image} 
-                                                alt={session.user.name || "User"} 
-                                                style={{ width: "100%", height: "100%", objectFit: "cover" }} 
-                                            />
-                                        ) : (
-                                            <span>{session.user.name?.charAt(0).toUpperCase() ?? "U"}</span>
-                                        )}
+                                ) : (
+                                    <div className={styles.authButtons}>
+                                        <Link href="/auth/login" className="btn btn-ghost btn-sm">{t.logIn}</Link>
+                                        <Link href="/auth/register" className="btn btn-primary btn-sm">{t.signUp}</Link>
                                     </div>
-                                    <div className={styles.dropdown}>
-                                        <Link href="/dashboard" className={styles.dropdownItem}>{t.dashboard}</Link>
-                                        <Link href="/listings/new" className={styles.dropdownItem}>{t.postListing}</Link>
-                                        <Link href="/messages" className={styles.dropdownItem}>{t.messages}</Link>
-                                        <Link href="/profile" className={styles.dropdownItem}>{t.profile}</Link>
-                                        <button
-                                            className={`${styles.dropdownItem} ${styles.signOutBtn}`}
-                                            onClick={() => signOut({ callbackUrl: "/" })}
-                                        >
-                                            {t.signOut}
-                                        </button>
-                                    </div>
-                                </div>
+                                )}
                             </div>
-                        ) : (
-                            <div className={styles.authButtons}>
-                                <Link href="/auth/login" className="btn btn-secondary btn-sm">
-                                    {t.logIn}
-                                </Link>
-                                <Link href="/auth/register" className="btn btn-primary btn-sm">
-                                    {t.signUp}
-                                </Link>
-                            </div>
-                        )}
+                        </div>
                     </div>
 
-                    {/* Mobile Actions (Visible on small screens) */}
                     <div className={styles.mobileActions}>
                         <LanguageSwitcher />
-                        <button
-                            className={styles.hamburger}
-                            onClick={() => setMenuOpen(!menuOpen)}
-                            aria-label="Toggle menu"
-                        >
+                        <button className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
                             <span className={menuOpen ? styles.barOpen : styles.bar} />
                             <span className={menuOpen ? styles.barHide : styles.bar} />
                             <span className={menuOpen ? styles.barOpenBottom : styles.bar} />

@@ -43,6 +43,13 @@
 }
 
 /* --- Desktop Nav Links --- */
+.navSection {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: space-between;
+}
+
 .links {
     display: flex;
     align-items: center;
@@ -50,20 +57,26 @@
     margin: 0;
     padding: 0;
     list-style: none;
-    flex: 1;
+}
+
+.userActions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
 }
 
 .link {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-    font-weight: 500;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
     color: var(--text-secondary);
     transition: var(--transition-fast);
     white-space: nowrap;
+    text-decoration: none;
+    letter-spacing: 0.01em;
 }
 
 .link:hover {
@@ -71,8 +84,9 @@
     background: var(--surface-2);
 }
 
-.linkIcon {
-    font-size: 1rem;
+.linkActive {
+    color: var(--color-primary-light);
+    background: rgba(255, 92, 40, 0.1);
 }
 
 /* --- Auth Area --- */
