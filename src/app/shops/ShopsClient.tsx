@@ -116,6 +116,12 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
             return;
         }
 
+        // Geolocation requires HTTPS on most mobile browsers
+        if (typeof window !== "undefined" && window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
+            alert("Location services require a secure connection (HTTPS). Please ensure you are using a secure link.");
+            return;
+        }
+
         setLoadingLocation(true);
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -128,10 +134,16 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
             },
             (error) => {
                 setLoadingLocation(false);
+                console.error("Geolocation Error:", error);
+                
                 let msg = "Could not get your location.";
-                if (error.code === 1) msg = "Location permission denied. Please enable it in your settings.";
-                else if (error.code === 2) msg = "Location unavailable.";
-                else if (error.code === 3) msg = "Location request timed out.";
+                if (error.code === 1) {
+                    msg = "Location permission denied. Please:\n1. Check your browser settings\n2. Ensure 'Location Services' is ON in iPhone Settings > Privacy\n3. Refresh and 'Allow' when prompted.";
+                } else if (error.code === 2) {
+                    msg = "Location unavailable. Your device couldn't find a signal.";
+                } else if (error.code === 3) {
+                    msg = "Location request timed out. Try again.";
+                }
                 alert(msg);
             },
             {
