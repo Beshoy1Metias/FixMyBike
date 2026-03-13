@@ -19,6 +19,7 @@ const NAV_TEXT = {
         bikes: "Bikes for Sale",
         wanted: "Wanted Bikes",
         community: "Community",
+        shops: "Bike Shops",
         dashboard: "Dashboard",
         postListing: "Post a Listing",
         messages: "Messages",
@@ -34,6 +35,7 @@ const NAV_TEXT = {
         bikes: "Bici in vendita",
         wanted: "Cerco bici",
         community: "Community",
+        shops: "Negozi Bici",
         dashboard: "Dashboard",
         postListing: "Pubblica un annuncio",
         messages: "Messaggi",
@@ -134,6 +136,9 @@ export default function Navbar() {
                     <Link href="/community" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
                         💬 {t.community}
                     </Link>
+                    <Link href="/shops" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+                        📍 {t.shops}
+                    </Link>
                     
                     <div className={styles.mobileDivider} />
                     
@@ -222,6 +227,12 @@ export default function Navbar() {
                             <Link href="/community" className={styles.link}>
                                 <span className={styles.linkIcon}>💬</span>
                                 {t.community}
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/shops" className={styles.link}>
+                                <span className={styles.linkIcon}>📍</span>
+                                {t.shops}
                             </Link>
                         </li>
                     </ul>
