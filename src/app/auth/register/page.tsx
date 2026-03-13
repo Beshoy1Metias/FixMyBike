@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import styles from "../auth.module.css";
@@ -81,7 +82,9 @@ export default function RegisterPage() {
         <div className={styles.page}>
             <div className={styles.card}>
                 <div className={styles.cardHead}>
-                    <Link href="/" className={styles.logoLink}>🔧 FixMyBike</Link>
+                    <Link href="/" className={styles.logoLink}>
+                        <Image src="/logo.png" alt="FixMyBike" width={40} height={40} priority unoptimized />
+                    </Link>
                     <h1 className={styles.title}>{t.title}</h1>
                     <p className={styles.subtitle}>{t.subtitle}</p>
                 </div>

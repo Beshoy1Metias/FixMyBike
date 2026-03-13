@@ -16,6 +16,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://fix-my-bike.it"),
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
   title: {
     default: "FixMyBike Padova — Bici, Meccanici & Ricambi a Padova",
     template: "%s | FixMyBike Padova",
