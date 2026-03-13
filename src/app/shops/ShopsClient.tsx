@@ -20,6 +20,7 @@ interface Shop {
     image_url: string;
     lat: number;
     lng: number;
+    phone?: string;
     distance?: number;
 }
 
@@ -30,32 +31,41 @@ interface ShopsClientProps {
 
 const UI_TEXT = {
     en: {
-        title: "Bike Shops in Padova",
-        subtitle: "Find professional repair services and quality parts near you.",
+        title: "Bike Shops & Repair",
+        subtitle: "Expert bike services across Padova.",
         nearMe: "Near Me",
         allShops: "All Shops",
         openNow: "Open Now",
-        km: "km away",
-        viewOnMap: "View on Map",
-        noShops: "No shops found matching your criteria.",
-        loadingLocation: "Getting your location...",
+        km: "km",
+        viewOnMap: "Map",
+        directions: "Directions",
+        call: "Call",
+        noShops: "No shops found.",
+        loadingLocation: "Locating...",
+        searchPlaceholder: "Search by name or street...",
+        open: "Open",
+        closed: "Closed",
     },
     it: {
-        title: "Negozi di Bici a Padova",
-        subtitle: "Trova servizi di riparazione professionali e ricambi di qualità vicino a te.",
+        title: "Negozi e Riparazioni",
+        subtitle: "Servizi esperti per la tua bici a Padova.",
         nearMe: "Vicino a Me",
         allShops: "Tutti i Negozi",
         openNow: "Aperti Ora",
-        km: "km di distanza",
-        viewOnMap: "Vedi sulla Mappa",
-        noShops: "Nessun negozio trovato con i tuoi criteri.",
-        loadingLocation: "Ottenendo la tua posizione...",
+        km: "km",
+        viewOnMap: "Mappa",
+        directions: "Indicazioni",
+        call: "Chiama",
+        noShops: "Nessun negozio trovato.",
+        loadingLocation: "Localizzazione...",
+        searchPlaceholder: "Cerca per nome o via...",
+        open: "Aperto",
+        closed: "Chiuso",
     }
 };
 
-// Haversine formula to calculate distance between two coordinates in km
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
-    const R = 6371; // Radius of the earth in km
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = 
@@ -66,170 +76,212 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
     return R * c;
 }
 
-// Helper to check if a shop is "Open Now" (Mock logic: 9 AM - 7 PM, Mon-Sat)
 function isShopOpen() {
     const now = new Date();
-    const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const day = now.getDay();
     const hour = now.getHours();
+    const mins = now.getMinutes();
+    const time = hour + mins / 60;
     
-    // Closed on Sundays
     if (day === 0) return false;
     
-    // Open 09:00 to 19:00
-    return hour >= 9 && hour < 19;
+    // Typical Italian shop hours: 09:00-13:00, 15:30-19:30
+    const morningOpen = 9;
+    const morningClose = 13;
+    const afternoonOpen = 15.5;
+    const afternoonClose = 19.5;
+    
+    return (time >= morningOpen && time < morningClose) || (time >= afternoonOpen && time < afternoonClose);
+}
+
+function getDirectionsUrl(lat: number, lng: number, address: string) {
+    const isIOS = typeof window !== "undefined" && /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+        return `maps://maps.apple.com/?daddr=${lat},${lng}&q=${encodeURIComponent(address)}`;
+    }
+    return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 }
 
 export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
     const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
     const [filterOpen, setFilterOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     const [sortByDistance, setSortByDistance] = useState(false);
     const [loadingLocation, setLoadingLocation] = useState(false);
     const t = UI_TEXT[lang];
 
     const handleNearMe = () => {
-        if (navigator.geolocation) {
-            setLoadingLocation(true);
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setUserLocation({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    });
-                    setSortByDistance(true);
-                    setLoadingLocation(false);
-                },
-                (error) => {
-                    console.error("Geolocation error:", error);
-                    setLoadingLocation(false);
-                    alert("Could not get your location. Please ensure location services are enabled.");
-                }
-            );
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser");
+            return;
         }
+
+        setLoadingLocation(true);
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setUserLocation({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                });
+                setSortByDistance(true);
+                setLoadingLocation(false);
+            },
+            (error) => {
+                setLoadingLocation(false);
+                let msg = "Could not get your location.";
+                if (error.code === 1) msg = "Location permission denied. Please enable it in your settings.";
+                else if (error.code === 2) msg = "Location unavailable.";
+                else if (error.code === 3) msg = "Location request timed out.";
+                alert(msg);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
     };
 
-    const shopsWithDistance = useMemo(() => {
-        const result = initialShops.map(shop => {
-            if (userLocation) {
-                return {
-                    ...shop,
-                    distance: calculateDistance(userLocation.lat, userLocation.lng, shop.lat, shop.lng)
-                };
-            }
-            return shop;
-        });
+    const filteredShops = useMemo(() => {
+        let result = initialShops.map(shop => ({
+            ...shop,
+            distance: userLocation ? calculateDistance(userLocation.lat, userLocation.lng, shop.lat, shop.lng) : undefined
+        }));
 
-        if (filterOpen) {
-            const isOpen = isShopOpen();
-            if (!isOpen) return []; // If globally closed (e.g. Sunday or night), show none
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            result = result.filter(s => s.name.toLowerCase().includes(q) || s.address.toLowerCase().includes(q));
         }
+
+        const openStatus = isShopOpen();
+        if (filterOpen && !openStatus) return [];
 
         if (sortByDistance && userLocation) {
             result.sort((a, b) => (a.distance || 0) - (b.distance || 0));
         } else {
-            // Default sort by rating
             result.sort((a, b) => b.rating - a.rating);
         }
 
         return result;
-    }, [initialShops, userLocation, filterOpen, sortByDistance]);
+    }, [initialShops, userLocation, filterOpen, sortByDistance, searchQuery]);
 
     const mapListings = useMemo(() => {
-        return shopsWithDistance.map(shop => ({
+        return filteredShops.map(shop => ({
             id: shop.id,
             title: shop.name,
             latitude: shop.lat,
             longitude: shop.lng,
             image: shop.image_url,
-            href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shop.address)}`,
+            href: getDirectionsUrl(shop.lat, shop.lng, shop.address),
             price: `⭐ ${shop.rating}`
         }));
-    }, [shopsWithDistance]);
+    }, [filteredShops]);
+
+    const openNow = isShopOpen();
 
     return (
         <div className="section">
             <div className="container">
-                <div className="page-header" style={{ textAlign: "left", paddingBottom: "var(--space-8)" }}>
-                    <h1 className="text-heading-1">{t.title}</h1>
-                    <p className="text-body-lg">{t.subtitle}</p>
-                    
-                    <div style={{ display: "flex", gap: "var(--space-3)", marginTop: "var(--space-6)", flexWrap: "wrap" }}>
-                        <button 
-                            className={`btn ${sortByDistance ? "btn-primary" : "btn-secondary"}`}
-                            onClick={handleNearMe}
-                            disabled={loadingLocation}
-                        >
-                            {loadingLocation ? t.loadingLocation : `📍 ${t.nearMe}`}
-                        </button>
-                        <button 
-                            className={`btn ${filterOpen ? "btn-primary" : "btn-secondary"}`}
-                            onClick={() => setFilterOpen(!filterOpen)}
-                        >
-                            🕒 {t.openNow}
-                        </button>
-                        {sortByDistance && (
-                            <button className="btn btn-ghost" onClick={() => {setSortByDistance(false); setUserLocation(null);}}>
-                                ✕ {t.allShops}
+                <div style={{ marginBottom: "var(--space-8)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-4)" }}>
+                        <div>
+                            <h1 className="text-heading-1">{t.title}</h1>
+                            <p className="text-body-lg">{t.subtitle}</p>
+                        </div>
+                        <div style={{ display: "flex", gap: "var(--space-2)" }}>
+                            <button 
+                                className={`btn btn-sm ${sortByDistance ? "btn-primary" : "btn-secondary"}`}
+                                onClick={handleNearMe}
+                                disabled={loadingLocation}
+                            >
+                                {loadingLocation ? t.loadingLocation : `📍 ${t.nearMe}`}
                             </button>
-                        )}
+                            <button 
+                                className={`btn btn-sm ${filterOpen ? "btn-primary" : "btn-secondary"}`}
+                                onClick={() => setFilterOpen(!filterOpen)}
+                            >
+                                🕒 {t.openNow}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style={{ marginTop: "var(--space-6)" }}>
+                        <input 
+                            type="text"
+                            className="form-input"
+                            placeholder={t.searchPlaceholder}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{ maxWidth: "500px" }}
+                        />
                     </div>
                 </div>
 
                 <div className="grid-details">
-                    {/* Left: List of shops */}
                     <div style={{ maxHeight: "800px", overflowY: "auto", paddingRight: "var(--space-2)" }}>
                         <StaggerContainer style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-                            {shopsWithDistance.length > 0 ? (
-                                shopsWithDistance.map((shop) => (
+                            {filteredShops.length > 0 ? (
+                                filteredShops.map((shop) => (
                                     <FadeIn key={shop.id}>
-                                        <div className="card" style={{ display: "flex", gap: "var(--space-4)", padding: "var(--space-4)" }}>
-                                            <div style={{ width: "120px", height: "120px", flexShrink: 0, borderRadius: "var(--radius)", overflow: "hidden", position: "relative" }}>
-                                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                <img 
-                                                    src={shop.image_url} 
-                                                    alt={shop.name} 
-                                                    style={{ width: "100%", height: "100%", objectFit: "cover" }} 
-                                                />
-                                            </div>
-                                            <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                                                <div>
-                                                    <h3 className="text-heading-3" style={{ marginBottom: "2px" }}>{shop.name}</h3>
-                                                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-1)" }}>
+                                        <div className="card" style={{ padding: "var(--space-4)" }}>
+                                            <div style={{ display: "flex", gap: "var(--space-4)" }}>
+                                                <div style={{ width: "100px", height: "100px", flexShrink: 0, borderRadius: "var(--radius)", overflow: "hidden", position: "relative" }}>
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                    <img src={shop.image_url} alt={shop.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                                        <h3 className="text-heading-3">{shop.name}</h3>
+                                                        <span className={`badge ${openNow ? "badge-success" : "badge-gray"}`}>
+                                                            {openNow ? t.open : t.closed}
+                                                        </span>
+                                                    </div>
+                                                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", margin: "4px 0" }}>
                                                         <StarRating rating={shop.rating} size="sm" />
                                                         <span className="text-sm" style={{ fontWeight: 600 }}>{shop.rating}</span>
                                                     </div>
-                                                    <p className="text-xs text-secondary-color" style={{ marginBottom: "var(--space-2)" }}>
-                                                        📍 {shop.address}
-                                                    </p>
-                                                </div>
-                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                                                    <p className="text-xs text-secondary-color">📍 {shop.address}</p>
+                                                    
                                                     {shop.distance !== undefined && (
-                                                        <span className="badge badge-accent">
-                                                            {shop.distance.toFixed(1)} {t.km}
-                                                        </span>
+                                                        <div style={{ marginTop: "4px" }}>
+                                                            <span className="text-xs" style={{ color: "var(--color-primary)", fontWeight: 700 }}>
+                                                                {shop.distance.toFixed(1)} {t.km}
+                                                            </span>
+                                                        </div>
                                                     )}
-                                                    <a 
-                                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shop.address)}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="btn btn-ghost btn-sm"
-                                                        style={{ padding: "0 var(--space-2)", minHeight: "32px" }}
-                                                    >
-                                                        {t.viewOnMap} ↗
-                                                    </a>
                                                 </div>
+                                            </div>
+                                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--space-2)", marginTop: "var(--space-4)" }}>
+                                                <a href={getDirectionsUrl(shop.lat, shop.lng, shop.address)} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm" style={{ minHeight: "36px", fontSize: "0.8rem" }}>
+                                                    🗺️ {t.directions}
+                                                </a>
+                                                {shop.phone && (
+                                                    <a href={`tel:${shop.phone.replace(/\s+/g, '')}`} className="btn btn-secondary btn-sm" style={{ minHeight: "36px", fontSize: "0.8rem" }}>
+                                                        📞 {t.call}
+                                                    </a>
+                                                )}
+                                                <button 
+                                                    className="btn btn-ghost btn-sm" 
+                                                    style={{ minHeight: "36px", fontSize: "0.8rem" }}
+                                                    onClick={() => {
+                                                        const el = document.querySelector(".leaflet-container") as HTMLElement;
+                                                        if (el) {
+                                                            window.scrollTo({ top: el.offsetTop - 100, behavior: "smooth" });
+                                                        }
+                                                    }}
+                                                >
+                                                    📍 {t.viewOnMap}
+                                                </button>
                                             </div>
                                         </div>
                                     </FadeIn>
                                 ))
                             ) : (
-                                <div className="empty-state">
-                                    <p>{t.noShops}</p>
-                                </div>
+                                <div className="empty-state">{t.noShops}</div>
                             )}
                         </StaggerContainer>
                     </div>
 
-                    {/* Right: Map view */}
                     <div style={{ height: "600px", position: "sticky", top: "var(--space-4)" }}>
                         <Map 
                             listings={mapListings} 
