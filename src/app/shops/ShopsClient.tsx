@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import FadeIn from "@/components/Animations/FadeIn";
 import StaggerContainer from "@/components/Animations/StaggerContainer";
@@ -106,12 +106,8 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [sortByDistance, setSortByDistance] = useState(false);
     const [loadingLocation, setLoadingLocation] = useState(false);
-    const [openNow, setOpenNow] = useState(false);
+    const openNow = isShopOpen();
     const t = UI_TEXT[lang];
-
-    useEffect(() => {
-        setOpenNow(isShopOpen());
-    }, []);
 
     const handleNearMe = () => {
         // Trigger immediately as the first line to guarantee Safari recognizes the user gesture

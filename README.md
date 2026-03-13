@@ -64,7 +64,7 @@ The app is optimized for [Vercel](https://vercel.com/):
 | Variable | Description |
 | :--- | :--- |
 | `DATABASE_URL` | PostgreSQL connection string (include `?sslmode=require` for Neon). |
-| `NEXTAUTH_URL` | The base URL of your app (e.g., `https://your-app.vercel.app`). |
+| `NEXTAUTH_URL` | The base URL of your app (e.g., `https://fix-my-bike.it`). |
 | `NEXTAUTH_SECRET` | A random string used to hash tokens. |
 | `GOOGLE_CLIENT_ID` | Google OAuth Client ID. |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret. |

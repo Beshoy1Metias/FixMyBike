@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: "/",
             disallow: ["/api/", "/dashboard/"],
         },
-        sitemap: "https://fixmybike.com/sitemap.xml",
+        sitemap: "https://fix-my-bike.it/sitemap.xml",
     };
 }

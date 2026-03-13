@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = process.env.NEXTAUTH_URL || "https://fixmybike.com";
+    const baseUrl = process.env.NEXTAUTH_URL || "https://fix-my-bike.it";
 
     // Fetch dynamic routes
     const bikes = await prisma.bikeListing.findMany({ select: { id: true, updatedAt: true } });

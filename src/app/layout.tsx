@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://fix-my-bike-umber.vercel.app"),
+  metadataBase: new URL("https://fix-my-bike.it"),
   title: {
     default: "FixMyBike Padova — Bici, Meccanici & Ricambi a Padova",
     template: "%s | FixMyBike Padova",
