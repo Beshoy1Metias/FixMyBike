@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import MessageInAppButton from "@/components/MessageInAppButton/MessageInAppButton";
 import { getCurrentLanguage } from "@/lib/language";
 import ReviewSection from "@/components/ReviewSystem/ReviewSection";
+import ImageGallery from "@/components/ImageGallery/ImageGallery";
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -89,35 +90,10 @@ export default async function BikeDetailsPage({ params }: Props) {
     return (
         <div className="section">
             <div className="container">
-                <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "var(--space-10)" }}>
+                <div className="grid-details">
                     {/* Left: Photos */}
                     <div>
-                        <div style={{ borderRadius: "var(--radius-lg)", overflow: "hidden", aspectRatio: "16/10", background: "var(--surface-2)", marginBottom: "var(--space-4)" }}>
-                            {bike.photos.length > 0 ? (
-                                /* eslint-disable-next-line @next/next/no-img-element */
-                                <img
-                                    src={bike.photos.find(p => p.isPrimary)?.url || bike.photos[0].url}
-                                    alt={bike.title}
-                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                />
-                            ) : (
-                                <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-tertiary)" }}>
-                                    No Image
-                                </div>
-                            )}
-                        </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "var(--space-2)" }}>
-                            {bike.photos.map((photo) => (
-                                <div key={photo.id} style={{ borderRadius: "var(--radius)", overflow: "hidden", aspectRatio: "1/1", background: "var(--surface-2)" }}>
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                        src={photo.url}
-                                        alt={bike.title}
-                                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                    />
-                                </div>
-                            ))}
-                        </div>
+                        <ImageGallery photos={bike.photos} />
                     </div>
 
                     {/* Right: Info */}

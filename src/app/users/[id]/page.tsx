@@ -73,7 +73,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
     return (
         <div className="section">
             <div className="container">
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "var(--space-12)" }}>
+                <div className="grid-details">
                     {/* Left: User Info & Reviews */}
                     <div>
                         <FadeIn>
