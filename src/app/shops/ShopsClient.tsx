@@ -31,6 +31,7 @@ export interface Shop {
     };
     phone?: string;
     distance?: number;
+    isOpen?: boolean;
 }
 
 interface ShopsClientProps {
