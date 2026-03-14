@@ -22,6 +22,7 @@ const NAV_TEXT = {
         shops: "Shops",
         dashboard: "Dashboard",
         postListing: "Post a Listing",
+        postShort: "+ Post",
         messages: "Messages",
         profile: "Profile",
         signOut: "Sign Out",
@@ -38,6 +39,7 @@ const NAV_TEXT = {
         shops: "Negozi",
         dashboard: "Dashboard",
         postListing: "Pubblica un annuncio",
+        postShort: "+ Pubblica",
         messages: "Messaggi",
         profile: "Profilo",
         signOut: "Esci",
@@ -77,10 +79,10 @@ export default function Navbar() {
                 await fetchUnreadCount();
             };
             init();
-            
+
             const pusher = getPusherClient();
             const channel = pusher.subscribe(`user-${session.user.id}`);
-            
+
             channel.bind("new-notification", (data: { type: string; text: string; senderName: string; conversationId: string }) => {
                 if (data.type === "MESSAGE") {
                     setNotification({
@@ -113,14 +115,14 @@ export default function Navbar() {
         <AnimatePresence>
             {menuOpen && (
                 <>
-                    <motion.div 
-                        className={styles.backdrop} 
+                    <motion.div
+                        className={styles.backdrop}
                         onClick={() => setMenuOpen(false)}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     />
-                    <motion.div 
+                    <motion.div
                         className={styles.mobileMenu}
                         initial={{ x: "100%" }}
                         animate={{ x: 0 }}
@@ -138,9 +140,9 @@ export default function Navbar() {
                             <Link href="/wanted" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.wanted}</Link>
                             <Link href="/shops" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.shops}</Link>
                             <Link href="/community" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.community}</Link>
-                            
+
                             <div className={styles.mobileDivider} />
-                            
+
                             {session ? (
                                 <>
                                     <Link href="/listings/new" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.postListing}</Link>
@@ -175,11 +177,11 @@ export default function Navbar() {
             <nav className={styles.navbar}>
                 <div className={`container ${styles.inner}`}>
                     <Link href="/" className={styles.logo}>
-                        <Image 
-                            src="/logo.svg" 
-                            alt="FixMyBike" 
-                            width={32} 
-                            height={32} 
+                        <Image
+                            src="/logo.svg"
+                            alt="FixMyBike"
+                            width={32}
+                            height={32}
                             className={styles.logoImage}
                             priority
                             unoptimized
@@ -201,13 +203,16 @@ export default function Navbar() {
                         <div className={styles.userActions}>
                             <Link href="/community" className={styles.link}>{t.community}</Link>
                             <div style={{ height: "20px", width: "1px", background: "var(--border)" }} />
-                            
+
                             <div className={styles.authArea} style={{ gap: "var(--space-4)" }}>
                                 <LanguageSwitcher />
                                 {status === "loading" ? (
                                     <div className="spinner" />
                                 ) : session ? (
                                     <div className={styles.userRow}>
+                                        <Link href="/listings/new" className={`btn btn-primary btn-sm ${styles.postBtn}`}>
+                                            {t.postShort}
+                                        </Link>
                                         <Link href="/messages" className={styles.userBtn} aria-label="Messages" style={{ background: "none", color: "var(--text-secondary)" }}>
                                             <div className={styles.msgIconWrapper}>
                                                 <div className={styles.messageIcon} />
@@ -215,11 +220,11 @@ export default function Navbar() {
                                             </div>
                                         </Link>
                                         <div className={styles.userMenu}>
-                                            <motion.div 
+                                            <motion.div
                                                 className={styles.userBtn}
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
-                                                style={{ 
+                                                style={{
                                                     background: session.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
                                                     overflow: "hidden",
                                                     width: "36px",

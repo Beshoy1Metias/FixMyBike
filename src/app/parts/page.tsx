@@ -41,19 +41,17 @@ export default async function PartsPage() {
         <div className="section">
             <div className="container">
                 {/* Header */}
-                <div className="page-header" style={{ textAlign: "left", paddingTop: "var(--space-12)", marginBottom: "var(--space-8)" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-4)" }}>
-                        <div>
-                            <span className="page-header__eyebrow">{t.eyebrow}</span>
-                            <h1 className="text-heading-1">{t.title}</h1>
-                            <p className="text-body-lg" style={{ maxWidth: 560 }}>
-                                {t.lead}
-                            </p>
-                        </div>
-                        <Link href="/parts/new" className="btn btn-primary">
-                            {t.sellPart}
-                        </Link>
+                <div className="page-listing-header">
+                    <div>
+                        <span className="page-header__eyebrow">{t.eyebrow}</span>
+                        <h1 className="text-heading-1">{t.title}</h1>
+                        <p className="text-body-lg page-listing-header__lead">
+                            {t.lead}
+                        </p>
                     </div>
+                    <Link href="/parts/new" className="btn btn-primary">
+                        {t.sellPart}
+                    </Link>
                 </div>
 
                 <PartsClient initialParts={parts} lang={lang} />

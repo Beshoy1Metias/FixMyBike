@@ -20,6 +20,8 @@ const TEXT = {
         title: "Dashboard",
         lead: "Manage your listings, profile, and activity.",
         postListing: "+ Post a Listing",
+        loginPrompt: "Please log in to view your dashboard.",
+        loginBtn: "Log In",
         offerMechanic: "Offer Mechanic Services",
         offerMechanicBody: "Create or update your mechanic profile to receive job requests.",
         sellPart: "Sell a Part",
@@ -41,6 +43,8 @@ const TEXT = {
         title: "Dashboard",
         lead: "Gestisci i tuoi annunci, il profilo meccanico e l'attività.",
         postListing: "+ Pubblica un annuncio",
+        loginPrompt: "Accedi per visualizzare la tua dashboard.",
+        loginBtn: "Accedi",
         offerMechanic: "Offri servizi di meccanico",
         offerMechanicBody: "Crea o aggiorna il tuo profilo meccanico per ricevere richieste di lavoro.",
         sellPart: "Vendi un ricambio",
@@ -69,9 +73,9 @@ export default async function DashboardPage() {
             <div className="section">
                 <div className="container">
                     <div className={styles.emptyState}>
-                        <p>Please log in to view your dashboard.</p>
+                        <p>{t.loginPrompt}</p>
                         <Link href="/auth/login" className="btn btn-primary" style={{ marginTop: "var(--space-4)" }}>
-                            Log In
+                            {t.loginBtn}
                         </Link>
                     </div>
                 </div>
@@ -130,7 +134,7 @@ export default async function DashboardPage() {
                                 </p>
                             </div>
                             <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
-                                <MechanicStatusBtn 
+                                <MechanicStatusBtn
                                     id={user.mechanicProfile.id}
                                     isAvailable={user.mechanicProfile.isAvailable}
                                     labelAvailable={t.markAvailable}
@@ -173,7 +177,7 @@ export default async function DashboardPage() {
                     </Link>
                 </div>
 
-                <DashboardClient 
+                <DashboardClient
                     bikes={bikes}
                     parts={parts}
                     wanted={wanted}

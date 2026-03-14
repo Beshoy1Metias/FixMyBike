@@ -20,6 +20,7 @@ interface ListingCardProps {
         variant: "sold" | "available";
     };
     isCompleted?: boolean;
+    completedLabel?: string;
 }
 
 export default function ListingCard({
@@ -35,9 +36,10 @@ export default function ListingCard({
     tags = [],
     statusAction,
     isCompleted = false,
+    completedLabel = "SOLD",
 }: ListingCardProps) {
     return (
-        <motion.div 
+        <motion.div
             className={`${styles.cardWrapper} ${isCompleted ? styles.completed : ""}`}
             whileHover={{ y: -5 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -57,7 +59,7 @@ export default function ListingCard({
                     )}
                     {isCompleted && (
                         <div className={styles.completedOverlay}>
-                            <span>SOLD</span>
+                            <span>{completedLabel}</span>
                         </div>
                     )}
                 </div>
@@ -84,7 +86,7 @@ export default function ListingCard({
                 </div>
             </Link>
             {statusAction && (
-                <button 
+                <button
                     onClick={statusAction.onClick}
                     className={`${styles.statusBtn} ${statusAction.variant === "sold" ? styles.btnSold : styles.btnAvail}`}
                 >

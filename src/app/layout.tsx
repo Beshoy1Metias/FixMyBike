@@ -7,6 +7,7 @@ import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { LanguageProvider } from "@/components/LanguageProvider/LanguageProvider";
 import PushNotificationProvider from "@/components/PushNotificationProvider/PushNotificationProvider";
+import { getCurrentLanguage } from "@/lib/language";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -54,13 +55,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang = await getCurrentLanguage();
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang={lang} className={inter.variable}>
       <body>
         <AuthProvider>
           <PushNotificationProvider />

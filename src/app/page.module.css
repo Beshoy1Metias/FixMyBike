@@ -56,6 +56,21 @@
     background: radial-gradient(circle, rgba(255, 92, 40, 0.18) 0%, rgba(255, 184, 0, 0.08) 50%, transparent 70%);
     border-radius: 50%;
     position: absolute;
+    animation: blobPulse 6s ease-in-out infinite;
+}
+
+@keyframes blobPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.08);
+        opacity: 0.8;
+    }
 }
 
 .heroStats {
@@ -74,6 +89,27 @@
     padding: var(--space-6);
     text-align: center;
     transition: var(--transition);
+    animation: floatCard 4s ease-in-out infinite;
+}
+
+.stat:nth-child(2) {
+    animation-delay: 0.8s;
+}
+
+.stat:nth-child(3) {
+    animation-delay: 1.6s;
+}
+
+@keyframes floatCard {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
 }
 
 .stat:hover {
@@ -162,6 +198,21 @@
     justify-content: center;
     border-radius: var(--radius-lg);
     margin-bottom: var(--space-2);
+}
+
+.categoryArrow {
+    font-size: 1.2rem;
+    color: var(--color-primary);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: var(--transition);
+    margin-top: auto;
+    display: inline-block;
+}
+
+.categoryCard:hover .categoryArrow {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 /* ---- FOUNDER NOTE ---- */
