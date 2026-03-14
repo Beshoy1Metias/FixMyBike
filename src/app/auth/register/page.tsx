@@ -83,7 +83,7 @@ export default function RegisterPage() {
             <div className={styles.card}>
                 <div className={styles.cardHead}>
                     <Link href="/" className={styles.logoLink}>
-                        <Image src="/logo.png" alt="FixMyBike" width={40} height={40} priority unoptimized />
+                        <Image src="/logo.svg" alt="FixMyBike" width={40} height={40} priority unoptimized />
                     </Link>
                     <h1 className={styles.title}>{t.title}</h1>
                     <p className={styles.subtitle}>{t.subtitle}</p>

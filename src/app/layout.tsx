@@ -17,12 +17,8 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://fix-my-bike.it"),
   icons: {
-    icon: [
-      { url: "/logo.png?v=1", type: "image/png" }
-    ],
-    apple: [
-      { url: "/logo.png?v=1", type: "image/png" }
-    ],
+    icon: "/logo.svg?v=3",
+    apple: "/logo.svg?v=3",
   },
   title: {
     default: "FixMyBike Padova — Bici, Meccanici & Ricambi a Padova",
@@ -49,7 +45,7 @@ export const metadata: Metadata = {
     siteName: "FixMyBike",
     images: [
       {
-        url: "/logo.png",
+        url: "/logo.svg",
         width: 800,
         height: 800,
         alt: "FixMyBike Logo",

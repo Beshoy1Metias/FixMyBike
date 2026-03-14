@@ -160,7 +160,7 @@ export default function Navbar() {
                 <div className={`container ${styles.inner}`}>
                     <Link href="/" className={styles.logo}>
                         <Image 
-                            src="/logo.png" 
+                            src="/logo.svg" 
                             alt="FixMyBike" 
                             width={32} 
                             height={32} 

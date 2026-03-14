@@ -97,7 +97,7 @@ export default function Footer() {
                 <div className={styles.brand}>
                     <div className={styles.logo}>
                         <Image 
-                            src="/logo.png" 
+                            src="/logo.svg" 
                             alt="FixMyBike Logo" 
                             width={24} 
                             height={24} 
