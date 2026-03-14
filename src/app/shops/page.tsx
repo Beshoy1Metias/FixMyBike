@@ -14,8 +14,9 @@ const SHOPS_DATA: Shop[] = [
     "address": "Piazza A. de Gasperi, 3, 35131 Padova",
     "rating": 4.9,
     "image_url": "/shops/student-bike.webp",
-    "lat": 45.4111,
-    "lng": 11.8805,
+    "lat": 45.4147,
+    "lng": 11.8786,
+    "phone": "+39 049 815 4620",
     "hours": {
       "mon": ["11:00-20:00"],
       "tue": ["11:00-20:00"],
@@ -32,8 +33,9 @@ const SHOPS_DATA: Shop[] = [
     "address": "Via Tiziano Aspetti, 172/A, 35132 Padova",
     "rating": 4.8,
     "image_url": "/shops/molena-bike.png",
-    "lat": 45.4244,
-    "lng": 11.8876,
+    "lat": 45.4251,
+    "lng": 11.8855,
+    "phone": "+39 049 875 2235",
     "hours": {
       "mon": ["08:30-12:30", "15:00-19:30"],
       "tue": ["08:30-12:30", "15:00-19:30"],
@@ -50,8 +52,9 @@ const SHOPS_DATA: Shop[] = [
     "address": "Via Tiziano Aspetti, 136, 35132 Padova",
     "rating": 5.0,
     "image_url": "/shops/shabani-veis.webp",
-    "lat": 45.4225,
-    "lng": 11.8872,
+    "lat": 45.4232,
+    "lng": 11.8841,
+    "phone": "+39 049 738 6223",
     "hours": {
       "mon": ["08:30-12:30", "15:30-19:30"],
       "tue": ["08:30-12:30", "15:30-19:30"],
@@ -68,8 +71,9 @@ const SHOPS_DATA: Shop[] = [
     "address": "Via S. Biagio, 28, 35121 Padova",
     "rating": 4.7,
     "image_url": "/shops/street-bike.webp",
-    "lat": 45.4081,
-    "lng": 11.8794,
+    "lat": 45.4071,
+    "lng": 11.8801,
+    "phone": "+39 328 258 5381",
     "hours": {
       "mon": ["09:00-12:15", "15:00-19:00"],
       "tue": ["09:00-12:15", "15:00-19:00"],
@@ -86,8 +90,9 @@ const SHOPS_DATA: Shop[] = [
     "address": "Via Jacopo Crescini, 24, 35126 Padova",
     "rating": 4.9,
     "image_url": "/shops/new-bicycles-story.webp",
-    "lat": 45.3952,
-    "lng": 11.8901,
+    "lat": 45.3926,
+    "lng": 11.8830,
+    "phone": "+39 371 395 1663",
     "hours": {
       "mon": ["09:00-13:30", "14:30-19:00"],
       "tue": ["09:00-13:30", "14:30-19:00"],
@@ -104,8 +109,9 @@ const SHOPS_DATA: Shop[] = [
     "address": "Via Santa Sofia, 27, 35121 Padova",
     "rating": 4.7,
     "image_url": "/shops/bike-padova.webp",
-    "lat": 45.4052,
-    "lng": 11.8834,
+    "lat": 45.4058,
+    "lng": 11.8822,
+    "phone": "+39 366 874 0700",
     "hours": {
       "mon": ["07:30-12:30", "14:30-19:00"],
       "tue": ["07:30-12:30", "14:30-19:00"],
@@ -122,8 +128,9 @@ const SHOPS_DATA: Shop[] = [
     "address": "Via S. Francesco, 121, 35121 Padova",
     "rating": 4.5,
     "image_url": "/shops/motociclo-padova.webp",
-    "lat": 45.4055,
-    "lng": 11.8812,
+    "lat": 45.4034,
+    "lng": 11.8829,
+    "phone": "+39 049 875 1489",
     "hours": {
       "mon": ["09:00-12:30", "15:30-19:30"],
       "tue": ["09:00-12:30", "15:30-19:30"],
@@ -140,8 +147,9 @@ const SHOPS_DATA: Shop[] = [
     "address": "Via Jacopo Facciolati, 22, 35126 Padova",
     "rating": 4.3,
     "image_url": "/shops/mr-bike.webp",
-    "lat": 45.3984,
-    "lng": 11.8885,
+    "lat": 45.3988,
+    "lng": 11.8862,
+    "phone": "+39 049 981 7230",
     "hours": {
       "mon": ["08:30-13:00", "15:30-19:00"],
       "tue": ["08:30-13:00", "15:30-19:00"],
@@ -158,8 +166,9 @@ const SHOPS_DATA: Shop[] = [
     "address": "Via Sanmicheli, 1, 35123 Padova",
     "rating": 4.4,
     "image_url": "/shops/bici-center.webp",
-    "lat": 45.4011,
-    "lng": 11.8824,
+    "lat": 45.3998,
+    "lng": 11.8844,
+    "phone": "+39 339 591 4796",
     "hours": {
       "mon": ["07:30-12:00", "15:00-19:00"],
       "tue": ["07:30-12:00", "15:00-19:00"],
@@ -176,8 +185,9 @@ const SHOPS_DATA: Shop[] = [
     "address": "Via Sorio, 54, 35141 Padova",
     "rating": 4.7,
     "image_url": "/shops/cicli-morello.webp",
-    "lat": 45.4022,
-    "lng": 11.8601,
+    "lat": 45.4012,
+    "lng": 11.8573,
+    "phone": "+39 049 871 2372",
     "hours": {
       "mon": ["15:30-19:00"],
       "tue": ["09:00-12:30", "15:30-19:00"],
@@ -194,8 +204,9 @@ const SHOPS_DATA: Shop[] = [
     "address": "Via Guido Reni, 62, 35133 Padova",
     "rating": 4.6,
     "image_url": "/shops/angel-bike.webp",
-    "lat": 45.4354,
-    "lng": 11.8845,
+    "lat": 45.4325,
+    "lng": 11.8901,
+    "phone": "+39 049 864 6865",
     "hours": {
       "mon": "closed",
       "tue": ["09:00-12:30", "15:30-19:00"],
@@ -208,12 +219,32 @@ const SHOPS_DATA: Shop[] = [
   },
   {
     "id": "12",
+    "name": "Aloha Cicloriparazioni",
+    "address": "Via Milazzo, 2a/b, 35139 Padova",
+    "rating": 4.8,
+    "image_url": "/shops/aloha-bike.png",
+    "lat": 45.4015,
+    "lng": 11.8712,
+    "phone": "unknown",
+    "hours": {
+      "mon": "unknown",
+      "tue": "unknown",
+      "wed": "unknown",
+      "thu": "unknown",
+      "fri": "unknown",
+      "sat": "unknown",
+      "sun": "unknown"
+    }
+  },
+  {
+    "id": "13",
     "name": "Bici Mosconi",
     "address": "Via Palestro, 49, 35138 Padova",
     "rating": 4.5,
     "image_url": "/shops/bici-mosconi.webp",
-    "lat": 45.4048,
-    "lng": 11.8681,
+    "lat": 45.4071,
+    "lng": 11.8580,
+    "phone": "+39 342 111 1755",
     "hours": {
       "mon": ["08:30-12:30", "15:30-19:30"],
       "tue": ["08:30-12:30", "15:30-19:30"],
@@ -225,13 +256,14 @@ const SHOPS_DATA: Shop[] = [
     }
   },
   {
-    "id": "13",
+    "id": "14",
     "name": "NORD BIKE Store Di Santinello Nicola",
     "address": "Via Tagliamento, 1, 35135 Padova",
     "rating": 4.8,
     "image_url": "/shops/nord-bike.webp",
     "lat": 45.4344,
     "lng": 11.8705,
+    "phone": "+39 049 603217",
     "hours": {
       "mon": ["15:00-19:30"],
       "tue": ["08:30-12:30", "15:00-19:30"],
@@ -243,13 +275,14 @@ const SHOPS_DATA: Shop[] = [
     }
   },
   {
-    "id": "14",
+    "id": "15",
     "name": "Faggian Fabio Riparazione Cicli",
     "address": "Via Annibale da Bassano, 4, 35135 Padova",
     "rating": 4.7,
     "image_url": "/shops/faggian-fabio.png",
     "lat": 45.4192,
     "lng": 11.8776,
+    "phone": "+39 328 884 6051",
     "hours": {
       "mon": ["08:30-12:30", "15:00-19:00"],
       "tue": ["08:30-12:30", "15:00-19:00"],
@@ -261,13 +294,14 @@ const SHOPS_DATA: Shop[] = [
     }
   },
   {
-    "id": "15",
+    "id": "16",
     "name": "Pit Bike 3",
     "address": "Via Fabrici Girolamo d'Acquapendente, 59, 35126 Padova",
     "rating": 5.0,
     "image_url": "/shops/pit-bike-3.webp",
     "lat": 45.3882,
     "lng": 11.8808,
+    "phone": "+39 371 514 2831",
     "hours": {
       "mon": ["08:00-19:00"],
       "tue": ["08:00-19:00"],
@@ -279,13 +313,14 @@ const SHOPS_DATA: Shop[] = [
     }
   },
   {
-    "id": "16",
+    "id": "17",
     "name": "Aloha Bikes",
     "address": "Via Monteortone, 29, 35031 Abano Terme PD",
     "rating": 4.7,
-    "image_url": "/shops/aloha-bike.png",
+    "image_url": "/shops/aloha-bikes.webp",
     "lat": 45.3549,
     "lng": 11.7708,
+    "phone": "+39 049 866 8292",
     "hours": {
       "mon": ["15:30-19:15"],
       "tue": ["09:00-12:30", "15:30-19:15"],
@@ -297,13 +332,14 @@ const SHOPS_DATA: Shop[] = [
     }
   },
   {
-    "id": "17",
+    "id": "18",
     "name": "Mudi Bike",
     "address": "Via Giambattista Belzoni, 120, 35121 Padova",
     "rating": 4.0,
     "image_url": "/shops/mudi-bike.webp",
     "lat": 45.4071,
     "lng": 11.8897,
+    "phone": "+39 392 280 3502",
     "hours": {
       "mon": ["09:00-12:30", "15:30-18:30"],
       "tue": ["09:00-12:30", "15:00-18:30"],
@@ -315,13 +351,14 @@ const SHOPS_DATA: Shop[] = [
     }
   },
   {
-    "id": "18",
+    "id": "19",
     "name": "Pandabike",
     "address": "Via Niccolò Tommaseo, 17, 35131 Padova",
     "rating": 4.4,
     "image_url": "/shops/pandabike.webp",
     "lat": 45.4159,
     "lng": 11.8810,
+    "phone": "+39 334 906 6212",
     "hours": {
       "mon": ["09:30-19:30"],
       "tue": ["09:30-19:30"],
@@ -333,13 +370,14 @@ const SHOPS_DATA: Shop[] = [
     }
   },
   {
-    "id": "19",
+    "id": "20",
     "name": "Ciclofficina La Mente Comune",
     "address": "Via Cristoforo Moro, 4, 35141 Padova",
     "rating": 4.7,
     "image_url": "/shops/ciclofficina-la-mente-comune.webp",
     "lat": 45.4035,
     "lng": 11.8644,
+    "phone": "unknown",
     "hours": {
       "mon": "closed",
       "tue": ["18:30-21:00"],
@@ -351,13 +389,14 @@ const SHOPS_DATA: Shop[] = [
     }
   },
   {
-    "id": "20",
+    "id": "21",
     "name": "Pit Bike",
     "address": "Via Ognissanti, 9, 35131 Padova",
     "rating": 3.0,
     "image_url": "/shops/pit-bike.webp",
     "lat": 45.4072,
     "lng": 11.8925,
+    "phone": "+39 371 634 6114",
     "hours": {
       "mon": ["08:15-18:30"],
       "tue": ["08:15-18:30"],

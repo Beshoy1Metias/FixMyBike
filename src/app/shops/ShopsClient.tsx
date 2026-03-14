@@ -21,13 +21,13 @@ export interface Shop {
     lat: number;
     lng: number;
     hours: {
-        mon: string[] | "closed";
-        tue: string[] | "closed";
-        wed: string[] | "closed";
-        thu: string[] | "closed";
-        fri: string[] | "closed";
-        sat: string[] | "closed";
-        sun: string[] | "closed";
+        mon: string[] | "closed" | "unknown";
+        tue: string[] | "closed" | "unknown";
+        wed: string[] | "closed" | "unknown";
+        thu: string[] | "closed" | "unknown";
+        fri: string[] | "closed" | "unknown";
+        sat: string[] | "closed" | "unknown";
+        sun: string[] | "closed" | "unknown";
     };
     phone?: string;
     distance?: number;
@@ -54,6 +54,7 @@ const UI_TEXT = {
         searchPlaceholder: "Search by name or street...",
         open: "Open",
         closed: "Closed",
+        unknown: "Hours unknown",
     },
     it: {
         title: "Negozi e Officine",
@@ -70,6 +71,7 @@ const UI_TEXT = {
         searchPlaceholder: "Cerca per nome o via...",
         open: "Aperto",
         closed: "Chiuso",
+        unknown: "Orari non disponibili",
     }
 };
 
@@ -93,7 +95,7 @@ function isShopCurrentlyOpen(shop: Shop) {
         const dayKey = days[now.getDay()] as keyof Shop["hours"];
         const hours = shop.hours[dayKey];
 
-        if (hours === "closed") return false;
+        if (!hours || hours === "closed" || hours === "unknown") return false;
 
         const currentHour = now.getHours();
         const currentMin = now.getMinutes();
@@ -101,6 +103,7 @@ function isShopCurrentlyOpen(shop: Shop) {
 
         return hours.some(range => {
             const [start, end] = range.split("-");
+            if (!start || !end) return false;
             const [startH, startM] = start.split(":").map(Number);
             const [endH, endM] = end.split(":").map(Number);
             const startTime = startH * 60 + startM;
@@ -194,6 +197,22 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
         }));
     }, [filteredShops]);
 
+    const getStatusBadge = (shop: Shop) => {
+        const days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+        const dayKey = days[new Date().getDay()] as keyof Shop["hours"];
+        const todayHours = shop.hours[dayKey];
+
+        if (todayHours === "unknown") {
+            return <span className="badge badge-gray">{t.unknown}</span>;
+        }
+
+        return (
+            <span className={`badge ${shop.isOpen ? "badge-success" : "badge-gray"}`}>
+                {shop.isOpen ? t.open : t.closed}
+            </span>
+        );
+    };
+
     return (
         <div className="section">
             <div className="container">
@@ -247,9 +266,7 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
                                                 <div style={{ flex: 1 }}>
                                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                                         <h3 className="text-heading-3">{shop.name}</h3>
-                                                        <span className={`badge ${shop.isOpen ? "badge-success" : "badge-gray"}`}>
-                                                            {shop.isOpen ? t.open : t.closed}
-                                                        </span>
+                                                        {getStatusBadge(shop)}
                                                     </div>
                                                     <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", margin: "4px 0" }}>
                                                         <StarRating rating={shop.rating} size="sm" />
@@ -270,7 +287,7 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
                                                 <a href={getDirectionsUrl(shop.lat, shop.lng, shop.address)} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm" style={{ minHeight: "36px", fontSize: "0.8rem" }}>
                                                     🗺️ {t.directions}
                                                 </a>
-                                                {shop.phone && (
+                                                {shop.phone && shop.phone !== "unknown" && (
                                                     <a href={`tel:${shop.phone.replace(/\s+/g, '')}`} className="btn btn-secondary btn-sm" style={{ minHeight: "36px", fontSize: "0.8rem" }}>
                                                         📞 {t.call}
                                                     </a>
