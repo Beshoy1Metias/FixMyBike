@@ -136,7 +136,16 @@ export default function LocationPicker({
         searchTimeout.current = setTimeout(async () => {
             setIsSearching(true);
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&accept-language=${language}`);
+                const isZipCode = /^\d{5}$/.test(query.trim());
+                let url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&accept-language=${language}&countrycodes=it`;
+                
+                if (isZipCode) {
+                    url += `&postalcode=${encodeURIComponent(query.trim())}`;
+                } else {
+                    url += `&q=${encodeURIComponent(query)}`;
+                }
+
+                const res = await fetch(url);
                 const data = await res.json();
                 setSuggestions(data);
             } catch (err) {
