@@ -12,7 +12,7 @@ const Map = dynamic(() => import("@/components/Map/Map"), {
     loading: () => <div style={{ height: "100%", background: "var(--surface-2)", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading Map...</div>
 });
 
-interface Shop {
+export interface Shop {
     id: string;
     name: string;
     address: string;
@@ -20,6 +20,15 @@ interface Shop {
     image_url: string;
     lat: number;
     lng: number;
+    hours: {
+        mon: string[] | "closed";
+        tue: string[] | "closed";
+        wed: string[] | "closed";
+        thu: string[] | "closed";
+        fri: string[] | "closed";
+        sat: string[] | "closed";
+        sun: string[] | "closed";
+    };
     phone?: string;
     distance?: number;
 }
@@ -76,19 +85,31 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
     return R * c;
 }
 
-function isShopOpen() {
+function isShopCurrentlyOpen(shop: Shop) {
     try {
         const padovaTime = new Date().toLocaleString("en-US", { timeZone: "Europe/Rome" });
         const now = new Date(padovaTime);
-        const day = now.getDay();
-        const hour = now.getHours();
-        const mins = now.getMinutes();
-        const time = hour + mins / 60;
-        if (day === 0) return false;
-        return time >= 9 && time < 19.5;
-    } catch {
-        const hour = new Date().getHours();
-        return hour >= 9 && hour < 19;
+        const days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+        const dayKey = days[now.getDay()] as keyof Shop["hours"];
+        const hours = shop.hours[dayKey];
+
+        if (hours === "closed") return false;
+
+        const currentHour = now.getHours();
+        const currentMin = now.getMinutes();
+        const currentTime = currentHour * 60 + currentMin;
+
+        return hours.some(range => {
+            const [start, end] = range.split("-");
+            const [startH, startM] = start.split(":").map(Number);
+            const [endH, endM] = end.split(":").map(Number);
+            const startTime = startH * 60 + startM;
+            const endTime = endH * 60 + endM;
+            return currentTime >= startTime && currentTime < endTime;
+        });
+    } catch (e) {
+        console.error("Error checking shop status:", e);
+        return false;
     }
 }
 
@@ -102,15 +123,14 @@ function getDirectionsUrl(lat: number, lng: number, address: string) {
 
 export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
     const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
-    const [filterOpen, setFilterOpen] = useState(false);
+    const [filterOpenNow, setFilterOpenNow] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortByDistance, setSortByDistance] = useState(false);
     const [loadingLocation, setLoadingLocation] = useState(false);
-    const openNow = isShopOpen();
     const t = UI_TEXT[lang];
 
     const handleNearMe = () => {
-        // Trigger immediately as the first line to guarantee Safari recognizes the user gesture
+        setLoadingLocation(true);
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 setUserLocation({
@@ -123,8 +143,6 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
             (error) => {
                 setLoadingLocation(false);
                 console.error("Geolocation error:", error);
-                
-                // Minimal, clear error message
                 if (error.code === 1) {
                     alert("Location access was denied. Please check your browser or phone settings.");
                 } else {
@@ -137,15 +155,13 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
                 maximumAge: 0
             }
         );
-
-        // Update UI state after triggering the native prompt
-        setLoadingLocation(true);
     };
 
     const filteredShops = useMemo(() => {
         let result = initialShops.map(shop => ({
             ...shop,
-            distance: userLocation ? calculateDistance(userLocation.lat, userLocation.lng, shop.lat, shop.lng) : undefined
+            distance: userLocation ? calculateDistance(userLocation.lat, userLocation.lng, shop.lat, shop.lng) : undefined,
+            isOpen: isShopCurrentlyOpen(shop)
         }));
 
         if (searchQuery) {
@@ -153,8 +169,9 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
             result = result.filter(s => s.name.toLowerCase().includes(q) || s.address.toLowerCase().includes(q));
         }
 
-        const openStatus = isShopOpen();
-        if (filterOpen && !openStatus) return [];
+        if (filterOpenNow) {
+            result = result.filter(s => s.isOpen);
+        }
 
         if (sortByDistance && userLocation) {
             result.sort((a, b) => (a.distance || 0) - (b.distance || 0));
@@ -163,7 +180,7 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
         }
 
         return result;
-    }, [initialShops, userLocation, filterOpen, sortByDistance, searchQuery]);
+    }, [initialShops, userLocation, filterOpenNow, sortByDistance, searchQuery]);
 
     const mapListings = useMemo(() => {
         return filteredShops.map(shop => ({
@@ -195,8 +212,8 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
                                 {loadingLocation ? t.loadingLocation : `📍 ${t.nearMe}`}
                             </button>
                             <button 
-                                className={`btn btn-sm ${filterOpen ? "btn-primary" : "btn-secondary"}`}
-                                onClick={() => setFilterOpen(!filterOpen)}
+                                className={`btn btn-sm ${filterOpenNow ? "btn-primary" : "btn-secondary"}`}
+                                onClick={() => setFilterOpenNow(!filterOpenNow)}
                             >
                                 🕒 {t.openNow}
                             </button>
@@ -230,8 +247,8 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
                                                 <div style={{ flex: 1 }}>
                                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                                         <h3 className="text-heading-3">{shop.name}</h3>
-                                                        <span className={`badge ${openNow ? "badge-success" : "badge-gray"}`}>
-                                                            {openNow ? t.open : t.closed}
+                                                        <span className={`badge ${shop.isOpen ? "badge-success" : "badge-gray"}`}>
+                                                            {shop.isOpen ? t.open : t.closed}
                                                         </span>
                                                     </div>
                                                     <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", margin: "4px 0" }}>
