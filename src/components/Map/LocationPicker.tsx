@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import { APIProvider, Map as GoogleMap, AdvancedMarker, useMap, MapMouseEvent } from "@vis.gl/react-google-maps";
 import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
-import { Icon, LatLng } from "leaflet";
 
 interface LocationPickerProps {
     initialLat?: number;
@@ -41,39 +39,13 @@ const TEXT = {
     }
 };
 
-function LocationMarker({ position, setPosition, onLocationSelect, icon, language }: {
-    position: LatLng | null;
-    setPosition: (pos: LatLng) => void;
-    onLocationSelect: (lat: number, lng: number, address: string) => void;
-    icon: Icon;
-    language: string;
-}) {
-    const map = useMapEvents({
-        async click(e) {
-            setPosition(e.latlng);
-            map.flyTo(e.latlng, map.getZoom());
-            
-            // Get address for the clicked point
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
-                const data = await res.json();
-                const address = data.display_name || `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
-                onLocationSelect(e.latlng.lat, e.latlng.lng, address);
-            } catch {
-                onLocationSelect(e.latlng.lat, e.latlng.lng, `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`);
-            }
-        },
-    });
-
-    return position && icon ? (
-        <Marker position={position} icon={icon} />
-    ) : null;
-}
-
-function MapController({ center }: { center: [number, number] }) {
+function MapController({ center }: { center: google.maps.LatLngLiteral }) {
     const map = useMap();
     useEffect(() => {
-        map.flyTo(center, 15);
+        if (map && center.lat && center.lng) {
+            map.panTo(center);
+            map.setZoom(15);
+        }
     }, [center, map]);
     return null;
 }
@@ -91,120 +63,126 @@ export default function LocationPicker({
     const t = TEXT[language as keyof typeof TEXT] || TEXT.en;
     
     const [mounted, setMounted] = useState(false);
-    const [position, setPosition] = useState<LatLng | null>(null);
-    const [defaultIcon, setDefaultIcon] = useState<Icon | null>(null);
-    const [L, setL] = useState<typeof import("leaflet") | null>(null);
-
+    const [position, setPosition] = useState<google.maps.LatLngLiteral | null>(null);
+    const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral>({ lat: 45.4064, lng: 11.8768 }); // Default Padova
+    
+    // Autocomplete state
     const [searchQuery, setSearchTerm] = useState(initialAddress);
-    const [suggestions, setSuggestions] = useState<{ lat: string; lon: string; display_name: string }[]>([]);
-    const [isSearching, setIsSearching] = useState(false);
-    const [mapCenter, setMapCenter] = useState<[number, number]>([45.4064, 11.8768]);
-    const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+    const geocoderRef = useRef<google.maps.Geocoder | null>(null);
+
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
     useEffect(() => {
         setMounted(true);
-        import("leaflet").then((Leaflet) => {
-            setL(Leaflet);
-            const icon = Leaflet.icon({
-                iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-                iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
-                shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41],
-            });
-            setDefaultIcon(icon);
-            
-            if (initialLat && initialLng) {
-                const pos = new Leaflet.LatLng(initialLat, initialLng);
-                setPosition(pos);
-                setMapCenter([initialLat, initialLng]);
-            }
-        });
+        if (initialLat && initialLng) {
+            const pos = { lat: initialLat, lng: initialLng };
+            setPosition(pos);
+            setMapCenter(pos);
+        }
     }, [initialLat, initialLng]);
 
-    const handleSearch = async (query: string) => {
-        setSearchTerm(query);
-        if (query.length < 3) {
-            setSuggestions([]);
-            return;
-        }
+    // Initialize Autocomplete once the Google Maps script is loaded globally by APIProvider
+    const initAutocomplete = () => {
+        if (!inputRef.current || !window.google || autocompleteRef.current) return;
 
-        if (searchTimeout.current) clearTimeout(searchTimeout.current);
+        geocoderRef.current = new window.google.maps.Geocoder();
 
-        searchTimeout.current = setTimeout(async () => {
-            setIsSearching(true);
-            try {
-                const isZipCode = /^\d{5}$/.test(query.trim());
-                let url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&accept-language=${language}&countrycodes=it`;
+        autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
+            componentRestrictions: { country: "it" }, // Force Italy
+            fields: ["geometry", "formatted_address", "name"],
+        });
+
+        autocompleteRef.current.addListener("place_changed", () => {
+            const place = autocompleteRef.current?.getPlace();
+            if (place && place.geometry && place.geometry.location) {
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+                const address = place.formatted_address || place.name || "";
                 
-                if (isZipCode) {
-                    url += `&postalcode=${encodeURIComponent(query.trim())}`;
-                } else {
-                    url += `&q=${encodeURIComponent(query)}`;
-                }
-
-                const res = await fetch(url);
-                const data = await res.json();
-                setSuggestions(data);
-            } catch (err) {
-                console.error("Search failed", err);
-            } finally {
-                setIsSearching(false);
+                const newPos = { lat, lng };
+                setPosition(newPos);
+                setMapCenter(newPos);
+                setSearchTerm(address);
+                onLocationSelect(lat, lng, address);
             }
-        }, 500);
+        });
     };
 
-    const selectSuggestion = (s: { lat: string; lon: string; display_name: string }) => {
-        if (!L) return;
-        const lat = parseFloat(s.lat);
-        const lon = parseFloat(s.lon);
-        const newPos = new L.LatLng(lat, lon);
+    const handleMapClick = (e: MapMouseEvent) => {
+        const detail = (e as any).detail;
+        if (!detail?.latLng || !geocoderRef.current) return;
+        const lat = detail.latLng.lat;
+        const lng = detail.latLng.lng;
+        const newPos = { lat, lng };
         
         setPosition(newPos);
-        setMapCenter([lat, lon]);
-        setSuggestions([]);
-        setSearchTerm(s.display_name);
-        onLocationSelect(lat, lon, s.display_name);
+        
+        // Reverse geocode the click
+        geocoderRef.current.geocode({ location: { lat, lng } }, (results, status) => {
+            if (status === "OK" && results && results[0]) {
+                const address = results[0].formatted_address;
+                setSearchTerm(address);
+                onLocationSelect(lat, lng, address);
+            } else {
+                const fallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                setSearchTerm(fallback);
+                onLocationSelect(lat, lng, fallback);
+            }
+        });
     };
 
     const handleUseCurrentLocation = () => {
-        if (!L) return;
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                async (pos) => {
-                    const { latitude, longitude } = pos.coords;
-                    const newPos = new L.LatLng(latitude, longitude);
-                    setPosition(newPos);
-                    setMapCenter([latitude, longitude]);
-                    
-                    // Get address
-                    try {
-                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=${language}&lat=${latitude}&lon=${longitude}`);
-                        const data = await res.json();
-                        const address = data.display_name || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-                        setSearchTerm(address);
-                        onLocationSelect(latitude, longitude, address);
-                    } catch {
-                        const fallback = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-                        setSearchTerm(fallback);
-                        onLocationSelect(latitude, longitude, fallback);
-                    }
-                },
-                (err) => {
-                    console.error("Error getting location:", err);
-                    alert("Could not get your location. Please search or select manually.");
-                }
-            );
-        } else {
+        if (!navigator.geolocation) {
             alert("Geolocation is not supported by your browser.");
+            return;
         }
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude: lat, longitude: lng } = pos.coords;
+                const newPos = { lat, lng };
+                setPosition(newPos);
+                setMapCenter(newPos);
+                
+                // Reverse geocode
+                if (geocoderRef.current) {
+                    geocoderRef.current.geocode({ location: { lat, lng } }, (results, status) => {
+                        if (status === "OK" && results && results[0]) {
+                            const address = results[0].formatted_address;
+                            setSearchTerm(address);
+                            onLocationSelect(lat, lng, address);
+                        } else {
+                            const fallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                            setSearchTerm(fallback);
+                            onLocationSelect(lat, lng, fallback);
+                        }
+                    });
+                } else {
+                    const fallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    setSearchTerm(fallback);
+                    onLocationSelect(lat, lng, fallback);
+                }
+            },
+            (err) => {
+                console.error("Error getting location:", err);
+                alert("Could not get your location. Please check browser permissions.");
+            }
+        );
     };
 
-    if (!mounted || !defaultIcon) {
-        return <div style={{ height, background: "var(--surface-2)", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading Map...</div>;
+    if (!mounted) {
+        return <div style={{ height, background: "var(--surface-2)", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading Component...</div>;
+    }
+
+    if (!apiKey) {
+        return (
+            <div style={{ height, width: "100%", background: "var(--surface-2)", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed var(--border)", flexDirection: "column", gap: "10px" }}>
+                <p className="text-muted text-sm">Google Maps API Key missing in .env</p>
+                <p className="text-muted text-xs">Cannot load location picker</p>
+            </div>
+        );
     }
 
     return (
@@ -216,58 +194,14 @@ export default function LocationPicker({
                     </label>
                     <div style={{ position: "relative" }}>
                         <input
+                            ref={inputRef}
                             type="text"
                             className={`form-input ${error && !position ? "border-error" : ""}`}
                             placeholder={t.searchPlaceholder}
                             value={searchQuery}
-                            onChange={(e) => handleSearch(e.target.value)}
-                            style={{ paddingRight: "40px" }}
+                            onChange={(e) => setSearchTerm(e.target.value)} // Let user type, autocomplete handles the dropdown natively
                         />
-                        {isSearching && (
-                            <div style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)" }}>
-                                <span className="spinner" style={{ width: "16px", height: "16px", borderWidth: "2px" }} />
-                            </div>
-                        )}
                     </div>
-
-                    {suggestions.length > 0 && (
-                        <div style={{ 
-                            position: "absolute", 
-                            top: "100%", 
-                            left: 0, 
-                            right: 0, 
-                            background: "#1e1e21", /* solid background */
-                            border: "1px solid var(--border)", 
-                            borderRadius: "var(--radius)",
-                            marginTop: "4px",
-                            zIndex: 1000,
-                            boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
-                            maxHeight: "250px",
-                            overflowY: "auto"
-                        }}>
-                            {suggestions.map((s, i) => (
-                                <button
-                                    key={i}
-                                    type="button"
-                                    onClick={() => selectSuggestion(s)}
-                                    style={{ 
-                                        width: "100%", 
-                                        textAlign: "left", 
-                                        padding: "12px 16px", 
-                                        borderBottom: i === suggestions.length - 1 ? "none" : "1px solid var(--border)",
-                                        fontSize: "0.9rem",
-                                        color: "var(--text-primary)",
-                                        backgroundColor: "transparent",
-                                        display: "block"
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--surface-2)"}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                                >
-                                    {s.display_name}
-                                </button>
-                            ))}
-                        </div>
-                    )}
                 </div>
                 <button 
                     type="button" 
@@ -288,26 +222,34 @@ export default function LocationPicker({
                 borderRadius: "var(--radius-lg)",
                 overflow: "hidden"
             }}>
-                 <MapContainer 
-                    center={mapCenter} 
-                    zoom={13} 
-                    style={{ height: "100%", width: "100%" }}
-                    scrollWheelZoom={false}
-                >
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    <MapController center={mapCenter} />
-                    <LocationMarker 
-                        position={position} 
-                        setPosition={setPosition} 
-                        onLocationSelect={onLocationSelect} 
-                        icon={defaultIcon}
-                        language={language}
-                    />
-                </MapContainer>
+                <APIProvider apiKey={apiKey} onLoad={initAutocomplete}>
+                    <GoogleMap 
+                        defaultCenter={mapCenter} 
+                        defaultZoom={13} 
+                        mapId="fix-my-bike-picker-id" // Required for AdvancedMarker
+                        disableDefaultUI={false}
+                        gestureHandling="greedy"
+                        onClick={handleMapClick}
+                        style={{ height: "100%", width: "100%" }}
+                    >
+                        <MapController center={mapCenter} />
+                        {position && (
+                            <AdvancedMarker position={position}>
+                                <div style={{
+                                    transform: `translate(-50%, -100%) scale(1.2)`,
+                                    filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
+                                }}>
+                                    <svg width="32" height="42" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16 0C7.16344 0 0 7.16344 0 16C0 28 16 42 16 42C16 42 32 28 32 16C32 7.16344 24.8366 0 16 0Z" fill="var(--color-accent)"/>
+                                        <circle cx="16" cy="16" r="6" fill="white"/>
+                                    </svg>
+                                </div>
+                            </AdvancedMarker>
+                        )}
+                    </GoogleMap>
+                </APIProvider>
             </div>
+            
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <p className="text-xs text-muted" style={{ maxWidth: "80%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {position ? `${t.selectedAddress}: ${searchQuery}` : `${t.coords}: ${t.none}`}
