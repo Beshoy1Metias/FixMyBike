@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
-import { sendWelcomeEmail } from "@/lib/email";
 
 const TEXT = {
     en: {
@@ -53,11 +52,6 @@ export async function POST(req: NextRequest) {
             data: { name, email, passwordHash },
             select: { id: true, name: true, email: true, createdAt: true },
         });
-
-        // Fire-and-forget welcome email — never blocks the 201 response
-        sendWelcomeEmail(email, name, lang).catch((err) =>
-            console.error("[POST /api/auth/register] Welcome email error:", err)
-        );
 
         return NextResponse.json({ user }, { status: 201 });
     } catch (error) {

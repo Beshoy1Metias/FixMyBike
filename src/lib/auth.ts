@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
+import { sendWelcomeEmail } from "@/lib/email";
 
 const providers = [];
 
@@ -82,6 +83,14 @@ export const authOptions: NextAuthOptions = {
                 session.user.role = token.role as string;
             }
             return session;
+        },
+    },
+    events: {
+        // Fires exactly once when a new user row is created — covers Google OAuth,
+        // email/password, and any future provider.
+        async createUser({ user }) {
+            if (!user.email) return;
+            await sendWelcomeEmail(user.email, user.name ?? "there");
         },
     },
 };
