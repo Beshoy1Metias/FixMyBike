@@ -317,7 +317,7 @@ const SHOPS_DATA: Shop[] = [
     "name": "Aloha Bikes",
     "address": "Via Monteortone, 29, 35031 Abano Terme PD",
     "rating": 4.7,
-    "image_url": "/shops/aloha-bikes.webp",
+    "image_url": "/shops/aloha-bike.png",
     "lat": 45.3549,
     "lng": 11.7708,
     "phone": "+39 049 866 8292",
