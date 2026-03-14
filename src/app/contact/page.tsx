@@ -110,21 +110,21 @@ export default function ContactOwnerPage() {
                             </a>
                             
                             <a 
-                                href="mailto:beshoybassem1@gmail.com" 
+                                href="mailto:fixmybike@fix-my-bike.it" 
                                 className="btn btn-secondary" 
                                 style={{ justifyContent: "flex-start", width: "100%" }}
                             >
-                                <span style={{ fontSize: "1.2rem" }}>✉️</span> Email
+                                <span style={{ fontSize: "1.2rem" }}>✉️</span> fixmybike@fix-my-bike.it
                             </a>
                             
                             <a 
-                                href="https://www.instagram.com/beshoy__bassem/" 
+                                href="https://www.instagram.com/fixmybike.it/" 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
                                 className="btn btn-secondary" 
                                 style={{ justifyContent: "flex-start", width: "100%" }}
                             >
-                                <span style={{ fontSize: "1.2rem" }}>📸</span> Instagram
+                                <span style={{ fontSize: "1.2rem" }}>📸</span> @fixmybike.it
                             </a>
                         </div>
                     </div>
