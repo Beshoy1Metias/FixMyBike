@@ -64,6 +64,7 @@ export default function MechanicsClient({ initialMechanics, lang }: MechanicsCli
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState<Record<string, string | number | boolean | null>>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
+    const [activeListingId, setActiveListingId] = useState<string | null>(null);
     const t = UI_TEXT[lang];
 
     const fetchMechanics = async (newFilters: Record<string, string | number | boolean | null>) => {
@@ -140,45 +141,50 @@ export default function MechanicsClient({ initialMechanics, lang }: MechanicsCli
                     {mechanics.length > 0 ? (
                         mechanics.map((m) => (
                             <FadeIn key={m.id}>
-                                <Link href={`/mechanics/${m.id}`} className={styles.mechCard}>
-                                    {/* Avatar */}
-                                    <div className={styles.mechAvatar}>
-                                        <span>{(m.user.name || "M").charAt(0)}</span>
-                                        {m.isAvailable && <span className={styles.availDot} title={t.available} />}
-                                    </div>
-                                    <div className={styles.mechInfo}>
-                                        <div className={styles.mechTop}>
-                                            <div>
-                                                <h3 className={styles.mechName}>{m.user.name || t.mechanic}</h3>
-                                                <p className={styles.mechLocation}>📍 {m.location}</p>
-                                            </div>
-                                            <div className={styles.mechBadges}>
-                                                <span className={`badge badge-${m.skillLevel === "PROFESSIONAL" ? "primary" : m.skillLevel === "EXPERT" ? "accent" : "gray"}`}>
-                                                    {SKILL_BADGE[m.skillLevel][lang]}
-                                                </span>
-                                                {!m.isAvailable && <span className="badge badge-gray">{t.unavailable}</span>}
-                                            </div>
+                                <div 
+                                    onMouseEnter={() => setActiveListingId(m.id)}
+                                    onMouseLeave={() => setActiveListingId(null)}
+                                >
+                                    <Link href={`/mechanics/${m.id}`} className={styles.mechCard}>
+                                        {/* Avatar */}
+                                        <div className={styles.mechAvatar}>
+                                            <span>{(m.user.name || "M").charAt(0)}</span>
+                                            {m.isAvailable && <span className={styles.availDot} title={t.available} />}
                                         </div>
-                                        {m.bio && <p className={styles.mechBio}>{m.bio}</p>}
-                                        {m.skills && (
-                                            <div className={styles.mechSkills}>
-                                                {m.skills.split(",").map((s: string) => (
-                                                    <span key={s.trim()} className={`badge badge-gray`} style={{ fontSize: "0.7rem" }}>
-                                                        {s.trim()}
+                                        <div className={styles.mechInfo}>
+                                            <div className={styles.mechTop}>
+                                                <div>
+                                                    <h3 className={styles.mechName}>{m.user.name || t.mechanic}</h3>
+                                                    <p className={styles.mechLocation}>📍 {m.location}</p>
+                                                </div>
+                                                <div className={styles.mechBadges}>
+                                                    <span className={`badge badge-${m.skillLevel === "PROFESSIONAL" ? "primary" : m.skillLevel === "EXPERT" ? "accent" : "gray"}`}>
+                                                        {SKILL_BADGE[m.skillLevel][lang]}
                                                     </span>
-                                                ))}
+                                                    {!m.isAvailable && <span className="badge badge-gray">{t.unavailable}</span>}
+                                                </div>
                                             </div>
-                                        )}
-                                        <div className={styles.mechFooter}>
-                                            {m.hourlyRate && (
-                                                <span className="price-sm">
-                                                    €{m.hourlyRate.toLocaleString()}
-                                                    <span className="text-muted text-xs"> {t.perHour}</span>
-                                                </span>
+                                            {m.bio && <p className={styles.mechBio}>{m.bio}</p>}
+                                            {m.skills && (
+                                                <div className={styles.mechSkills}>
+                                                    {m.skills.split(",").map((s: string) => (
+                                                        <span key={s.trim()} className={`badge badge-gray`} style={{ fontSize: "0.7rem" }}>
+                                                            {s.trim()}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             )}
+                                            <div className={styles.mechFooter}>
+                                                {m.hourlyRate && (
+                                                    <span className="price-sm">
+                                                        €{m.hourlyRate.toLocaleString()}
+                                                        <span className="text-muted text-xs"> {t.perHour}</span>
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                </Link>
+                                    </Link>
+                                </div>
                             </FadeIn>
                         ))
                     ) : (
@@ -189,7 +195,12 @@ export default function MechanicsClient({ initialMechanics, lang }: MechanicsCli
                 </StaggerContainer>
             ) : (
                 <FadeIn delay={0.2} style={{ height: "600px", marginTop: "var(--space-6)" }}>
-                    <Map listings={mapListings} height="600px" />
+                    <Map 
+                        listings={mapListings} 
+                        height="600px" 
+                        activeId={activeListingId}
+                        onMarkerClick={(id) => setActiveListingId(id)}
+                    />
                 </FadeIn>
             )}
         </FadeIn>

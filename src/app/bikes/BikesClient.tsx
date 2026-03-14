@@ -95,6 +95,7 @@ export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState<Record<string, string | number | boolean | null>>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
+    const [activeListingId, setActiveListingId] = useState<string | null>(null);
     const t = UI_TEXT[lang];
 
     const fetchBikes = async (newFilters: Record<string, string | number | boolean | null>) => {
@@ -197,25 +198,29 @@ export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
                     {bikes.length > 0 ? (
                         bikes.map((bike) => (
                             <FadeIn key={bike.id}>
-                                <ListingCard
-                                    href={`/bikes/${bike.id}`}
-                                    image={bike.photos[0]?.url ?? null}
-                                    title={bike.title}
-                                    price={bike.price}
-                                    condition={CONDITION_LABELS[bike.condition][lang]}
-                                    location={bike.location}
-                                    badge={bike.bikeType.charAt(0) + bike.bikeType.slice(1).toLowerCase()}
-                                    badgeVariant={bike.bikeType === "ELECTRIC" ? "accent" : "primary"}
-                                    meta={[
-                                        bike.brand,
-                                        bike.year ? String(bike.year) : null,
-                                        bike.frameSize ? `${t.size} ${bike.frameSize}` : null,
-                                    ]
-                                        .filter(Boolean)
-                                        .join(" · ")}
-                                />
-                            </FadeIn>
-                        ))
+                                <div 
+                                    onMouseEnter={() => setActiveListingId(bike.id)}
+                                    onMouseLeave={() => setActiveListingId(null)}
+                                >
+                                    <ListingCard
+                                        href={`/bikes/${bike.id}`}
+                                        image={bike.photos[0]?.url ?? null}
+                                        title={bike.title}
+                                        price={bike.price}
+                                        condition={CONDITION_LABELS[bike.condition][lang]}
+                                        location={bike.location}
+                                        badge={bike.bikeType.charAt(0) + bike.bikeType.slice(1).toLowerCase()}
+                                        badgeVariant={bike.bikeType === "ELECTRIC" ? "accent" : "primary"}
+                                        meta={[
+                                            bike.brand,
+                                            bike.year ? String(bike.year) : null,
+                                            bike.frameSize ? `${t.size} ${bike.frameSize}` : null,
+                                        ]
+                                            .filter(Boolean)
+                                            .join(" · ")}
+                                    />
+                                </div>
+                            </FadeIn>                        ))
                     ) : (
                         <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "var(--space-20) 0" }}>
                             <p className="text-muted">{t.noResults}</p>
@@ -224,7 +229,12 @@ export default function BikesClient({ initialBikes, lang }: BikesClientProps) {
                 </StaggerContainer>
             ) : (
                 <FadeIn delay={0.2} style={{ height: "600px", marginTop: "var(--space-6)" }}>
-                    <Map listings={mapListings} height="600px" />
+                    <Map 
+                        listings={mapListings} 
+                        height="600px" 
+                        activeId={activeListingId}
+                        onMarkerClick={(id) => setActiveListingId(id)}
+                    />
                 </FadeIn>
             )}
         </FadeIn>

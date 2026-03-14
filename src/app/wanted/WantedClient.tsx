@@ -80,6 +80,7 @@ export default function WantedClient({ initialPosts, lang }: WantedClientProps) 
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState<Record<string, string | number | boolean | null>>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
+    const [activeListingId, setActiveListingId] = useState<string | null>(null);
     const t = UI_TEXT[lang];
 
     const fetchPosts = async (newFilters: Record<string, string | number | boolean | null>) => {
@@ -156,46 +157,51 @@ export default function WantedClient({ initialPosts, lang }: WantedClientProps) 
                     {posts.length > 0 ? (
                         posts.map((post) => (
                             <FadeIn key={post.id}>
-                                <Link href={`/wanted/${post.id}`} className={styles.postCard}>
-                                    <div className={styles.postLeft}>
-                                        <div className={styles.postAvatar}>
-                                            {(post.user.name || "B").charAt(0)}
+                                <div 
+                                    onMouseEnter={() => setActiveListingId(post.id)}
+                                    onMouseLeave={() => setActiveListingId(null)}
+                                >
+                                    <Link href={`/wanted/${post.id}`} className={styles.postCard}>
+                                        <div className={styles.postLeft}>
+                                            <div className={styles.postAvatar}>
+                                                {(post.user.name || "B").charAt(0)}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className={styles.postBody}>
-                                        <div className={styles.postTop}>
-                                            <div>
-                                                <h3 className={styles.postTitle}>{post.title}</h3>
-                                                <div className={styles.postMeta}>
-                                                    <span>👤 {post.user.name || t.anonymous}</span>
-                                                    <span>📍 {post.location}</span>
-                                                    <span>🕐 {formatPostedAt(post.createdAt, lang)}</span>
+                                        <div className={styles.postBody}>
+                                            <div className={styles.postTop}>
+                                                <div>
+                                                    <h3 className={styles.postTitle}>{post.title}</h3>
+                                                    <div className={styles.postMeta}>
+                                                        <span>👤 {post.user.name || t.anonymous}</span>
+                                                        <span>📍 {post.location}</span>
+                                                        <span>🕐 {formatPostedAt(post.createdAt, lang)}</span>
+                                                    </div>
+                                                </div>
+                                                <div className={styles.postRight}>
+                                                    {post.maxBudget && (
+                                                        <div className={styles.postBudget}>
+                                                            <span className={styles.budgetLabel}>{t.budget}</span>
+                                                            <span className="price-sm">
+                                                                {t.upTo} €{post.maxBudget.toLocaleString()}
+                                                            </span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
-                                            <div className={styles.postRight}>
-                                                {post.maxBudget && (
-                                                    <div className={styles.postBudget}>
-                                                        <span className={styles.budgetLabel}>{t.budget}</span>
-                                                        <span className="price-sm">
-                                                            {t.upTo} €{post.maxBudget.toLocaleString()}
-                                                        </span>
-                                                    </div>
+                                            <p className={styles.postDesc}>{post.description}</p>
+                                            <div className={styles.postTags}>
+                                                {post.bikeType && (
+                                                    <span className="badge badge-primary">{post.bikeType}</span>
+                                                )}
+                                                {post.frameSize && (
+                                                    <span className="badge badge-gray">
+                                                        {t.size} {post.frameSize}
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>
-                                        <p className={styles.postDesc}>{post.description}</p>
-                                        <div className={styles.postTags}>
-                                            {post.bikeType && (
-                                                <span className="badge badge-primary">{post.bikeType}</span>
-                                            )}
-                                            {post.frameSize && (
-                                                <span className="badge badge-gray">
-                                                    {t.size} {post.frameSize}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </Link>
+                                    </Link>
+                                </div>
                             </FadeIn>
                         ))
                     ) : (
@@ -206,7 +212,12 @@ export default function WantedClient({ initialPosts, lang }: WantedClientProps) 
                 </StaggerContainer>
             ) : (
                 <FadeIn delay={0.2} style={{ height: "600px", marginTop: "var(--space-6)" }}>
-                    <Map listings={mapListings} height="600px" />
+                    <Map 
+                        listings={mapListings} 
+                        height="600px" 
+                        activeId={activeListingId}
+                        onMarkerClick={(id) => setActiveListingId(id)}
+                    />
                 </FadeIn>
             )}
         </FadeIn>

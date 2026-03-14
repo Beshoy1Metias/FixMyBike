@@ -131,6 +131,7 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [sortByDistance, setSortByDistance] = useState(false);
     const [loadingLocation, setLoadingLocation] = useState(false);
+    const [activeShopId, setActiveShopId] = useState<string | null>(null);
     const t = UI_TEXT[lang];
 
     const handleNearMe = () => {
@@ -194,7 +195,8 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
             longitude: shop.lng,
             image: shop.image_url,
             href: getDirectionsUrl(shop.lat, shop.lng, shop.address),
-            price: `⭐ ${shop.rating}`
+            price: `⭐ ${shop.rating}`,
+            type: "shop" as const
         }));
     }, [filteredShops]);
 
@@ -258,7 +260,19 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
                             {filteredShops.length > 0 ? (
                                 filteredShops.map((shop) => (
                                     <FadeIn key={shop.id}>
-                                        <div className="card" style={{ padding: "var(--space-4)" }}>
+                                        <div 
+                                            id={`shop-${shop.id}`}
+                                            className={`card ${activeShopId === shop.id ? "active-shop-card" : ""}`} 
+                                            style={{ 
+                                                padding: "var(--space-4)", 
+                                                cursor: "pointer",
+                                                border: activeShopId === shop.id ? "2px solid var(--color-primary)" : "1px solid var(--border)",
+                                                transition: "all 0.2s"
+                                            }}
+                                            onMouseEnter={() => setActiveShopId(shop.id)}
+                                            onMouseLeave={() => setActiveShopId(null)}
+                                            onClick={() => setActiveShopId(shop.id)}
+                                        >
                                             <div style={{ display: "flex", gap: "var(--space-4)" }}>
                                                 <div style={{ width: "100px", height: "100px", flexShrink: 0, borderRadius: "var(--radius)", overflow: "hidden", position: "relative" }}>
                                                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -321,6 +335,12 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
                             height="100%" 
                             center={userLocation ? [userLocation.lat, userLocation.lng] : [45.4111, 11.8805]}
                             zoom={userLocation ? 14 : 13}
+                            activeId={activeShopId}
+                            onMarkerClick={(id) => {
+                                const el = document.getElementById(`shop-${id}`);
+                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                setActiveShopId(id);
+                            }}
                         />
                     </div>
                 </div>

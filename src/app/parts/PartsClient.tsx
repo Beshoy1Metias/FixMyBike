@@ -67,6 +67,7 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState<Record<string, string | number | boolean | null>>({});
     const [viewMode, setViewMode] = useState<"list" | "map">("list");
+    const [activeListingId, setActiveListingId] = useState<string | null>(null);
     const t = UI_TEXT[lang];
 
     const fetchParts = async (newFilters: Record<string, string | number | boolean | null>) => {
@@ -168,22 +169,26 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
                     {parts.length > 0 ? (
                         parts.map((part) => (
                             <FadeIn key={part.id}>
-                                <ListingCard
-                                    href={`/parts/${part.id}`}
-                                    image={part.photos[0]?.url ?? null}
-                                    title={part.title}
-                                    price={part.price}
-                                    condition={CONDITION_LABELS[part.condition][lang]}
-                                    location={part.location}
-                                    badge={CONDITION_LABELS[part.condition][lang]}
-                                    badgeVariant={part.condition === "NEW" ? "success" : part.condition === "LIKE_NEW" ? "accent" : "gray"}
-                                    tags={[
-                                        part.brand ?? "",
-                                        part.category.charAt(0) + part.category.slice(1).toLowerCase(),
-                                    ].filter(Boolean)}
-                                />
-                            </FadeIn>
-                        ))
+                                <div 
+                                    onMouseEnter={() => setActiveListingId(part.id)}
+                                    onMouseLeave={() => setActiveListingId(null)}
+                                >
+                                    <ListingCard
+                                        href={`/parts/${part.id}`}
+                                        image={part.photos[0]?.url ?? null}
+                                        title={part.title}
+                                        price={part.price}
+                                        condition={CONDITION_LABELS[part.condition][lang]}
+                                        location={part.location}
+                                        badge={CONDITION_LABELS[part.condition][lang]}
+                                        badgeVariant={part.condition === "NEW" ? "success" : part.condition === "LIKE_NEW" ? "accent" : "gray"}
+                                        tags={[
+                                            part.brand ?? "",
+                                            part.category.charAt(0) + part.category.slice(1).toLowerCase(),
+                                        ].filter(Boolean)}
+                                    />
+                                </div>
+                            </FadeIn>                        ))
                     ) : (
                         <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "var(--space-20) 0" }}>
                             <p className="text-muted">{t.noResults}</p>
@@ -192,7 +197,12 @@ export default function PartsClient({ initialParts, lang }: PartsClientProps) {
                 </StaggerContainer>
             ) : (
                 <FadeIn delay={0.2} style={{ height: "600px", marginTop: "var(--space-6)" }}>
-                    <Map listings={mapListings} height="600px" />
+                    <Map 
+                        listings={mapListings} 
+                        height="600px" 
+                        activeId={activeListingId}
+                        onMarkerClick={(id) => setActiveListingId(id)}
+                    />
                 </FadeIn>
             )}
         </FadeIn>
