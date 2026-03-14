@@ -9,14 +9,18 @@ interface FadeInProps extends HTMLMotionProps<"div"> {
     duration?: number;
     direction?: "up" | "down" | "left" | "right" | "none";
     distance?: number;
+    scale?: number;
+    viewportMargin?: string;
 }
 
 export default function FadeIn({
     children,
     delay = 0,
-    duration = 0.5,
+    duration = 0.6,
     direction = "up",
-    distance = 20,
+    distance = 30,
+    scale = 1,
+    viewportMargin = "-50px",
     className,
     ...props
 }: FadeInProps) {
@@ -25,15 +29,17 @@ export default function FadeIn({
             opacity: 0,
             x: direction === "left" ? distance : direction === "right" ? -distance : 0,
             y: direction === "up" ? distance : direction === "down" ? -distance : 0,
+            scale: scale !== 1 ? scale : 1,
         },
         visible: {
             opacity: 1,
             x: 0,
             y: 0,
+            scale: 1,
             transition: {
                 duration,
                 delay,
-                ease: "easeOut",
+                ease: [0.21, 0.47, 0.32, 0.98], // Custom smooth ease
             },
         },
     };
@@ -42,7 +48,7 @@ export default function FadeIn({
         <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin: viewportMargin }}
             variants={variants}
             className={className}
             {...props}

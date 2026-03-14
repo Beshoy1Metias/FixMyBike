@@ -83,7 +83,7 @@ const UI_TEXT = {
         noResults: "No bikes found with these filters.",
     },
     it: {
-        list: "Lista",
+        list: "Elenco",
         map: "Mappa",
         size: "Taglia",
         noResults: "Nessuna bici trovata con questi filtri.",

@@ -33,7 +33,7 @@ const CATEGORIES = {
         { key: "BIKE_TALK", label: "Bike Talk" },
     ],
     it: [
-        { key: "", label: "Tutti i temi" },
+        { key: "", label: "Tutti gli Argomenti" },
         { key: "GENERAL", label: "Generale" },
         { key: "APP_FEEDBACK", label: "Feedback App" },
         { key: "BIKE_TALK", label: "Parliamo di Bici" },
@@ -55,9 +55,9 @@ const UI_TEXT = {
     it: {
         categories: "Categorie",
         rulesTitle: "Regole della Community",
-        rulesBody: "Sii rispettoso, rimani in tema e aiutiamoci a vicenda!",
+        rulesBody: "Rispetta gli altri, rimani in tema e offri il tuo aiuto!",
         latest: "Ultime Discussioni",
-        newDiscussion: "+ Nuova Discussione",
+        newDiscussion: "+ Inizia una Discussione",
         by: "Di",
         comments: "commenti",
         noPosts: "Nessuna discussione trovata in questa categoria.",

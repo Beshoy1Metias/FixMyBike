@@ -25,22 +25,22 @@ const TEXT = {
     it: {
         title: "Termini di Servizio",
         lastUpdated: "Ultimo aggiornamento: Marzo 2026",
-        content: `Benvenuto su FixMyBike. Utilizzando la nostra piattaforma, accetti i seguenti termini:
+        content: `Benvenuti su FixMyBike. Utilizzando la nostra piattaforma, l'utente accetta i seguenti termini:
 
         1. Accettazione dei Termini
-        Accedendo o utilizzando FixMyBike, accetti di essere vincolato da questi Termini di Servizio e da tutte le leggi e i regolamenti applicabili.
+        Accedendo o utilizzando FixMyBike, accetti di essere vincolato dai presenti Termini di Servizio e da tutte le leggi e i regolamenti applicabili.
 
         2. Responsabilità dell'Utente
-        Sei responsabile dei contenuti che pubblichi e delle interazioni che hai con gli altri utenti. Gli annunci devono essere accurati e veritieri.
+        Sei l'unico responsabile dei contenuti pubblicati e delle interazioni con gli altri utenti. Gli annunci devono essere accurati, veritieri e completi.
 
         3. Condotta Vietata
-        Accetti di non utilizzare il servizio per scopi illegali, per molestare altri o per pubblicare annunci fraudolenti.
+        Ti impegni a non utilizzare il servizio per scopi illegali, per molestare altri utenti o per pubblicare annunci fraudolenti.
 
         4. Linee Guida della Community
-        Il nostro forum della community è un luogo per discussioni rispettose. Ci riserviamo il diritto di rimuovere contenuti che violano i nostri standard.
+        Il forum della nostra community è un luogo di confronto civile e rispettoso. Ci riserviamo il diritto di rimuovere qualsiasi contenuto che violi i nostri standard.
 
         5. Limitazione di Responsabilità
-        FixMyBike è una piattaforma per connettere gli utenti. Non siamo responsabili della qualità delle riparazioni, delle condizioni dei ricambi venduti o dell'esito delle transazioni tra utenti.`,
+        FixMyBike è una piattaforma che mette in contatto gli utenti. Non siamo responsabili della qualità delle riparazioni, delle condizioni dei ricambi venduti o dell'esito delle transazioni tra utenti.`,
     }
 };
 

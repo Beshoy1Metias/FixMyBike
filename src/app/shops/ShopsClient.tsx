@@ -47,8 +47,8 @@ const UI_TEXT = {
         closed: "Closed",
     },
     it: {
-        title: "Negozi e Riparazioni",
-        subtitle: "Servizi esperti per la tua bici a Padova.",
+        title: "Negozi e Officine",
+        subtitle: "Trova i migliori servizi per la tua bici a Padova.",
         nearMe: "Vicino a Me",
         allShops: "Tutti i Negozi",
         openNow: "Aperti Ora",

@@ -22,19 +22,19 @@ const TEXT = {
     it: {
         title: "Informativa sulla Privacy",
         lastUpdated: "Ultimo aggiornamento: Marzo 2026",
-        content: `In FixMyBike, prendiamo sul serio la tua privacy. Questa informativa descrive come raccogliamo, utilizziamo e gestiamo le tue informazioni personali.
+        content: `In FixMyBike, la tua privacy è una nostra priorità. Questa informativa descrive come raccogliamo, utilizziamo e gestiamo le tue informazioni personali.
 
-        1. Informazioni che Raccogliamo
-        Raccogliamo le informazioni che ci fornisci direttamente, come quando crei un account, pubblichi un annuncio o comunichi con altri utenti. Questo include il tuo nome, indirizzo email, posizione e foto.
+        1. Informazioni raccolte
+        Raccogliamo le informazioni fornite direttamente dall'utente, ad esempio durante la creazione di un account, la pubblicazione di un annuncio o la comunicazione con altri utenti. Ciò include nome, indirizzo email, posizione e foto.
 
-        2. Come Utilizziamo le tue Informazioni
-        Utilizziamo le tue informazioni per gestire e migliorare i nostri servizi, facilitare i contatti tra gli utenti e fornire funzionalità di visualizzazione su mappa.
+        2. Utilizzo delle informazioni
+        Utilizziamo i dati per gestire e migliorare i nostri servizi, facilitare i contatti tra gli utenti e fornire funzionalità basate sulla geolocalizzazione degli annunci.
 
-        3. Condivisione delle Informazioni
-        Il tuo profilo pubblico e i tuoi annunci sono visibili agli altri utenti. Non vendiamo le tue informazioni personali a terze parti.
+        3. Condivisione dei dati
+        Il tuo profilo pubblico e i tuoi annunci sono visibili agli altri utenti della piattaforma. Non vendiamo le tue informazioni personali a terze parti per scopi commerciali.
 
-        4. Dati della Mappa
-        Quando utilizzi le funzionalità della mappa, le tue coordinate precise vengono utilizzate per mostrare i tuoi annunci agli altri membri della community di Padova.`,
+        4. Dati cartografici
+        Quando utilizzi le funzionalità della mappa, le tue coordinate vengono utilizzate per mostrare i tuoi annunci agli altri membri della community di Padova.`,
     }
 };
 

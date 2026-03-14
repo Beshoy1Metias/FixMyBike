@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import styles from "./Navbar.module.css";
 import LanguageSwitcher from "@/components/LanguageSwitcher/LanguageSwitcher";
 import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
@@ -37,7 +37,7 @@ const NAV_TEXT = {
         community: "Community",
         shops: "Negozi",
         dashboard: "Dashboard",
-        postListing: "Pubblica annuncio",
+        postListing: "Pubblica un annuncio",
         messages: "Messaggi",
         profile: "Profilo",
         signOut: "Esci",
@@ -110,48 +110,64 @@ export default function Navbar() {
     }, [menuOpen]);
 
     const mobileMenuContent = (
-        <>
-            <div className={styles.backdrop} onClick={() => setMenuOpen(false)} />
-            <div className={styles.mobileMenu}>
-                <div className={styles.mobileMenuHeader}>
-                    <span className={styles.mobileMenuTitle}>Menu</span>
-                    <button className={styles.closeBtn} onClick={() => setMenuOpen(false)}>✕</button>
-                </div>
-                <div className={styles.mobileMenuBody}>
-                    <Link href="/mechanics" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.mechanics}</Link>
-                    <Link href="/parts" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.parts}</Link>
-                    <Link href="/bikes" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.bikes}</Link>
-                    <Link href="/wanted" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.wanted}</Link>
-                    <Link href="/shops" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.shops}</Link>
-                    <Link href="/community" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.community}</Link>
-                    
-                    <div className={styles.mobileDivider} />
-                    
-                    {session ? (
-                        <>
-                            <Link href="/listings/new" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.postListing}</Link>
-                            <Link href="/dashboard" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.dashboard}</Link>
-                            <Link href="/messages" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-                                {t.messages}
-                                {unreadCount > 0 && <span className={styles.badge} style={{ position: "static", marginLeft: "8px", transform: "none" }}>{unreadCount}</span>}
-                            </Link>
-                            <Link href="/profile" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.profile}</Link>
-                            <button
-                                className={`${styles.mobileLink} ${styles.signOutBtnMobile}`}
-                                onClick={() => { signOut({ callbackUrl: "/" }); setMenuOpen(false); }}
-                            >
-                                {t.signOut}
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.logIn}</Link>
-                            <Link href="/auth/register" className={`${styles.mobileLink} ${styles.mobileLinkPrimary}`} onClick={() => setMenuOpen(false)}>{t.signUpFree}</Link>
-                        </>
-                    )}
-                </div>
-            </div>
-        </>
+        <AnimatePresence>
+            {menuOpen && (
+                <>
+                    <motion.div 
+                        className={styles.backdrop} 
+                        onClick={() => setMenuOpen(false)}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    />
+                    <motion.div 
+                        className={styles.mobileMenu}
+                        initial={{ x: "100%" }}
+                        animate={{ x: 0 }}
+                        exit={{ x: "100%" }}
+                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                    >
+                        <div className={styles.mobileMenuHeader}>
+                            <span className={styles.mobileMenuTitle}>Menu</span>
+                            <button className={styles.closeBtn} onClick={() => setMenuOpen(false)}>✕</button>
+                        </div>
+                        <div className={styles.mobileMenuBody}>
+                            <Link href="/mechanics" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.mechanics}</Link>
+                            <Link href="/parts" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.parts}</Link>
+                            <Link href="/bikes" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.bikes}</Link>
+                            <Link href="/wanted" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.wanted}</Link>
+                            <Link href="/shops" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.shops}</Link>
+                            <Link href="/community" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.community}</Link>
+                            
+                            <div className={styles.mobileDivider} />
+                            
+                            {session ? (
+                                <>
+                                    <Link href="/listings/new" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.postListing}</Link>
+                                    <Link href="/dashboard" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.dashboard}</Link>
+                                    <Link href="/messages" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+                                        {t.messages}
+                                        {unreadCount > 0 && <span className={styles.badge} style={{ position: "static", marginLeft: "8px", transform: "none" }}>{unreadCount}</span>}
+                                    </Link>
+                                    <Link href="/profile" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.profile}</Link>
+                                    <button
+                                        className={`${styles.mobileLink} ${styles.signOutBtnMobile}`}
+                                        onClick={() => { signOut({ callbackUrl: "/" }); setMenuOpen(false); }}
+                                    >
+                                        {t.signOut}
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{t.logIn}</Link>
+                                    <Link href="/auth/register" className={`${styles.mobileLink} ${styles.mobileLinkPrimary}`} onClick={() => setMenuOpen(false)}>{t.signUpFree}</Link>
+                                </>
+                            )}
+                        </div>
+                    </motion.div>
+                </>
+            )}
+        </AnimatePresence>
     );
 
     return (
@@ -199,8 +215,10 @@ export default function Navbar() {
                                             </div>
                                         </Link>
                                         <div className={styles.userMenu}>
-                                            <div 
+                                            <motion.div 
                                                 className={styles.userBtn}
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
                                                 style={{ 
                                                     background: session.user.image ? "none" : "linear-gradient(135deg, var(--color-primary), var(--color-accent))",
                                                     overflow: "hidden",
@@ -214,7 +232,7 @@ export default function Navbar() {
                                                 ) : (
                                                     <span style={{ fontSize: "0.9rem" }}>{session.user.name?.charAt(0).toUpperCase() ?? "U"}</span>
                                                 )}
-                                            </div>
+                                            </motion.div>
                                             <div className={styles.dropdown}>
                                                 <Link href="/dashboard" className={styles.dropdownItem}>{t.dashboard}</Link>
                                                 <Link href="/listings/new" className={styles.dropdownItem}>{t.postListing}</Link>

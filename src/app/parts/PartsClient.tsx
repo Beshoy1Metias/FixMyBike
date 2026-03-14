@@ -56,7 +56,7 @@ const UI_TEXT = {
         noResults: "No parts found with these filters.",
     },
     it: {
-        list: "Lista",
+        list: "Elenco",
         map: "Mappa",
         noResults: "Nessun ricambio trovato con questi filtri.",
     },

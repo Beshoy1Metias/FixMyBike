@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import styles from "./ListingCard.module.css";
 
 interface ListingCardProps {
@@ -36,7 +37,11 @@ export default function ListingCard({
     isCompleted = false,
 }: ListingCardProps) {
     return (
-        <div className={`${styles.cardWrapper} ${isCompleted ? styles.completed : ""}`}>
+        <motion.div 
+            className={`${styles.cardWrapper} ${isCompleted ? styles.completed : ""}`}
+            whileHover={{ y: -5 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
             <Link href={href} className={styles.card}>
                 <div className={styles.imageWrap}>
                     {image ? (
@@ -86,6 +91,6 @@ export default function ListingCard({
                     {statusAction.label}
                 </button>
             )}
-        </div>
+        </motion.div>
     );
 }

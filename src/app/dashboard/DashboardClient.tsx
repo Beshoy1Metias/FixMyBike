@@ -80,15 +80,15 @@ const TEXT = {
         markSold: "Segna come Venduto",
         markFound: "Segna come Trovato",
         markAvailable: "Segna come Disponibile",
-        noListings: "Nessun annuncio trovato in questa sezione.",
+        noListings: "Nessun annuncio in questa sezione.",
         bike: "Bici",
         part: "Ricambio",
-        wanted: "Richiesta",
+        wanted: "Cercasi",
         conditionLabels: {
-            NEW: "Nuova",
-            LIKE_NEW: "Come nuova",
-            GOOD: "Buona",
-            FAIR: "Discreta",
+            NEW: "Nuovo",
+            LIKE_NEW: "Come nuovo",
+            GOOD: "Buono",
+            FAIR: "Discreto",
             POOR: "Da sistemare"
         }
     },

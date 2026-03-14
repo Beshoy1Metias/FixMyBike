@@ -64,14 +64,14 @@ const UI_TEXT = {
         noResults: "No wanted posts found.",
     },
     it: {
-        list: "Lista",
+        list: "Elenco",
         map: "Mappa",
         buyer: "Acquirente",
-        anonymous: "Acquirente FixMyBike",
+        anonymous: "Utente FixMyBike",
         budget: "Budget",
         upTo: "fino a",
         size: "Taglia",
-        noResults: "Nessuna richiesta trovata.",
+        noResults: "Nessun annuncio trovato con questi filtri.",
     },
 };
 

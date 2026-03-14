@@ -26,18 +26,18 @@ const TEXT = {
     },
     it: {
         title: "Crea il tuo account",
-        subtitle: "Unisciti alla community ciclistica",
+        subtitle: "Entra a far parte della nostra community",
         googleBtn: "Continua con Google",
-        divider: "o registrati con la tua email",
-        labelName: "Nome Completo",
+        divider: "oppure registrati con l'email",
+        labelName: "Nome e Cognome",
         placeholderName: "Mario Rossi",
         labelEmail: "Email",
         labelPassword: "Password",
-        placeholderPassword: "Min. 8 caratteri",
+        placeholderPassword: "Almeno 8 caratteri",
         submit: "Crea Account",
         switchText: "Hai già un account?",
         switchLink: "Accedi",
-        errorGeneric: "Qualcosa è andato storto.",
+        errorGeneric: "Si è verificato un errore.",
     },
 } as const;
 
