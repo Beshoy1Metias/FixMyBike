@@ -26,6 +26,22 @@
     box-shadow: var(--shadow-glow), 0 16px 32px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
 }
 
+@media (hover: none) {
+    .card:hover {
+        transform: none;
+    }
+}
+
+.card:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+    .card:active {
+        transform: none;
+    }
+}
+
 .imageWrap {
     position: relative;
     width: 100%;
@@ -123,11 +139,29 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: var(--space-2);
+}
+
+.locationWrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-tertiary);
+    max-width: 60%;
+}
+
+.locationIcon {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    color: var(--color-primary);
 }
 
 .location {
     font-size: 0.75rem;
-    color: var(--text-tertiary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .condition {

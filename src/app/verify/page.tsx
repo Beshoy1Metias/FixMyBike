@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import styles from "../auth.module.css";
+import styles from "../auth/auth.module.css";
 import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
 
 const TEXT = {
@@ -49,7 +49,7 @@ function VerifyEmailContent() {
             return;
         }
 
-        fetch(`/api/auth/verify-email?token=${encodeURIComponent(token)}`)
+        fetch(`/api/verify?token=${encodeURIComponent(token)}`)
             .then(async (res) => {
                 if (res.ok) {
                     setState("success");

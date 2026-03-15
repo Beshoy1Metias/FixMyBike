@@ -4,7 +4,7 @@ import { useState, FormEvent, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
-import styles from "../auth.module.css";
+import styles from "../auth/auth.module.css";
 import { useLanguage } from "@/components/LanguageProvider/LanguageProvider";
 
 const TEXT = {
@@ -68,7 +68,7 @@ function ResetPasswordContent() {
         setLoading(true);
 
         try {
-            const res = await fetch("/api/auth/reset-password", {
+            const res = await fetch("/api/reset-password", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ token, password: form.password }),

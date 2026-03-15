@@ -296,10 +296,17 @@ ul {
   outline: none;
   min-height: 48px;
   will-change: transform;
+  touch-action: manipulation;
 }
 
 .btn:active {
   transform: scale(0.96) !important;
+}
+
+@media (max-width: 768px) {
+  .btn:active {
+    transform: none !important;
+  }
 }
 
 .btn-sm {

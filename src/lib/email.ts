@@ -257,7 +257,7 @@ export async function sendVerificationEmail(
   lang: "en" | "it" = "en"
 ) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://fix-my-bike.it";
-  const verifyUrl = `${appUrl}/auth/verify-email?token=${token}`;
+  const verifyUrl = `${appUrl}/verify?token=${token}`;
   const t = VERIFY[lang];
   const firstName = name.split(" ")[0] || name;
 
@@ -321,7 +321,7 @@ export async function sendPasswordResetEmail(
   lang: "en" | "it" = "en"
 ) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://fix-my-bike.it";
-  const resetUrl = `${appUrl}/auth/reset-password?token=${token}`;
+  const resetUrl = `${appUrl}/reset-password?token=${token}`;
   const t = RESET[lang];
   const firstName = name.split(" ")[0] || name;
 
