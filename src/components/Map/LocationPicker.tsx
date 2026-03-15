@@ -136,19 +136,15 @@ export default function LocationPicker({
         searchTimeout.current = setTimeout(async () => {
             setIsSearching(true);
             try {
-                const isZipCode = /^\d{5}$/.test(query.trim());
                 let url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&accept-language=${language}&countrycodes=it`;
                 
-                if (isZipCode) {
-                    url += `&postalcode=${encodeURIComponent(query.trim())}`;
-                } else {
-                    // Implicitly bias to Padova if not specified
-                    const lowerQuery = query.toLowerCase();
-                    const searchQuery = (lowerQuery.includes("padova") || lowerQuery.includes("padua")) 
-                        ? query 
-                        : `${query}, Padova`;
-                    url += `&q=${encodeURIComponent(searchQuery)}`;
-                }
+                // Implicitly bias to Padova if not specified
+                const lowerQuery = query.toLowerCase();
+                const searchQuery = (lowerQuery.includes("padova") || lowerQuery.includes("padua") || lowerQuery.includes("veneto")) 
+                    ? query 
+                    : `${query}, Padova`;
+                
+                url += `&q=${encodeURIComponent(searchQuery)}`;
 
                 const res = await fetch(url);
                 const data = await res.json();
