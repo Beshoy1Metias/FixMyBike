@@ -164,7 +164,7 @@ export default function NewPartListingPage() {
                 body: JSON.stringify({
                     ...form,
                     price: Number(form.price),
-                    photoUrls,
+                    photos: photoUrls,
                 }),
             });
 

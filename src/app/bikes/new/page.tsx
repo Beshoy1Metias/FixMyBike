@@ -192,7 +192,7 @@ export default function NewBikeListingPage() {
                     ...form,
                     price: Number(form.price),
                     year: form.year ? Number(form.year) : undefined,
-                    photoUrls,
+                    photos: photoUrls,
                 }),
             });
 
