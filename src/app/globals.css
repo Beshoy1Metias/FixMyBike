@@ -171,8 +171,10 @@ ul {
   height: 100vh;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.08;
+  mix-blend-mode: screen;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMcvsBAAAABnRSTlMAAAAAAABupgeRAAAAnklEQVQ4y2NgQAX8DIwgwpGBgREkwMDIyAhWgFEQKMQIE2FgYGTsYMxhYGBsYNwNUsTImMFgwMDIuBvMZ2Rk3AOSZ2RkPMBgwMDIeBgswsjIFMDYwcjIBOJkZMwF6WJkXAyiGRkZDzAYMDAyhYPoGBkbGBcxMjIy7gbmZGRcDaJjZBRjYGRk3A1XxcjYwcHAwMgIFmRgRDYgM8N1AQB7U0Hls9q+KAAAAABJRU5ErkJggg==");
+  background-repeat: repeat;
 }
 
 /* ---- Layout Utilities ---- */

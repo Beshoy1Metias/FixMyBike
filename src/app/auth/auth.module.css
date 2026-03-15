@@ -22,11 +22,13 @@
     z-index: 1;
     width: 100%;
     max-width: 440px;
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: rgba(22, 22, 24, 0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-xl);
     padding: var(--space-10);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.08);
 }
 
 .cardHead {
