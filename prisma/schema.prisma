@@ -62,7 +62,7 @@ model Feedback {
   message   String   @db.Text
   createdAt DateTime @default(now())
 
-  user User? @relation(fields: [userId], references: [id])
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("feedbacks")
 }
@@ -139,8 +139,8 @@ model Order {
   createdAt             DateTime    @default(now())
   updatedAt             DateTime    @updatedAt
 
-  buyer       User         @relation("BuyerOrders", fields: [buyerId], references: [id])
-  seller      User         @relation("SellerOrders", fields: [sellerId], references: [id])
+  buyer       User         @relation("BuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller      User         @relation("SellerOrders", fields: [sellerId], references: [id], onDelete: Cascade)
   bikeListing BikeListing? @relation(fields: [bikeListingId], references: [id])
   partListing PartListing? @relation(fields: [partListingId], references: [id])
 
@@ -260,7 +260,7 @@ model ServiceRequest {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  user     User             @relation(fields: [userId], references: [id])
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   mechanic MechanicProfile? @relation(fields: [mechanicId], references: [id])
   photos   ServiceRequestPhoto[]
 
@@ -320,7 +320,7 @@ model PartListing {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  user            User              @relation(fields: [userId], references: [id])
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   photos          PartListingPhoto[]
   contactMessages ContactMessage[]
   order           Order?
@@ -388,7 +388,7 @@ model BikeListing {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  user            User               @relation(fields: [userId], references: [id])
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   photos          BikeListingPhoto[]
   contactMessages ContactMessage[]
   order           Order?
@@ -427,7 +427,7 @@ model WantedPost {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  user            User             @relation(fields: [userId], references: [id])
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   contactMessages ContactMessage[]
 
   @@map("wanted_posts")
@@ -446,8 +446,8 @@ model Review {
   comment     String?  @db.Text
   createdAt   DateTime @default(now())
 
-  author  User             @relation("ReviewAuthor", fields: [authorId], references: [id])
-  target  User             @relation("ReviewTarget", fields: [targetId], references: [id])
+  author  User             @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  target  User             @relation("ReviewTarget", fields: [targetId], references: [id], onDelete: Cascade)
   mechanic MechanicProfile? @relation("MechanicReviews", fields: [mechanicId], references: [id])
 
   @@map("reviews")
@@ -471,8 +471,8 @@ model ContactMessage {
   wantedPostId     String?
   createdAt        DateTime @default(now())
 
-  fromUser        User?            @relation("ContactFromUser", fields: [fromUserId], references: [id])
-  toUser          User             @relation("ContactToUser", fields: [toUserId], references: [id])
+  fromUser        User?            @relation("ContactFromUser", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser          User             @relation("ContactToUser", fields: [toUserId], references: [id], onDelete: Cascade)
   partListing     PartListing?     @relation(fields: [partListingId], references: [id])
   bikeListing     BikeListing?     @relation(fields: [bikeListingId], references: [id])
   mechanicProfile MechanicProfile? @relation(fields: [mechanicProfileId], references: [id])
