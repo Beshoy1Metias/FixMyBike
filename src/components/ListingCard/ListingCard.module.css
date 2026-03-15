@@ -20,6 +20,12 @@
     height: 100%;
 }
 
+@media (max-width: 640px) {
+    .card {
+        border-radius: var(--radius-lg);
+    }
+}
+
 .card:hover {
     transform: translateY(-6px);
     border-color: rgba(255, 92, 40, 0.4);
@@ -142,12 +148,20 @@
     gap: var(--space-2);
 }
 
+@media (max-width: 480px) {
+    .footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-1);
+    }
+}
+
 .locationWrap {
     display: flex;
     align-items: center;
     gap: 4px;
     color: var(--text-tertiary);
-    max-width: 60%;
+    min-width: 0;
 }
 
 .locationIcon {
