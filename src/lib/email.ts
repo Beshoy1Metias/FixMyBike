@@ -154,7 +154,7 @@ function welcomeHtml(name: string, lang: "en" | "it"): string {
               <p style="margin:0;font-size:12px;color:#3D3D42;">
                 You received this email because you created a Fix My Bike account.
                 &nbsp;&middot;&nbsp;
-                <a href="${appUrl}" style="color:#FF5C28;text-decoration:none;">fixmybike.com</a>
+                <a href="${appUrl}" style="color:#FF5C28;text-decoration:none;">fix-my-bike.it</a>
               </p>
             </td>
           </tr>
@@ -184,6 +184,222 @@ export async function sendWelcomeEmail(to: string, name: string, lang: "en" | "i
     console.error("[sendWelcomeEmail] Failed to send to", to, result.error);
   } else {
     console.log("[sendWelcomeEmail] Sent to", to);
+  }
+
+  return result;
+}
+
+// ─── Email Verification ───────────────────────────────────────────────────────
+
+function verificationHtml(name: string, verifyUrl: string, lang: "en" | "it"): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://fix-my-bike.it";
+  const logoUrl = `${appUrl}/logo.png`;
+  const firstName = name.split(" ")[0] || name;
+
+  const copy = {
+    en: {
+      eyebrow: "Action required",
+      headline: "Verify your email",
+      body1: `Hey ${firstName}, thanks for joining Fix My Bike!`,
+      body2: "Please verify your email address to activate your account. This link expires in 1 hour.",
+      cta: "Verify Email Address",
+      footer: "If you didn't create a Fix My Bike account, you can safely ignore this email.",
+    },
+    it: {
+      eyebrow: "Azione richiesta",
+      headline: "Verifica la tua email",
+      body1: `Ciao ${firstName}, grazie per esserti iscritto a Fix My Bike!`,
+      body2: "Verifica il tuo indirizzo email per attivare il tuo account. Il link scade tra 1 ora.",
+      cta: "Verifica Email",
+      footer: "Se non hai creato un account Fix My Bike, puoi ignorare questa email.",
+    },
+  }[lang];
+
+  return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${copy.headline}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0D0D0F;font-family:'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0D0D0F;padding:48px 0;">
+    <tr>
+      <td align="center" style="padding:0 16px;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#161618;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);">
+          <tr>
+            <td style="background:linear-gradient(135deg,#1A1A1C 0%,#0D0D0F 100%);padding:36px 48px;text-align:center;border-bottom:2px solid #FF5C28;">
+              <img src="${logoUrl}" alt="Fix My Bike" width="160" height="auto" style="display:block;margin:0 auto;max-width:160px;height:auto;" />
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:36px 48px 0;">
+              <p style="margin:0 0 8px;font-size:11px;font-weight:700;color:#FF5C28;text-transform:uppercase;letter-spacing:0.12em;">${copy.eyebrow}</p>
+              <h1 style="margin:0 0 24px;font-size:26px;font-weight:800;color:#FFFFFF;letter-spacing:-0.03em;line-height:1.2;">${copy.headline}</h1>
+              <div style="width:40px;height:3px;background:linear-gradient(90deg,#FF5C28,#FFB800);border-radius:99px;margin-bottom:28px;"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 48px 32px;">
+              <p style="margin:0 0 20px;font-size:16px;line-height:1.75;color:#FFFFFF;font-weight:600;">${copy.body1}</p>
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.75;color:#A0A6B3;">${copy.body2}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 48px 40px;">
+              <a href="${verifyUrl}" style="display:inline-block;background:linear-gradient(135deg,#FF5C28,#E04B1A);color:#ffffff;text-decoration:none;padding:15px 32px;border-radius:10px;font-size:15px;font-weight:700;letter-spacing:0.01em;box-shadow:0 4px 20px rgba(255,92,40,0.4);">
+                ${copy.cta} &rarr;
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 48px;">
+              <div style="height:1px;background:rgba(255,255,255,0.07);"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 48px 36px;">
+              <p style="margin:0 0 12px;font-size:14px;line-height:1.8;color:#666A75;">${copy.footer}</p>
+              <p style="margin:0;font-size:12px;color:#3D3D42;">
+                &copy; Fix My Bike &nbsp;&middot;&nbsp;
+                <a href="${appUrl}" style="color:#FF5C28;text-decoration:none;">fix-my-bike.it</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendVerificationEmail(
+  to: string,
+  name: string,
+  token: string,
+  lang: "en" | "it" = "en"
+) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://fix-my-bike.it";
+  const verifyUrl = `${appUrl}/auth/verify-email?token=${token}`;
+  const subject = lang === "it"
+    ? "Verifica la tua email — Fix My Bike"
+    : "Verify your email — Fix My Bike";
+
+  const result = await sendEmail({ to, subject, html: verificationHtml(name, verifyUrl, lang) });
+
+  if (!result.success) {
+    console.error("[sendVerificationEmail] Failed to send to", to, result.error);
+  } else {
+    console.log("[sendVerificationEmail] Sent to", to);
+  }
+
+  return result;
+}
+
+// ─── Password Reset ───────────────────────────────────────────────────────────
+
+function passwordResetHtml(name: string, resetUrl: string, lang: "en" | "it"): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://fix-my-bike.it";
+  const logoUrl = `${appUrl}/logo.png`;
+  const firstName = name.split(" ")[0] || name;
+
+  const copy = {
+    en: {
+      eyebrow: "Password reset",
+      headline: "Reset your password",
+      body1: `Hey ${firstName}, we received a request to reset your password.`,
+      body2: "Click the button below to choose a new password. This link expires in 1 hour. If you didn't request this, you can safely ignore this email.",
+      cta: "Reset Password",
+      footer: "If you didn't request a password reset, no action is needed. Your account is safe.",
+    },
+    it: {
+      eyebrow: "Reimposta password",
+      headline: "Reimposta la tua password",
+      body1: `Ciao ${firstName}, abbiamo ricevuto una richiesta di reimpostazione della password.`,
+      body2: "Clicca il pulsante qui sotto per scegliere una nuova password. Il link scade tra 1 ora. Se non hai richiesto il reset, puoi ignorare questa email.",
+      cta: "Reimposta Password",
+      footer: "Se non hai richiesto il reset della password, non è necessaria alcuna azione. Il tuo account è al sicuro.",
+    },
+  }[lang];
+
+  return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${copy.headline}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0D0D0F;font-family:'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0D0D0F;padding:48px 0;">
+    <tr>
+      <td align="center" style="padding:0 16px;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#161618;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);">
+          <tr>
+            <td style="background:linear-gradient(135deg,#1A1A1C 0%,#0D0D0F 100%);padding:36px 48px;text-align:center;border-bottom:2px solid #FF5C28;">
+              <img src="${logoUrl}" alt="Fix My Bike" width="160" height="auto" style="display:block;margin:0 auto;max-width:160px;height:auto;" />
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:36px 48px 0;">
+              <p style="margin:0 0 8px;font-size:11px;font-weight:700;color:#FF5C28;text-transform:uppercase;letter-spacing:0.12em;">${copy.eyebrow}</p>
+              <h1 style="margin:0 0 24px;font-size:26px;font-weight:800;color:#FFFFFF;letter-spacing:-0.03em;line-height:1.2;">${copy.headline}</h1>
+              <div style="width:40px;height:3px;background:linear-gradient(90deg,#FF5C28,#FFB800);border-radius:99px;margin-bottom:28px;"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 48px 32px;">
+              <p style="margin:0 0 20px;font-size:16px;line-height:1.75;color:#FFFFFF;font-weight:600;">${copy.body1}</p>
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.75;color:#A0A6B3;">${copy.body2}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 48px 40px;">
+              <a href="${resetUrl}" style="display:inline-block;background:linear-gradient(135deg,#FF5C28,#E04B1A);color:#ffffff;text-decoration:none;padding:15px 32px;border-radius:10px;font-size:15px;font-weight:700;letter-spacing:0.01em;box-shadow:0 4px 20px rgba(255,92,40,0.4);">
+                ${copy.cta} &rarr;
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 48px;">
+              <div style="height:1px;background:rgba(255,255,255,0.07);"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 48px 36px;">
+              <p style="margin:0 0 12px;font-size:14px;line-height:1.8;color:#666A75;">${copy.footer}</p>
+              <p style="margin:0;font-size:12px;color:#3D3D42;">
+                &copy; Fix My Bike &nbsp;&middot;&nbsp;
+                <a href="${appUrl}" style="color:#FF5C28;text-decoration:none;">fix-my-bike.it</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendPasswordResetEmail(
+  to: string,
+  name: string,
+  token: string,
+  lang: "en" | "it" = "en"
+) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://fix-my-bike.it";
+  const resetUrl = `${appUrl}/auth/reset-password?token=${token}`;
+  const subject = lang === "it"
+    ? "Reimposta la tua password — Fix My Bike"
+    : "Reset your password — Fix My Bike";
+
+  const result = await sendEmail({ to, subject, html: passwordResetHtml(name, resetUrl, lang) });
+
+  if (!result.success) {
+    console.error("[sendPasswordResetEmail] Failed to send to", to, result.error);
+  } else {
+    console.log("[sendPasswordResetEmail] Sent to", to);
   }
 
   return result;

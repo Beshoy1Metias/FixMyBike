@@ -13,11 +13,13 @@ const TEXT = {
         title: "Welcome back",
         subtitle: "Sign in to your account",
         successAlert: "Account created! You can now log in.",
+        resetAlert: "Password reset successfully. You can now log in.",
         googleBtn: "Continue with Google",
         divider: "or sign in with email",
         labelEmail: "Email",
         labelPassword: "Password",
         placeholderPassword: "Your password",
+        forgotPassword: "Forgot password?",
         submit: "Sign In",
         switchText: "Don't have an account?",
         switchLink: "Sign up for free",
@@ -27,11 +29,13 @@ const TEXT = {
         title: "Bentornato",
         subtitle: "Accedi al tuo account per continuare",
         successAlert: "Account creato con successo! Ora puoi accedere.",
+        resetAlert: "Password reimpostata con successo. Ora puoi accedere.",
         googleBtn: "Continua con Google",
         divider: "oppure accedi con l'email",
         labelEmail: "Email",
         labelPassword: "Password",
         placeholderPassword: "La tua password",
+        forgotPassword: "Password dimenticata?",
         submit: "Accedi",
         switchText: "Non hai ancora un account?",
         switchLink: "Registrati gratis",
@@ -43,6 +47,7 @@ function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const justRegistered = searchParams?.get("registered") === "1";
+    const justReset = searchParams?.get("reset") === "1";
     const { language } = useLanguage();
     const t = TEXT[language];
 
@@ -94,6 +99,12 @@ function LoginForm() {
                     </div>
                 )}
 
+                {justReset && (
+                    <div className={styles.successAlert}>
+                        {t.resetAlert}
+                    </div>
+                )}
+
                 {/* Google Sign-In */}
                 <button
                     className={styles.googleBtn}
@@ -133,7 +144,12 @@ function LoginForm() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password" className="form-label">{t.labelPassword}</label>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-2)" }}>
+                            <label htmlFor="password" className="form-label" style={{ margin: 0 }}>{t.labelPassword}</label>
+                            <Link href="/auth/forgot-password" style={{ fontSize: "0.85rem", color: "var(--color-primary)", textDecoration: "none" }}>
+                                {t.forgotPassword}
+                            </Link>
+                        </div>
                         <input
                             id="password"
                             type="password"

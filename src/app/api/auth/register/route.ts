@@ -1,7 +1,9 @@
 // User registration API route
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { randomBytes } from "crypto";
 import prisma from "@/lib/prisma";
+import { sendVerificationEmail, sendWelcomeEmail } from "@/lib/email";
 
 const TEXT = {
     en: {
@@ -52,6 +54,24 @@ export async function POST(req: NextRequest) {
             data: { name, email, passwordHash },
             select: { id: true, name: true, email: true, createdAt: true },
         });
+
+        // Generate secure email verification token (expires in 1 hour)
+        const token = randomBytes(32).toString("hex");
+        const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+        await prisma.emailVerificationToken.create({
+            data: { userId: user.id, token, expiresAt },
+        });
+
+        // Send verification email (non-blocking — don't fail registration if email fails)
+        sendVerificationEmail(email, name, token, lang).catch((err) =>
+            console.error("[register] sendVerificationEmail error:", err)
+        );
+
+        // Send welcome email (same as Google OAuth users get via createUser event)
+        sendWelcomeEmail(email, name, lang).catch((err) =>
+            console.error("[register] sendWelcomeEmail error:", err)
+        );
 
         return NextResponse.json({ user }, { status: 201 });
     } catch (error) {

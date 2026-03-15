@@ -31,9 +31,9 @@ const TEXT = {
     catWantedTitle: "Wanted",
     catWantedBody: "Can't find it? Post what you're looking for and get offers.",
     founderTitle: "A Note from the Founder",
-    founderBody: "I started FixMyBike during my first year of Information Engineering at the University of Padua. After struggling to find reliable parts and mechanics for my own bike, I realized our community needed a dedicated space. What began as a student project is now growing into a platform to empower every cyclist in Padova.",
-    founderName: "Beshoy Bassem",
-    founderRole: "Founder & Engineering Student",
+    founderBody: "I moved from Egypt to Padova to study. I didn't expect to fall in love with a city that runs entirely on bikes. But finding parts, booking a mechanic, or selling your old ride — it was all harder than it needed to be. I kept thinking someone should fix this. So I did.",
+    founderName: "Beshoy Metias",
+    founderRole: "Founder & Computer Engineering Student",
     howTitle: "How it works",
     howBody: "Simple, transparent, and local.",
     steps: [
@@ -83,9 +83,9 @@ const TEXT = {
     catWantedTitle: "Cerco",
     catWantedBody: "Non trovi quello che cerchi? Pubblica un annuncio e ricevi offerte.",
     founderTitle: "Una nota dal fondatore",
-    founderBody: "Ho lanciato FixMyBike durante il mio primo anno di Ingegneria dell'Informazione a Padova. Dopo aver faticato a trovare pezzi di ricambio e meccanici affidabili per la mia bici, ho capito che la nostra comunità aveva bisogno di uno spazio dedicato. Quello che era iniziato come un progetto studentesco sta diventando il punto di riferimento per ogni ciclista a Padova.",
-    founderName: "Beshoy Bassem",
-    founderRole: "Fondatore e Studente di Ingegneria",
+    founderBody: "Mi sono trasferito dall'Egitto a Padova per studiare. Non mi aspettavo di innamorarmi di una città che vive interamente di bici. Ma trovare ricambi, prenotare un meccanico, o vendere la tua vecchia bici — era tutto più complicato del dovuto. Continuavo a pensare che qualcuno avrebbe dovuto risolvere il problema. Così l'ho risolto io.",
+    founderName: "Beshoy Metias",
+    founderRole: "Fondatore e Studente di Ingegneria Informatica",
     howTitle: "Come funziona",
     howBody: "Semplice, trasparente e locale.",
     steps: [
@@ -230,9 +230,9 @@ export default async function Home() {
               </div>
             </div>
             <div className={styles.founderImageContainer}>
-               <div className={styles.founderAvatarPlaceholder}>
-                  {t.founderName.charAt(0)}
-               </div>
+              <div className={styles.founderAvatarPlaceholder}>
+                {t.founderName.charAt(0)}
+              </div>
             </div>
           </FadeIn>
         </div>

@@ -105,6 +105,10 @@ model User {
   conversationsAsParticipant2 Conversation[]   @relation("Participant2")
   messagesSent                Message[]
 
+  // Email verification & password reset
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+
   @@map("users")
 }
 
@@ -529,4 +533,36 @@ model Message {
   sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
   @@map("messages")
+}
+
+// ============================================================
+// EMAIL VERIFICATION
+// ============================================================
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_verification_tokens")
+}
+
+// ============================================================
+// PASSWORD RESET
+// ============================================================
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
 }
