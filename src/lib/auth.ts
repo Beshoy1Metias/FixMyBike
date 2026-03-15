@@ -48,6 +48,14 @@ providers.push(
                 return null;
             }
 
+            if (!user.emailVerified) {
+                throw new Error("unverified");
+            }
+
+            if (!isValid) {
+                return null;
+            }
+
             return {
                 id: user.id,
                 email: user.email,

@@ -63,15 +63,13 @@ export async function POST(req: NextRequest) {
             data: { userId: user.id, token, expiresAt },
         });
 
-        // Send verification email (non-blocking — don't fail registration if email fails)
-        sendVerificationEmail(email, name, token, lang).catch((err) =>
-            console.error("[register] sendVerificationEmail error:", err)
-        );
-
-        // Send welcome email (same as Google OAuth users get via createUser event)
-        sendWelcomeEmail(email, name, lang).catch((err) =>
-            console.error("[register] sendWelcomeEmail error:", err)
-        );
+        // Wait for emails to send before responding so Vercel doesn't kill the execution context
+        try {
+            await sendVerificationEmail(email, name, token, lang);
+            await sendWelcomeEmail(email, name, lang);
+        } catch (err) {
+            console.error("[register] failed to send emails:", err);
+        }
 
         return NextResponse.json({ user }, { status: 201 });
     } catch (error) {

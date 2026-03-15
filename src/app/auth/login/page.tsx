@@ -24,6 +24,7 @@ const TEXT = {
         switchText: "Don't have an account?",
         switchLink: "Sign up for free",
         errorInvalid: "Invalid email or password.",
+        errorUnverified: "Please verify your email before logging in. Check your inbox.",
     },
     it: {
         title: "Bentornato",
@@ -40,6 +41,7 @@ const TEXT = {
         switchText: "Non hai ancora un account?",
         switchLink: "Registrati gratis",
         errorInvalid: "Email o password non valide.",
+        errorUnverified: "Verifica la tua email prima di accedere. Controlla la posta.",
     },
 } as const;
 
@@ -73,7 +75,11 @@ function LoginForm() {
         });
 
         if (res?.error) {
-            setError(t.errorInvalid);
+            if (res.error === "unverified") {
+                setError(t.errorUnverified);
+            } else {
+                setError(t.errorInvalid);
+            }
             setLoading(false);
             return;
         }

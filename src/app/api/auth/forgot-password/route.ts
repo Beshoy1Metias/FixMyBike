@@ -28,9 +28,11 @@ export async function POST(req: NextRequest) {
                 data: { userId: user.id, token, expiresAt },
             });
 
-            sendPasswordResetEmail(email, user.name ?? "there", token, lang).catch((err) =>
-                console.error("[forgot-password] sendPasswordResetEmail error:", err)
-            );
+            try {
+                await sendPasswordResetEmail(email, user.name ?? "there", token, lang);
+            } catch (err) {
+                console.error("[forgot-password] sendPasswordResetEmail error:", err);
+            }
         }
 
         return NextResponse.json(
