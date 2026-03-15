@@ -235,8 +235,8 @@ export default function NewBikeListingPage() {
 
                 <div className="card">
                     <form onSubmit={handleSubmit} className="card-body" style={{ display: "grid", gap: "var(--space-6)" }}>
-                        <div className="grid-2">
-                            <div className="form-group">
+                        <div className="form-row">
+                            <div className="form-group form-col">
                                 <label htmlFor="title" className="form-label">{t.labelTitle}</label>
                                 <input
                                     id="title"
@@ -247,7 +247,7 @@ export default function NewBikeListingPage() {
                                     required
                                 />
                             </div>
-                            <div className="form-group">
+                            <div className="form-group form-col">
                                 <label htmlFor="brand" className="form-label">{t.labelBrand}</label>
                                 <input
                                     id="brand"
@@ -260,8 +260,8 @@ export default function NewBikeListingPage() {
                             </div>
                         </div>
 
-                        <div className="grid-3">
-                            <div className="form-group">
+                        <div className="form-row">
+                            <div className="form-group form-col">
                                 <label htmlFor="model" className="form-label">{t.labelModel}</label>
                                 <input
                                     id="model"
@@ -270,7 +270,7 @@ export default function NewBikeListingPage() {
                                     onChange={(e) => setForm({ ...form, model: e.target.value })}
                                 />
                             </div>
-                            <div className="form-group">
+                            <div className="form-group form-col">
                                 <label htmlFor="year" className="form-label">{t.labelYear}</label>
                                 <input
                                     id="year"
@@ -282,7 +282,7 @@ export default function NewBikeListingPage() {
                                     onChange={(e) => setForm({ ...form, year: e.target.value })}
                                 />
                             </div>
-                            <div className="form-group">
+                            <div className="form-group form-col">
                                 <label htmlFor="price" className="form-label">{t.labelPrice}</label>
                                 <input
                                     id="price"
@@ -297,8 +297,8 @@ export default function NewBikeListingPage() {
                             </div>
                         </div>
 
-                        <div className="grid-3">
-                            <div className="form-group">
+                        <div className="form-row">
+                            <div className="form-group form-col">
                                 <label htmlFor="bikeType" className="form-label">{t.labelType}</label>
                                 <select
                                     id="bikeType"
@@ -312,7 +312,7 @@ export default function NewBikeListingPage() {
                                     ))}
                                 </select>
                             </div>
-                            <div className="form-group">
+                            <div className="form-group form-col">
                                 <label htmlFor="frameSize" className="form-label">{t.labelSize}</label>
                                 <select
                                     id="frameSize"
@@ -326,7 +326,7 @@ export default function NewBikeListingPage() {
                                     ))}
                                 </select>
                             </div>
-                            <div className="form-group">
+                            <div className="form-group form-col">
                                 <label htmlFor="condition" className="form-label">{t.labelCondition}</label>
                                 <select
                                     id="condition"
@@ -342,8 +342,8 @@ export default function NewBikeListingPage() {
                             </div>
                         </div>
 
-                        <div className="grid-2">
-                            <div className="form-group">
+                        <div className="form-row">
+                            <div className="form-group form-col">
                                 <label htmlFor="wheelSize" className="form-label">{t.labelWheel}</label>
                                 <input
                                     id="wheelSize"
@@ -353,7 +353,7 @@ export default function NewBikeListingPage() {
                                     onChange={(e) => setForm({ ...form, wheelSize: e.target.value })}
                                 />
                             </div>
-                            <div className="form-group">
+                            <div className="form-group form-col">
                                 <label htmlFor="color" className="form-label">{t.labelColor}</label>
                                 <input
                                     id="color"

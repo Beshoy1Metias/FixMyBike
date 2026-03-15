@@ -211,78 +211,82 @@ export default function LocationPicker({
     }
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "8px" }}>
-                <div style={{ flex: 1, minWidth: "280px", position: "relative" }}>
-                    <label className="form-label" style={{ display: "block", marginBottom: "6px" }}>
-                        {t.label} {required && <span style={{ color: "var(--color-error)" }}>*</span>}
-                    </label>
-                    <div style={{ position: "relative" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <label className="form-label" style={{ marginBottom: 0 }}>
+                    {t.label} {required && <span style={{ color: "var(--color-error)" }}>*</span>}
+                </label>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px", position: "relative" }}>
+                    <div style={{ position: "relative", width: "100%", zIndex: 1005 }}>
                         <input
                             type="text"
                             className={`form-input ${error && !position ? "border-error" : ""}`}
                             placeholder={t.searchPlaceholder}
                             value={searchQuery}
                             onChange={(e) => handleSearch(e.target.value)}
-                            style={{ paddingRight: "40px" }}
+                            style={{ paddingRight: "40px", width: "100%" }}
                         />
                         {isSearching && (
                             <div style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)" }}>
                                 <span className="spinner" style={{ width: "16px", height: "16px", borderWidth: "2px" }} />
                             </div>
                         )}
+
+                        {suggestions.length > 0 && (
+                            <div style={{ 
+                                position: "absolute", 
+                                top: "100%", 
+                                left: 0, 
+                                right: 0, 
+                                background: "var(--surface)",
+                                border: "1px solid var(--border)", 
+                                borderRadius: "var(--radius-md)",
+                                marginTop: "6px",
+                                boxShadow: "var(--shadow-xl)",
+                                maxHeight: "250px",
+                                overflowY: "auto"
+                            }}>
+                                {suggestions.map((s, i) => (
+                                    <button
+                                        key={i}
+                                        type="button"
+                                        onClick={() => selectSuggestion(s)}
+                                        style={{ 
+                                            width: "100%", 
+                                            textAlign: "left", 
+                                            padding: "14px 16px", 
+                                            borderBottom: i === suggestions.length - 1 ? "none" : "1px solid var(--border)",
+                                            fontSize: "0.95rem",
+                                            color: "var(--text-primary)",
+                                            backgroundColor: "transparent",
+                                            display: "block",
+                                            cursor: "pointer",
+                                            transition: "var(--transition-fast)"
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--surface-2)"}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                    >
+                                        {s.display_name}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                    <p style={{ fontSize: "0.8rem", color: "var(--text-tertiary)", marginTop: "8px" }}>
+                    
+                    <button 
+                        type="button" 
+                        onClick={handleUseCurrentLocation}
+                        className="btn btn-secondary"
+                        style={{ width: "100%", justifyContent: "center", padding: "12px" }}
+                    >
+                        {t.useMyLocation}
+                    </button>
+
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.5, marginTop: "2px" }}>
                         {t.accuracyNote}
                     </p>
-
-                    {suggestions.length > 0 && (
-                        <div style={{ 
-                            position: "absolute", 
-                            top: "100%", 
-                            left: 0, 
-                            right: 0, 
-                            background: "#1e1e21", /* solid background */
-                            border: "1px solid var(--border)", 
-                            borderRadius: "var(--radius)",
-                            marginTop: "4px",
-                            zIndex: 1000,
-                            boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
-                            maxHeight: "250px",
-                            overflowY: "auto"
-                        }}>
-                            {suggestions.map((s, i) => (
-                                <button
-                                    key={i}
-                                    type="button"
-                                    onClick={() => selectSuggestion(s)}
-                                    style={{ 
-                                        width: "100%", 
-                                        textAlign: "left", 
-                                        padding: "12px 16px", 
-                                        borderBottom: i === suggestions.length - 1 ? "none" : "1px solid var(--border)",
-                                        fontSize: "0.9rem",
-                                        color: "var(--text-primary)",
-                                        backgroundColor: "transparent",
-                                        display: "block"
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--surface-2)"}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                                >
-                                    {s.display_name}
-                                </button>
-                            ))}
-                        </div>
-                    )}
                 </div>
-                <button 
-                    type="button" 
-                    onClick={handleUseCurrentLocation}
-                    className="btn btn-secondary"
-                    style={{ fontSize: "13px", height: "48px", minHeight: "48px" }}
-                >
-                    {t.useMyLocation}
-                </button>
             </div>
             
             <div style={{ 
@@ -314,12 +318,30 @@ export default function LocationPicker({
                     />
                 </MapContainer>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <p className="text-xs text-muted" style={{ maxWidth: "80%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {position ? `${t.selectedAddress}: ${searchQuery}` : `${t.coords}: ${t.none}`}
-                </p>
+            
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", background: "var(--surface)", padding: "12px", borderRadius: "var(--radius-md)", border: "1px solid var(--border)" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <p className="text-xs text-muted" style={{ marginBottom: "4px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        {t.selectedAddress}
+                    </p>
+                    <p style={{ 
+                        color: position ? "var(--text-primary)" : "var(--text-muted)",
+                        fontSize: "0.95rem",
+                        overflow: "hidden", 
+                        textOverflow: "ellipsis", 
+                        display: "-webkit-box", 
+                        WebkitLineClamp: 2, 
+                        WebkitBoxOrient: "vertical",
+                        lineHeight: 1.4,
+                        margin: 0
+                    }}>
+                        {position ? searchQuery : t.none}
+                    </p>
+                </div>
                 {error && !position && (
-                    <p style={{ color: "var(--color-error)", fontSize: "0.75rem", fontWeight: "600" }}>{t.requiredError}</p>
+                    <span style={{ color: "var(--color-error)", fontSize: "0.85rem", fontWeight: "600", flexShrink: 0 }}>
+                        {t.requiredError}
+                    </span>
                 )}
             </div>
         </div>

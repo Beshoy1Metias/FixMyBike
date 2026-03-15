@@ -207,8 +207,8 @@ export default function NewPartListingPage() {
 
                 <div className="card">
                     <form onSubmit={handleSubmit} className="card-body" style={{ display: "grid", gap: "var(--space-6)" }}>
-                        <div className="grid-2">
-                            <div className="form-group">
+                        <div className="form-row">
+                            <div className="form-group form-col">
                                 <label htmlFor="title" className="form-label">{t.labelTitle}</label>
                                 <input
                                     id="title"
@@ -219,7 +219,7 @@ export default function NewPartListingPage() {
                                     required
                                 />
                             </div>
-                            <div className="form-group">
+                            <div className="form-group form-col">
                                 <label htmlFor="brand" className="form-label">{t.labelBrand}</label>
                                 <input
                                     id="brand"
@@ -231,8 +231,8 @@ export default function NewPartListingPage() {
                             </div>
                         </div>
 
-                        <div className="grid-3">
-                            <div className="form-group">
+                        <div className="form-row">
+                            <div className="form-group form-col">
                                 <label htmlFor="price" className="form-label">{t.labelPrice}</label>
                                 <input
                                     id="price"
@@ -245,7 +245,7 @@ export default function NewPartListingPage() {
                                     required
                                 />
                             </div>
-                            <div className="form-group">
+                            <div className="form-group form-col">
                                 <label htmlFor="condition" className="form-label">{t.labelCondition}</label>
                                 <select
                                     id="condition"
@@ -259,7 +259,7 @@ export default function NewPartListingPage() {
                                     ))}
                                 </select>
                             </div>
-                            <div className="form-group">
+                            <div className="form-group form-col">
                                 <label htmlFor="category" className="form-label">{t.labelCategory}</label>
                                 <select
                                     id="category"
