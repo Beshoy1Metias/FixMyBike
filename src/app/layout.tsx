@@ -64,6 +64,7 @@ export default async function RootLayout({
   return (
     <html lang={lang} className={inter.variable}>
       <body>
+        <div className="noise-overlay"></div>
         <AuthProvider>
           <PushNotificationProvider />
           <LanguageProvider>
