@@ -345,6 +345,20 @@
 
     .heroCta {
         flex-direction: column;
+        width: 100%;
+        gap: var(--space-3);
+    }
+    
+    .heroCta > * {
+        width: 100%;
+    }
+
+    .ctaActions {
+        width: 100%;
+    }
+
+    .ctaActions > * {
+        width: 100%;
     }
 
     .ctaCard {

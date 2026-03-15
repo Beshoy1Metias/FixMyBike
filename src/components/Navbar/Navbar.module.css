@@ -369,7 +369,7 @@
     gap: var(--space-1);
     flex: 1;
     overflow-y: auto;
-    padding-bottom: var(--space-8);
+    padding-bottom: calc(var(--space-8) + env(safe-area-inset-bottom));
 }
 
 .mobileMenuTitle {
