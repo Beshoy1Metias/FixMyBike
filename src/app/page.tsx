@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./page.module.css";
 import { getCurrentLanguage } from "@/lib/language";
 import FadeIn from "@/components/Animations/FadeIn";
@@ -230,9 +231,14 @@ export default async function Home() {
               </div>
             </div>
             <div className={styles.founderImageContainer}>
-              <div className={styles.founderAvatarPlaceholder}>
-                {t.founderName.charAt(0)}
-              </div>
+              <Image
+                src="/founder.jpg"
+                alt="Beshoy Metias"
+                width={160}
+                height={160}
+                className={styles.founderAvatar}
+                style={{ borderRadius: "var(--radius-2xl)", objectFit: "cover" }}
+              />
             </div>
           </FadeIn>
         </div>

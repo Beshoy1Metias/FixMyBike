@@ -240,17 +240,7 @@
     justify-content: center;
 }
 
-.founderAvatarPlaceholder {
-    width: 160px;
-    height: 160px;
-    border-radius: var(--radius-2xl);
-    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 4rem;
-    font-weight: 800;
-    color: white;
+.founderAvatar {
     box-shadow: var(--shadow-glow);
 }
 
