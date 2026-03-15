@@ -19,6 +19,13 @@ const nextConfig: NextConfig = {
   },
   // Don't expose Next.js version in response headers
   poweredByHeader: false,
+  
+  // Heavily constrain build workers to prevent "Out-Of-Memory" fatal crashes on many-core machines
+  experimental: {
+    cpus: 2,
+    workerThreads: false,
+    memoryBasedWorkersCount: true,
+  },
 };
 
 export default nextConfig;

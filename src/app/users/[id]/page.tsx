@@ -96,7 +96,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                                         /* eslint-disable-next-line @next/next/no-img-element */
                                         <img src={user.image} alt={user.name || ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                                     ) : (
-                                        user.name?.charAt(0).toUpperCase() || "U"
+                                        user.name?.charAt(0)?.toUpperCase() || "U"
                                     )}
                                 </div>
                                 <h1 className="text-heading-2">{user.name || "User Profile"}</h1>

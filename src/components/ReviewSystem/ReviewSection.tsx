@@ -220,7 +220,7 @@ export default function ReviewSection({ targetId, mechanicId, lang }: ReviewSect
                                             /* eslint-disable-next-line @next/next/no-img-element */
                                             <img src={review.author.image} alt={review.author.name || ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                                         ) : (
-                                            review.author.name?.charAt(0).toUpperCase() || "U"
+                                            review.author.name?.charAt(0)?.toUpperCase() || "U"
                                         )}
                                     </div>
                                     <div className={styles.authorInfo}>

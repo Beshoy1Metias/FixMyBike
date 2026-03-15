@@ -22,9 +22,8 @@ export default function ImageUploader({ label = "Photos", maxImages = 4, onChang
 
         try {
             setUploading(true);
-            const newUrls: string[] = [];
 
-            for (const file of filesArray) {
+            const uploadPromises = filesArray.map(async (file) => {
                 const formData = new FormData();
                 formData.append("file", file);
 
@@ -34,17 +33,21 @@ export default function ImageUploader({ label = "Photos", maxImages = 4, onChang
                 });
 
                 const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Upload failed.");
+                return data.url;
+            });
 
-                if (!res.ok) {
-                    throw new Error(data.error || "Upload failed.");
-                }
+            const results = await Promise.allSettled(uploadPromises);
+            
+            const successfulUrls = results
+                .filter((r): r is PromiseFulfilledResult<string> => r.status === "fulfilled" && !!r.value)
+                .map(r => r.value);
 
-                if (data.url) {
-                    newUrls.push(data.url);
-                }
+            if (results.some(r => r.status === "rejected")) {
+                setError("Some images failed to upload.");
             }
 
-            const allUrls = [...urls, ...newUrls];
+            const allUrls = [...urls, ...successfulUrls];
             setUrls(allUrls);
             onChange(allUrls);
         } catch (err) {

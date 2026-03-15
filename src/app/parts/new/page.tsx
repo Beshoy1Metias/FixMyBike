@@ -300,7 +300,7 @@ export default function NewPartListingPage() {
 
                         {error && <div className="form-error">{error}</div>}
 
-                        <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--space-3)" }}>
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--space-3)", flexWrap: "wrap" }}>
                             <button
                                 type="button"
                                 className="btn btn-secondary"

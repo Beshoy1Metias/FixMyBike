@@ -235,7 +235,7 @@ export default function Navbar() {
                                                     /* eslint-disable-next-line @next/next/no-img-element */
                                                     <img src={session.user.image} alt={session.user.name || "User"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                                                 ) : (
-                                                    <span style={{ fontSize: "0.9rem" }}>{session.user.name?.charAt(0).toUpperCase() ?? "U"}</span>
+                                                    <span style={{ fontSize: "0.9rem" }}>{session.user.name?.charAt(0)?.toUpperCase() ?? "U"}</span>
                                                 )}
                                             </motion.div>
                                             <div className={styles.dropdown}>
