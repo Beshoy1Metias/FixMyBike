@@ -17,20 +17,6 @@ export default function LanguageSwitcher() {
         <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
             <button
                 type="button"
-                onClick={() => handleChange("en")}
-                className="btn btn-ghost btn-xs"
-                aria-label="Switch language to English"
-                style={{
-                    paddingInline: "0.5rem",
-                    opacity: language === "en" ? 1 : 0.6,
-                    fontWeight: language === "en" ? 600 : 400,
-                }}
-            >
-                EN
-            </button>
-            <span style={{ opacity: 0.4 }}>|</span>
-            <button
-                type="button"
                 onClick={() => handleChange("it")}
                 className="btn btn-ghost btn-xs"
                 aria-label="Cambia lingua in italiano"
@@ -41,6 +27,20 @@ export default function LanguageSwitcher() {
                 }}
             >
                 IT
+            </button>
+            <span style={{ opacity: 0.4 }}>|</span>
+            <button
+                type="button"
+                onClick={() => handleChange("en")}
+                className="btn btn-ghost btn-xs"
+                aria-label="Switch language to English"
+                style={{
+                    paddingInline: "0.5rem",
+                    opacity: language === "en" ? 1 : 0.6,
+                    fontWeight: language === "en" ? 600 : 400,
+                }}
+            >
+                EN
             </button>
         </div>
     );

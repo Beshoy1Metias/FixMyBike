@@ -14,15 +14,15 @@ const COOKIE_NAME = "fixmybike_lang";
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
 function readLanguageFromCookie(): Language {
-    if (typeof document === "undefined") return "en";
+    if (typeof document === "undefined") return "it";
     const match = document.cookie.split(";").find((c) => c.trim().startsWith(`${COOKIE_NAME}=`));
-    if (!match) return "en";
+    if (!match) return "it";
     const value = match.split("=")[1]?.trim();
-    return value === "it" ? "it" : "en";
+    return value === "en" ? "en" : "it";
 }
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-    const [language, setLanguageState] = useState<Language>("en");
+    const [language, setLanguageState] = useState<Language>("it");
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect

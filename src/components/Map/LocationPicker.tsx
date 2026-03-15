@@ -26,7 +26,8 @@ const TEXT = {
         requiredError: "Please select a location on the map",
         coords: "Selected coordinates",
         none: "None",
-        selectedAddress: "Selected Address"
+        selectedAddress: "Selected Address",
+        accuracyNote: "💡 For best accuracy, click directly on the map or use 'Use My Location'.",
     },
     it: {
         label: "Posizione",
@@ -37,7 +38,8 @@ const TEXT = {
         requiredError: "Per favore seleziona una posizione sulla mappa",
         coords: "Coordinate selezionate",
         none: "Nessuna",
-        selectedAddress: "Indirizzo selezionato"
+        selectedAddress: "Indirizzo selezionato",
+        accuracyNote: "💡 Per maggiore precisione, clicca sulla mappa o usa 'Usa la mia posizione'.",
     }
 };
 
@@ -230,6 +232,9 @@ export default function LocationPicker({
                             </div>
                         )}
                     </div>
+                    <p style={{ fontSize: "0.8rem", color: "var(--text-tertiary)", marginTop: "8px" }}>
+                        {t.accuracyNote}
+                    </p>
 
                     {suggestions.length > 0 && (
                         <div style={{ 
