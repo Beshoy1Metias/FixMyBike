@@ -53,12 +53,22 @@ export default function ListingCard({
                     ) : (
                         <div className={styles.imagePlaceholder}>🚲</div>
                     )}
-                    {badge && (
-                        <span className={`badge badge-${badgeVariant} ${styles.badge}`}>{badge}</span>
-                    )}
-                    {condition && (
-                        <span className={`badge badge-gray ${styles.condition}`}>{condition}</span>
-                    )}
+                    
+                    {/* Visual Overlays */}
+                    <div className={styles.imageOverlay} />
+                    <div className={styles.glassShine} />
+
+                    <div className={styles.badgeContainer}>
+                        {badge && (
+                            <span className={`${styles.premiumBadge} ${styles[`badge_${badgeVariant}`]}`}>
+                                {badge}
+                            </span>
+                        )}
+                        {condition && (
+                            <span className={styles.conditionBadge}>{condition}</span>
+                        )}
+                    </div>
+
                     {isCompleted && (
                         <div className={styles.completedOverlay}>
                             <span>{completedLabel}</span>
@@ -66,27 +76,23 @@ export default function ListingCard({
                     )}
                 </div>
                 <div className={styles.body}>
-                    {tags.length > 0 && (
-                        <div className={styles.tags}>
-                            {tags.map((t) => (
-                                <span key={t} className={`badge badge-gray ${styles.tag}`}>{t}</span>
-                            ))}
-                        </div>
-                    )}
                     <h3 className={styles.title}>{title}</h3>
-                    {meta && <p className={styles.meta}>{meta}</p>}
+                    
                     <div className={styles.footer}>
-                        {price !== undefined && price !== null ? (
-                            <span className="price-sm">
-                                {typeof price === "number" ? `€${price.toLocaleString()}` : price}
-                            </span>
-                        ) : null}
+                        <div className={styles.priceContainer}>
+                            {price !== undefined && price !== null && (
+                                <span className={styles.listingPrice}>
+                                    {typeof price === "number" ? `€${price.toLocaleString()}` : price}
+                                </span>
+                            )}
+                        </div>
+                        
                         <div className={styles.locationWrap}>
-                            <svg className={styles.locationIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg className={styles.locationIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                 <circle cx="12" cy="10" r="3"></circle>
                             </svg>
-                            <span className={styles.location}>
+                            <span className={styles.locationText}>
                                 {location}
                             </span>
                         </div>
