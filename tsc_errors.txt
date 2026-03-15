@@ -1,0 +1,6 @@
+src/components/Map/LocationPicker.tsx(128,34): error TS1127: Invalid character.
+src/components/Map/LocationPicker.tsx(128,35): error TS1134: Variable declaration expected.
+src/components/Map/LocationPicker.tsx(263,1): error TS1005: '}' expected.
+src/components/Map/LocationPicker.tsx(263,1): error TS1160: Unterminated template literal.
+src/components/Map/Map.tsx(159,90): error TS1127: Invalid character.
+src/components/Map/Map.tsx(159,145): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
