@@ -378,6 +378,7 @@ const SHOPS_DATA: Shop[] = [
     "lat": 45.4035,
     "lng": 11.8644,
     "phone": "unknown",
+    "website": "https://www.lamentecomune.it/",
     "hours": {
       "mon": "closed",
       "tue": ["18:30-21:00"],

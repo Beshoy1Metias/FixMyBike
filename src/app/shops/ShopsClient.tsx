@@ -30,6 +30,7 @@ export interface Shop {
         sun: string[] | "closed" | "unknown";
     };
     phone?: string;
+    website?: string;
     distance?: number;
     isOpen?: boolean;
 }
@@ -305,6 +306,11 @@ export default function ShopsClient({ initialShops, lang }: ShopsClientProps) {
                                                 {shop.phone && shop.phone !== "unknown" && (
                                                     <a href={`tel:${shop.phone.replace(/\s+/g, '')}`} className="btn btn-secondary btn-sm" style={{ minHeight: "36px", fontSize: "0.8rem" }}>
                                                         📞 {t.call}
+                                                    </a>
+                                                )}
+                                                {shop.website && (
+                                                    <a href={shop.website} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm" style={{ minHeight: "36px", fontSize: "0.8rem" }}>
+                                                        🌐 {lang === "it" ? "Sito Web" : "Website"}
                                                     </a>
                                                 )}
                                                 <button 
